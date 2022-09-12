@@ -1,5 +1,4 @@
 #include "parser.hpp"
-#include "ast.hpp"
 
 #include <vector>
 #include <regex>
@@ -9,10 +8,9 @@
 namespace sauros {
 namespace parser {
 
-
 enum class token_e {
-   L_PAREN,
-   R_PAREN,
+   L_BRACKET,
+   R_BRACKET,
    SYMBOL,
    INTEGER,
    DOUBLE,
@@ -31,22 +29,6 @@ static bool is_digit(const char c) {
    return std::isdigit(static_cast<unsigned char>(c)) != 0;
 }
 
-
-
-void display_tree(const std::string &prefix, ast::node_c *n, bool is_left) {
-   if (!n) {
-      return;
-   }
-  
-   std::cout << prefix;
-   std::cout << (is_left ? "├──" : "└──");
-   std::cout << " " << n->data << std::endl;
-   display_tree(prefix + (is_left ? "│   " : "    "), n->left.get() ,  true);
-   display_tree(prefix + (is_left ? "│   " : "    "), n->right.get(), false);
-}
-
-
-
 //    Retrieve a list of tokens based on the given string
 //
 std::tuple<std::vector<token_s>, std::unique_ptr<error::error_c>> tokenize(size_t line_number, const std::string line) {
@@ -61,21 +43,21 @@ std::tuple<std::vector<token_s>, std::unique_ptr<error::error_c>> tokenize(size_
 
       std::string current_data;
       switch(current) {
-         case '(':
+         case '[':
          {
             tokens.push_back({
-               token_e::L_PAREN,
-               "(",
+               token_e::L_BRACKET,
+               "[",
                {line_number, idx}
             });
             continue;
          }
 
-         case ')':
+         case ']':
          {
             tokens.push_back({
-               token_e::R_PAREN,
-               ")",
+               token_e::R_BRACKET,
+               "]",
                {line_number, idx}
             });
             continue;
@@ -93,8 +75,8 @@ std::tuple<std::vector<token_s>, std::unique_ptr<error::error_c>> tokenize(size_
                }
                if (in_str) {
                   value += line[idx];
-               } else if (!std::isspace(line[idx]) && line[idx] != '(' &&
-                        line[idx] != ')') {
+               } else if (!std::isspace(line[idx]) && line[idx] != '[' &&
+                        line[idx] != ']') {
                   value += line[idx];
                } else {
                   --idx;
@@ -169,7 +151,7 @@ std::tuple<std::vector<token_s>, std::unique_ptr<error::error_c>> tokenize(size_
       //
       std::string value;
       decltype(idx) start = idx;
-      while (idx < line.size() && !std::isspace(line[idx]) && line[idx] != '(' && line[idx] != ')') {
+      while (idx < line.size() && !std::isspace(line[idx]) && line[idx] != '[' && line[idx] != ']') {
          value += line[idx];
          idx++;
       }
@@ -185,95 +167,133 @@ std::tuple<std::vector<token_s>, std::unique_ptr<error::error_c>> tokenize(size_
    return std::make_tuple(tokens, nullptr);
 }
 
-// 
-//
-std::tuple<std::unique_ptr<ast::node_c>, std::unique_ptr<error::error_c>> parse(std::vector<token_s> tokens, bool first = false) {
+namespace {
+   static uint64_t open_counter {0};
+}
+
+std::tuple<std::unique_ptr<list_c>, std::unique_ptr<error::error_c>> parse(std::vector<token_s>& tokens, list_c* current_list = nullptr) {
 
    if (tokens.empty()) {
       return std::make_tuple(nullptr, nullptr);
    }
 
-   /*
-      (define x (+ 3 2))
-   
-   */
-
-   auto& current_token = tokens[0];
+   auto current_token = tokens[0];
+   tokens = std::vector<token_s>(tokens.begin()+1, tokens.end());
 
    switch(current_token.token) {
 
-      // Skip this and go to the next token
-      case token_e::L_PAREN:
+      case token_e::L_BRACKET:
       {
-         return parse(std::vector<token_s>(tokens.begin()+1, tokens.end()), true);
+         open_counter++;
+
+         // Populate the list
+         auto [list, err] = parse(tokens, new list_c());
+
+         if (err) {
+            return std::make_tuple(nullptr, std::move(err));
+         }
+
+         // If we had  a list, we add our new list to it
+         if (current_list) {
+            current_list->cells.push_back(std::move(list));
+
+            return parse(tokens, current_list);
+
+         // otherwise we return the new list
+         } else {
+            return std::make_tuple(std::move(list), nullptr);
+         }
       }
 
-      case token_e::R_PAREN:
+      case token_e::R_BRACKET:
       {
-         return parse(std::vector<token_s>(tokens.begin()+1, tokens.end()));
+         // This means we are done building whatever current_list is
+         if (!current_list) {
+            auto error = std::make_unique<error::error_c>(
+                  current_token.location,
+                  current_token.data,
+                  "unopened closing bracket `]` located");
+            return std::make_tuple(nullptr, std::move(error));
+         }
+
+         open_counter--;
+
+         // return the current list as the thing
+         return std::make_tuple(std::unique_ptr<list_c>(current_list), nullptr);
       }
 
       case token_e::SYMBOL:
       {
-         // If its immediatly following a ( then it is a root
-         if (first) {
-
-            auto new_node = std::make_unique<ast::node_c>(current_token.data, ast::node_type_e::SYMBOL);
-
-            auto [left_node, left_e] = parse(std::vector<token_s>(tokens.begin()+1, tokens.end()));
-            if (left_e) {
-               return std::make_tuple(nullptr, std::move(left_e));
-            }
-
-            auto [right_node, right_e] = parse(std::vector<token_s>(tokens.begin()+2, tokens.end()));
-            if (right_e) {
-               return std::make_tuple(nullptr, std::move(right_e));
-            }
-
-            if (!right_node) {
-               std::cout << "no right ?? " << std::endl;
-            }
-
-            new_node->left = std::move(left_node);
-            new_node->right = std::move(right_node);
-            
-            return std::make_tuple(std::move(new_node), nullptr);
-
-
-         // If its not immediatly following a ( then it is a stand alone symbol
-         //
-         } else {
-            auto new_node = std::make_unique<ast::node_c>(current_token.data, ast::node_type_e::SYMBOL);
-            return std::make_tuple(std::move(new_node), nullptr);
+         if (!current_list) {
+            auto error = std::make_unique<error::error_c>(
+                  current_token.location,
+                  current_token.data,
+                  "attempting to create string object prior to list creation");
+            return std::make_tuple(nullptr, std::move(error));
          }
+
+         std::unique_ptr<cell_c> new_symbol(new symbol_c(current_token.data));
+         current_list->cells.push_back(std::move(new_symbol));
+
+         return parse(tokens, current_list);
+      }
+
+      case token_e::STRING:
+      {
+         if (!current_list) {
+            auto error = std::make_unique<error::error_c>(
+                  current_token.location,
+                  current_token.data,
+                  "attempting to create string object prior to list creation");
+            return std::make_tuple(nullptr, std::move(error));
+         }
+
+         std::unique_ptr<cell_c> new_string(new string_c(current_token.data));
+         current_list->cells.push_back(std::move(new_string));
+
+         return parse(tokens, current_list);
       }
 
       case token_e::INTEGER:
       {
-         auto new_node = std::make_unique<ast::node_c>(current_token.data, ast::node_type_e::INTEGER);
-         return std::make_tuple(std::move(new_node), nullptr);
+         if (!current_list) {
+            auto error = std::make_unique<error::error_c>(
+                  current_token.location,
+                  current_token.data,
+                  "attempting to create string object prior to list creation");
+            return std::make_tuple(nullptr, std::move(error));
+         }
+         std::unique_ptr<cell_c> new_integer(new integer_c(std::stol(current_token.data)));
+         current_list->cells.push_back(std::move(new_integer));
+
+         return parse(tokens, current_list);
       }
-      case token_e::STRING:
-      {
-         auto new_node = std::make_unique<ast::node_c>(current_token.data, ast::node_type_e::STRING);
-         return std::make_tuple(std::move(new_node), nullptr);
-      }
+
       case token_e::DOUBLE:
       {
-         auto new_node = std::make_unique<ast::node_c>(current_token.data, ast::node_type_e::DOUBLE);
-         return std::make_tuple(std::move(new_node), nullptr);
+         if (!current_list) {
+            auto error = std::make_unique<error::error_c>(
+                  current_token.location,
+                  current_token.data,
+                  "attempting to create string object prior to list creation");
+            return std::make_tuple(nullptr, std::move(error));
+         }
+         std::unique_ptr<cell_c> new_integer(new integer_c(std::stod(current_token.data)));
+         current_list->cells.push_back(std::move(new_integer));
+
+         return parse(tokens, current_list);
       }
    }
 
    auto error = std::make_unique<error::error_c>(
          current_token.location,
          current_token.data,
-         "internal error > unable to match item in ast construction");
-
+         "internal error > unhandled token type");
    return std::make_tuple(nullptr, std::move(error));
 }
 
-product_s parse_line(const char* source_descrption, std::size_t line_number, std::string line, bool show_tree) {
+
+product_s parse_line(const char* source_descrption, std::size_t line_number, std::string line) {
 
    product_s resulting_product;
 
@@ -284,9 +304,8 @@ product_s parse_line(const char* source_descrption, std::size_t line_number, std
       resulting_product.result = result_e::ERROR;
       return resulting_product;
    }
-
-
-   auto [tree, parse_err] = parse(tokens);
+   
+   auto [cells, parse_err] = parse(tokens);
 
    if (parse_err) {
       resulting_product.error_info = std::move(parse_err);
@@ -294,11 +313,8 @@ product_s parse_line(const char* source_descrption, std::size_t line_number, std
       return resulting_product;
    }
 
-   if (show_tree && tree) {
-      display_tree("", tree.get(), true);
-   }
-
-   resulting_product.tree = std::move(tree);
+   resulting_product.list = std::move(cells);
+   resulting_product.error_info = nullptr;
    resulting_product.result = result_e::OKAY;
    return resulting_product;
 }

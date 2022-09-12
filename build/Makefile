@@ -237,33 +237,6 @@ app/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sauros.dir/build.make CMakeFiles/sauros.dir/app/main.cpp.s
 .PHONY : app/main.cpp.s
 
-sauros/ast.o: sauros/ast.cpp.o
-.PHONY : sauros/ast.o
-
-# target to build an object file
-sauros/ast.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/libsauros.dir/build.make CMakeFiles/libsauros.dir/sauros/ast.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sauros.dir/build.make CMakeFiles/sauros.dir/sauros/ast.cpp.o
-.PHONY : sauros/ast.cpp.o
-
-sauros/ast.i: sauros/ast.cpp.i
-.PHONY : sauros/ast.i
-
-# target to preprocess a source file
-sauros/ast.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/libsauros.dir/build.make CMakeFiles/libsauros.dir/sauros/ast.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sauros.dir/build.make CMakeFiles/sauros.dir/sauros/ast.cpp.i
-.PHONY : sauros/ast.cpp.i
-
-sauros/ast.s: sauros/ast.cpp.s
-.PHONY : sauros/ast.s
-
-# target to generate assembly for a file
-sauros/ast.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/libsauros.dir/build.make CMakeFiles/libsauros.dir/sauros/ast.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sauros.dir/build.make CMakeFiles/sauros.dir/sauros/ast.cpp.s
-.PHONY : sauros/ast.cpp.s
-
 sauros/parser.o: sauros/parser.cpp.o
 .PHONY : sauros/parser.o
 
@@ -310,9 +283,6 @@ help:
 	@echo "... app/main.o"
 	@echo "... app/main.i"
 	@echo "... app/main.s"
-	@echo "... sauros/ast.o"
-	@echo "... sauros/ast.i"
-	@echo "... sauros/ast.s"
 	@echo "... sauros/parser.o"
 	@echo "... sauros/parser.i"
 	@echo "... sauros/parser.s"

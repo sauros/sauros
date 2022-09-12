@@ -69,24 +69,10 @@ include CMakeFiles/libsauros.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/libsauros.dir/flags.make
 
-CMakeFiles/libsauros.dir/sauros/ast.cpp.o: CMakeFiles/libsauros.dir/flags.make
-CMakeFiles/libsauros.dir/sauros/ast.cpp.o: ../sauros/ast.cpp
-CMakeFiles/libsauros.dir/sauros/ast.cpp.o: CMakeFiles/libsauros.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/bosley/workspace/sauros/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/libsauros.dir/sauros/ast.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/libsauros.dir/sauros/ast.cpp.o -MF CMakeFiles/libsauros.dir/sauros/ast.cpp.o.d -o CMakeFiles/libsauros.dir/sauros/ast.cpp.o -c /home/bosley/workspace/sauros/sauros/ast.cpp
-
-CMakeFiles/libsauros.dir/sauros/ast.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/libsauros.dir/sauros/ast.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/bosley/workspace/sauros/sauros/ast.cpp > CMakeFiles/libsauros.dir/sauros/ast.cpp.i
-
-CMakeFiles/libsauros.dir/sauros/ast.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/libsauros.dir/sauros/ast.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/bosley/workspace/sauros/sauros/ast.cpp -o CMakeFiles/libsauros.dir/sauros/ast.cpp.s
-
 CMakeFiles/libsauros.dir/sauros/parser.cpp.o: CMakeFiles/libsauros.dir/flags.make
 CMakeFiles/libsauros.dir/sauros/parser.cpp.o: ../sauros/parser.cpp
 CMakeFiles/libsauros.dir/sauros/parser.cpp.o: CMakeFiles/libsauros.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/bosley/workspace/sauros/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/libsauros.dir/sauros/parser.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/bosley/workspace/sauros/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/libsauros.dir/sauros/parser.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/libsauros.dir/sauros/parser.cpp.o -MF CMakeFiles/libsauros.dir/sauros/parser.cpp.o.d -o CMakeFiles/libsauros.dir/sauros/parser.cpp.o -c /home/bosley/workspace/sauros/sauros/parser.cpp
 
 CMakeFiles/libsauros.dir/sauros/parser.cpp.i: cmake_force
@@ -99,17 +85,15 @@ CMakeFiles/libsauros.dir/sauros/parser.cpp.s: cmake_force
 
 # Object files for target libsauros
 libsauros_OBJECTS = \
-"CMakeFiles/libsauros.dir/sauros/ast.cpp.o" \
 "CMakeFiles/libsauros.dir/sauros/parser.cpp.o"
 
 # External object files for target libsauros
 libsauros_EXTERNAL_OBJECTS =
 
-libsauros.a: CMakeFiles/libsauros.dir/sauros/ast.cpp.o
 libsauros.a: CMakeFiles/libsauros.dir/sauros/parser.cpp.o
 libsauros.a: CMakeFiles/libsauros.dir/build.make
 libsauros.a: CMakeFiles/libsauros.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/bosley/workspace/sauros/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX static library libsauros.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/bosley/workspace/sauros/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libsauros.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/libsauros.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/libsauros.dir/link.txt --verbose=$(VERBOSE)
 

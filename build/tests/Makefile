@@ -175,30 +175,6 @@ sauros_unit_tests/fast:
 	cd /home/bosley/workspace/sauros/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/sauros_unit_tests.dir/build.make tests/CMakeFiles/sauros_unit_tests.dir/build
 .PHONY : sauros_unit_tests/fast
 
-__/sauros/ast.o: __/sauros/ast.cpp.o
-.PHONY : __/sauros/ast.o
-
-# target to build an object file
-__/sauros/ast.cpp.o:
-	cd /home/bosley/workspace/sauros/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/sauros_unit_tests.dir/build.make tests/CMakeFiles/sauros_unit_tests.dir/__/sauros/ast.cpp.o
-.PHONY : __/sauros/ast.cpp.o
-
-__/sauros/ast.i: __/sauros/ast.cpp.i
-.PHONY : __/sauros/ast.i
-
-# target to preprocess a source file
-__/sauros/ast.cpp.i:
-	cd /home/bosley/workspace/sauros/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/sauros_unit_tests.dir/build.make tests/CMakeFiles/sauros_unit_tests.dir/__/sauros/ast.cpp.i
-.PHONY : __/sauros/ast.cpp.i
-
-__/sauros/ast.s: __/sauros/ast.cpp.s
-.PHONY : __/sauros/ast.s
-
-# target to generate assembly for a file
-__/sauros/ast.cpp.s:
-	cd /home/bosley/workspace/sauros/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/sauros_unit_tests.dir/build.make tests/CMakeFiles/sauros_unit_tests.dir/__/sauros/ast.cpp.s
-.PHONY : __/sauros/ast.cpp.s
-
 __/sauros/parser.o: __/sauros/parser.cpp.o
 .PHONY : __/sauros/parser.o
 
@@ -284,9 +260,6 @@ help:
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... sauros_unit_tests"
-	@echo "... __/sauros/ast.o"
-	@echo "... __/sauros/ast.i"
-	@echo "... __/sauros/ast.s"
 	@echo "... __/sauros/parser.o"
 	@echo "... __/sauros/parser.i"
 	@echo "... __/sauros/parser.s"

@@ -47,12 +47,11 @@ endif()
 include(${CMAKE_SOURCE_DIR}/cmake/SetEnv.cmake)
 
 set(SAUROS_SOURCES
-  ${CMAKE_CURRENT_SOURCE_DIR}/sauros/ast.cpp
   ${CMAKE_SOURCE_DIR}/sauros/parser.cpp
 )
 
 set(HEADERS
-    ${CMAKE_SOURCE_DIR}/sauros/ast.hpp
+    ${CMAKE_SOURCE_DIR}/sauros/list.hpp
     ${CMAKE_SOURCE_DIR}/sauros/parser.hpp
     ${CMAKE_SOURCE_DIR}/sauros/types.hpp
     ${CMAKE_SOURCE_DIR}/sauros/version.hpp

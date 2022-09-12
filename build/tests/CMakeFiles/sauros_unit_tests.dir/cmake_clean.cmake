@@ -1,6 +1,4 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/sauros_unit_tests.dir/__/sauros/ast.cpp.o"
-  "CMakeFiles/sauros_unit_tests.dir/__/sauros/ast.cpp.o.d"
   "CMakeFiles/sauros_unit_tests.dir/__/sauros/parser.cpp.o"
   "CMakeFiles/sauros_unit_tests.dir/__/sauros/parser.cpp.o.d"
   "CMakeFiles/sauros_unit_tests.dir/main.cpp.o"

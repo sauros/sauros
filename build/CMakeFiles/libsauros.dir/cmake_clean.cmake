@@ -1,6 +1,4 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/libsauros.dir/sauros/ast.cpp.o"
-  "CMakeFiles/libsauros.dir/sauros/ast.cpp.o.d"
   "CMakeFiles/libsauros.dir/sauros/parser.cpp.o"
   "CMakeFiles/libsauros.dir/sauros/parser.cpp.o.d"
   "libsauros.a"

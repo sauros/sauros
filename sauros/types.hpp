@@ -1,6 +1,7 @@
 #ifndef SAUROS_TYPES_HPP
 #define SAUROS_TYPES_HPP
 
+#include <string>
 #include <cstdint>
 
 namespace sauros {

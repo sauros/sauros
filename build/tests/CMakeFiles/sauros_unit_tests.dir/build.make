@@ -83,24 +83,10 @@ tests/CMakeFiles/sauros_unit_tests.dir/sauros_tests.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/sauros_unit_tests.dir/sauros_tests.cpp.s"
 	cd /home/bosley/workspace/sauros/build/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/bosley/workspace/sauros/tests/sauros_tests.cpp -o CMakeFiles/sauros_unit_tests.dir/sauros_tests.cpp.s
 
-tests/CMakeFiles/sauros_unit_tests.dir/__/sauros/ast.cpp.o: tests/CMakeFiles/sauros_unit_tests.dir/flags.make
-tests/CMakeFiles/sauros_unit_tests.dir/__/sauros/ast.cpp.o: ../sauros/ast.cpp
-tests/CMakeFiles/sauros_unit_tests.dir/__/sauros/ast.cpp.o: tests/CMakeFiles/sauros_unit_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/bosley/workspace/sauros/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object tests/CMakeFiles/sauros_unit_tests.dir/__/sauros/ast.cpp.o"
-	cd /home/bosley/workspace/sauros/build/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT tests/CMakeFiles/sauros_unit_tests.dir/__/sauros/ast.cpp.o -MF CMakeFiles/sauros_unit_tests.dir/__/sauros/ast.cpp.o.d -o CMakeFiles/sauros_unit_tests.dir/__/sauros/ast.cpp.o -c /home/bosley/workspace/sauros/sauros/ast.cpp
-
-tests/CMakeFiles/sauros_unit_tests.dir/__/sauros/ast.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/sauros_unit_tests.dir/__/sauros/ast.cpp.i"
-	cd /home/bosley/workspace/sauros/build/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/bosley/workspace/sauros/sauros/ast.cpp > CMakeFiles/sauros_unit_tests.dir/__/sauros/ast.cpp.i
-
-tests/CMakeFiles/sauros_unit_tests.dir/__/sauros/ast.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/sauros_unit_tests.dir/__/sauros/ast.cpp.s"
-	cd /home/bosley/workspace/sauros/build/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/bosley/workspace/sauros/sauros/ast.cpp -o CMakeFiles/sauros_unit_tests.dir/__/sauros/ast.cpp.s
-
 tests/CMakeFiles/sauros_unit_tests.dir/__/sauros/parser.cpp.o: tests/CMakeFiles/sauros_unit_tests.dir/flags.make
 tests/CMakeFiles/sauros_unit_tests.dir/__/sauros/parser.cpp.o: ../sauros/parser.cpp
 tests/CMakeFiles/sauros_unit_tests.dir/__/sauros/parser.cpp.o: tests/CMakeFiles/sauros_unit_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/bosley/workspace/sauros/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object tests/CMakeFiles/sauros_unit_tests.dir/__/sauros/parser.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/bosley/workspace/sauros/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object tests/CMakeFiles/sauros_unit_tests.dir/__/sauros/parser.cpp.o"
 	cd /home/bosley/workspace/sauros/build/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT tests/CMakeFiles/sauros_unit_tests.dir/__/sauros/parser.cpp.o -MF CMakeFiles/sauros_unit_tests.dir/__/sauros/parser.cpp.o.d -o CMakeFiles/sauros_unit_tests.dir/__/sauros/parser.cpp.o -c /home/bosley/workspace/sauros/sauros/parser.cpp
 
 tests/CMakeFiles/sauros_unit_tests.dir/__/sauros/parser.cpp.i: cmake_force
@@ -114,7 +100,7 @@ tests/CMakeFiles/sauros_unit_tests.dir/__/sauros/parser.cpp.s: cmake_force
 tests/CMakeFiles/sauros_unit_tests.dir/main.cpp.o: tests/CMakeFiles/sauros_unit_tests.dir/flags.make
 tests/CMakeFiles/sauros_unit_tests.dir/main.cpp.o: ../tests/main.cpp
 tests/CMakeFiles/sauros_unit_tests.dir/main.cpp.o: tests/CMakeFiles/sauros_unit_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/bosley/workspace/sauros/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object tests/CMakeFiles/sauros_unit_tests.dir/main.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/bosley/workspace/sauros/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object tests/CMakeFiles/sauros_unit_tests.dir/main.cpp.o"
 	cd /home/bosley/workspace/sauros/build/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT tests/CMakeFiles/sauros_unit_tests.dir/main.cpp.o -MF CMakeFiles/sauros_unit_tests.dir/main.cpp.o.d -o CMakeFiles/sauros_unit_tests.dir/main.cpp.o -c /home/bosley/workspace/sauros/tests/main.cpp
 
 tests/CMakeFiles/sauros_unit_tests.dir/main.cpp.i: cmake_force
@@ -128,7 +114,6 @@ tests/CMakeFiles/sauros_unit_tests.dir/main.cpp.s: cmake_force
 # Object files for target sauros_unit_tests
 sauros_unit_tests_OBJECTS = \
 "CMakeFiles/sauros_unit_tests.dir/sauros_tests.cpp.o" \
-"CMakeFiles/sauros_unit_tests.dir/__/sauros/ast.cpp.o" \
 "CMakeFiles/sauros_unit_tests.dir/__/sauros/parser.cpp.o" \
 "CMakeFiles/sauros_unit_tests.dir/main.cpp.o"
 
@@ -136,12 +121,11 @@ sauros_unit_tests_OBJECTS = \
 sauros_unit_tests_EXTERNAL_OBJECTS =
 
 tests/sauros_unit_tests: tests/CMakeFiles/sauros_unit_tests.dir/sauros_tests.cpp.o
-tests/sauros_unit_tests: tests/CMakeFiles/sauros_unit_tests.dir/__/sauros/ast.cpp.o
 tests/sauros_unit_tests: tests/CMakeFiles/sauros_unit_tests.dir/__/sauros/parser.cpp.o
 tests/sauros_unit_tests: tests/CMakeFiles/sauros_unit_tests.dir/main.cpp.o
 tests/sauros_unit_tests: tests/CMakeFiles/sauros_unit_tests.dir/build.make
 tests/sauros_unit_tests: tests/CMakeFiles/sauros_unit_tests.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/bosley/workspace/sauros/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable sauros_unit_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/bosley/workspace/sauros/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable sauros_unit_tests"
 	cd /home/bosley/workspace/sauros/build/tests && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/sauros_unit_tests.dir/link.txt --verbose=$(VERBOSE)
 	cd /home/bosley/workspace/sauros/build/tests && ./sauros_unit_tests
 

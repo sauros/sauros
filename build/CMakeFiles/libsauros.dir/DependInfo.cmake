@@ -8,7 +8,6 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/bosley/workspace/sauros/sauros/ast.cpp" "CMakeFiles/libsauros.dir/sauros/ast.cpp.o" "gcc" "CMakeFiles/libsauros.dir/sauros/ast.cpp.o.d"
   "/home/bosley/workspace/sauros/sauros/parser.cpp" "CMakeFiles/libsauros.dir/sauros/parser.cpp.o" "gcc" "CMakeFiles/libsauros.dir/sauros/parser.cpp.o.d"
   )
 

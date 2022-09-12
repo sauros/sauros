@@ -1,2 +1,2 @@
-/usr/bin/ar qc libsauros.a CMakeFiles/libsauros.dir/sauros/ast.cpp.o CMakeFiles/libsauros.dir/sauros/parser.cpp.o
+/usr/bin/ar qc libsauros.a CMakeFiles/libsauros.dir/sauros/parser.cpp.o
 /usr/bin/ranlib libsauros.a

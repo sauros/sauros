@@ -101,12 +101,12 @@ tests/clean: tests/CMakeFiles/sauros_unit_tests.dir/clean
 CMakeFiles/libsauros.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/libsauros.dir/build.make CMakeFiles/libsauros.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/libsauros.dir/build.make CMakeFiles/libsauros.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/bosley/workspace/sauros/build/CMakeFiles --progress-num=1,2,3 "Built target libsauros"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/bosley/workspace/sauros/build/CMakeFiles --progress-num=1,2 "Built target libsauros"
 .PHONY : CMakeFiles/libsauros.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/libsauros.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/bosley/workspace/sauros/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bosley/workspace/sauros/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/libsauros.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/bosley/workspace/sauros/build/CMakeFiles 0
 .PHONY : CMakeFiles/libsauros.dir/rule
@@ -153,12 +153,12 @@ CMakeFiles/uninstall.dir/clean:
 CMakeFiles/sauros.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sauros.dir/build.make CMakeFiles/sauros.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sauros.dir/build.make CMakeFiles/sauros.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/bosley/workspace/sauros/build/CMakeFiles --progress-num=4,5,6,7 "Built target sauros"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/bosley/workspace/sauros/build/CMakeFiles --progress-num=3,4,5 "Built target sauros"
 .PHONY : CMakeFiles/sauros.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/sauros.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/bosley/workspace/sauros/build/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bosley/workspace/sauros/build/CMakeFiles 3
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/sauros.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/bosley/workspace/sauros/build/CMakeFiles 0
 .PHONY : CMakeFiles/sauros.dir/rule
@@ -179,12 +179,12 @@ CMakeFiles/sauros.dir/clean:
 tests/CMakeFiles/sauros_unit_tests.dir/all:
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/sauros_unit_tests.dir/build.make tests/CMakeFiles/sauros_unit_tests.dir/depend
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/sauros_unit_tests.dir/build.make tests/CMakeFiles/sauros_unit_tests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/bosley/workspace/sauros/build/CMakeFiles --progress-num=8,9,10,11,12 "Built target sauros_unit_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/bosley/workspace/sauros/build/CMakeFiles --progress-num=6,7,8,9 "Built target sauros_unit_tests"
 .PHONY : tests/CMakeFiles/sauros_unit_tests.dir/all
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/sauros_unit_tests.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/bosley/workspace/sauros/build/CMakeFiles 5
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bosley/workspace/sauros/build/CMakeFiles 4
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/sauros_unit_tests.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/bosley/workspace/sauros/build/CMakeFiles 0
 .PHONY : tests/CMakeFiles/sauros_unit_tests.dir/rule
