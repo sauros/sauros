@@ -1,1 +1,0 @@
-/usr/bin/c++ -g CMakeFiles/sauros.dir/app/main.cpp.o CMakeFiles/sauros.dir/sauros/parser.cpp.o -o sauros  -Wl,-rpath,:::::::::::::: 
