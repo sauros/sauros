@@ -7,6 +7,7 @@
 namespace sauros {
 
 struct location_s {
+   location_s() : line(0), col(0) {}
    location_s(std::size_t l, std::size_t c) : line(l), col(c) {}
    std::size_t line{0};
    std::size_t col{0};

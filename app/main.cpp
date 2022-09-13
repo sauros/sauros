@@ -50,7 +50,8 @@ int main(int argc, char** argv) {
    visitor cell_visitor;
 
    //auto result = sauros::parser::parse_line("test", 8, "[define x [+ [- 10 2] 10]]");
-   auto result = sauros::parser::parse_line("test", 8, "[block [c] [[def] d [+ 3 1] ] ]");
+  // auto result = sauros::parser::parse_line("test", 8, "[block [c] [[def] d [+ 3 1] ] ]");
+   auto result = sauros::parser::parse_line("test", 8, "[var x [+ 3 3]]");
 
    if (result.error_info) {
       std::cout << result.error_info.get()->message << std::endl;
@@ -63,13 +64,11 @@ int main(int argc, char** argv) {
       }
    }
    std::cout << "]" << std::endl;
-/*
 
    std::vector<std::shared_ptr<sauros::list_c>> list_of_lists{result.list};
 
    sauros::engine_c engine;
    auto engine_result = engine.process(list_of_lists);
-*/
 
    return 0;
 }

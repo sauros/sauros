@@ -31,7 +31,7 @@ static bool is_digit(const char c) {
 
 //    Retrieve a list of tokens based on the given string
 //
-std::tuple<std::vector<token_s>, std::unique_ptr<error::error_c>> tokenize(size_t line_number, const std::string line) {
+std::tuple<std::vector<token_s>, std::shared_ptr<error::error_c>> tokenize(size_t line_number, const std::string line) {
 
    std::vector<token_s> tokens;
    for (size_t idx = 0; idx < line.size(); idx++) {
@@ -87,7 +87,7 @@ std::tuple<std::vector<token_s>, std::unique_ptr<error::error_c>> tokenize(size_
 
             if (!value.ends_with('"')) {
 
-               auto error = std::make_unique<error::error_c>(
+               auto error = std::make_shared<error::error_c>(
                      location_s(line_number, idx), 
                      line.c_str(),
                      "Unterminated string"
@@ -137,7 +137,7 @@ std::tuple<std::vector<token_s>, std::unique_ptr<error::error_c>> tokenize(size_
             }
          } else {
             // Some malformed oddity like: 4444.2323.232.4.34.
-            auto error = std::make_unique<error::error_c>(
+            auto error = std::make_shared<error::error_c>(
                   location_s(line_number, start), 
                   line.c_str(),
                   "Malformed representation of suspected numerical"
@@ -167,7 +167,7 @@ std::tuple<std::vector<token_s>, std::unique_ptr<error::error_c>> tokenize(size_
    return std::make_tuple(tokens, nullptr);
 }
 
-std::tuple<std::unique_ptr<list_c>, std::unique_ptr<error::error_c>> parse(std::vector<token_s>& tokens, list_c* current_list = nullptr) {
+std::tuple<std::shared_ptr<list_c>, std::shared_ptr<error::error_c>> parse(std::vector<token_s>& tokens, list_c* current_list = nullptr) {
 
    if (tokens.empty()) {
       return std::make_tuple(nullptr, nullptr);
@@ -203,7 +203,7 @@ std::tuple<std::unique_ptr<list_c>, std::unique_ptr<error::error_c>> parse(std::
       {
          // This means we are done building whatever current_list is
          if (!current_list) {
-            auto error = std::make_unique<error::error_c>(
+            auto error = std::make_shared<error::error_c>(
                   current_token.location,
                   current_token.data,
                   "unopened closing bracket `]` located");
@@ -211,20 +211,20 @@ std::tuple<std::unique_ptr<list_c>, std::unique_ptr<error::error_c>> parse(std::
          }
 
          // return the current list as the thing
-         return std::make_tuple(std::unique_ptr<list_c>(current_list), nullptr);
+         return std::make_tuple(std::shared_ptr<list_c>(current_list), nullptr);
       }
 
       case token_e::SYMBOL:
       {
          if (!current_list) {
-            auto error = std::make_unique<error::error_c>(
+            auto error = std::make_shared<error::error_c>(
                   current_token.location,
                   current_token.data,
                   "attempting to create string object prior to list creation");
             return std::make_tuple(nullptr, std::move(error));
          }
 
-         std::unique_ptr<cell_c> new_symbol(new symbol_c(current_token.data, current_token.location));
+         std::shared_ptr<cell_c> new_symbol(new symbol_c(current_token.data, current_token.location));
          current_list->cells.push_back(std::move(new_symbol));
 
          return parse(tokens, current_list);
@@ -233,14 +233,14 @@ std::tuple<std::unique_ptr<list_c>, std::unique_ptr<error::error_c>> parse(std::
       case token_e::STRING:
       {
          if (!current_list) {
-            auto error = std::make_unique<error::error_c>(
+            auto error = std::make_shared<error::error_c>(
                   current_token.location,
                   current_token.data,
                   "attempting to create string object prior to list creation");
             return std::make_tuple(nullptr, std::move(error));
          }
 
-         std::unique_ptr<cell_c> new_string(new string_c(current_token.data, current_token.location));
+         std::shared_ptr<cell_c> new_string(new string_c(current_token.data, current_token.location));
          current_list->cells.push_back(std::move(new_string));
 
          return parse(tokens, current_list);
@@ -249,13 +249,13 @@ std::tuple<std::unique_ptr<list_c>, std::unique_ptr<error::error_c>> parse(std::
       case token_e::INTEGER:
       {
          if (!current_list) {
-            auto error = std::make_unique<error::error_c>(
+            auto error = std::make_shared<error::error_c>(
                   current_token.location,
                   current_token.data,
                   "attempting to create string object prior to list creation");
             return std::make_tuple(nullptr, std::move(error));
          }
-         std::unique_ptr<cell_c> new_integer(new integer_c(std::stol(current_token.data), current_token.location));
+         std::shared_ptr<cell_c> new_integer(new integer_c(std::stol(current_token.data), current_token.location));
          current_list->cells.push_back(std::move(new_integer));
 
          return parse(tokens, current_list);
@@ -264,20 +264,20 @@ std::tuple<std::unique_ptr<list_c>, std::unique_ptr<error::error_c>> parse(std::
       case token_e::DOUBLE:
       {
          if (!current_list) {
-            auto error = std::make_unique<error::error_c>(
+            auto error = std::make_shared<error::error_c>(
                   current_token.location,
                   current_token.data,
                   "attempting to create string object prior to list creation");
             return std::make_tuple(nullptr, std::move(error));
          }
-         std::unique_ptr<cell_c> new_integer(new integer_c(std::stod(current_token.data), current_token.location));
-         current_list->cells.push_back(std::move(new_integer));
+         std::shared_ptr<cell_c> new_double(new double_c(std::stod(current_token.data), current_token.location));
+         current_list->cells.push_back(std::move(new_double));
 
          return parse(tokens, current_list);
       }
    }
 
-   auto error = std::make_unique<error::error_c>(
+   auto error = std::make_shared<error::error_c>(
          current_token.location,
          current_token.data,
          "internal error > unhandled token type");

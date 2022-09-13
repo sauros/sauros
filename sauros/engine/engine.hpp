@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <string>
 #include <stack>
+#include <variant>
 
 namespace sauros {
 
@@ -42,11 +43,19 @@ private:
    // from the environment
    //
    struct env_exception_c : public std::exception {
-      env_exception_c(const char* message) : message(message){}
+      env_exception_c(std::string message) : message(message){}
       const char * what () const throw () {
-         return message;
+         return message.c_str();
       }
-      const char* message {nullptr};
+      std::string message;
+   };
+
+   struct run_time_exception_c : public std::exception {
+      run_time_exception_c(std::string message) : message(message){}
+      const char * what () const throw () {
+         return message.c_str();
+      }
+      std::string message;
    };
 
    // The data environment
@@ -71,19 +80,23 @@ private:
          throw env_exception_c(err.c_str());
       }
 
+      std::unordered_map<std::string, std::shared_ptr<cell_c>> get_map() { return _data; }
+
     private:
       std::unordered_map<std::string, std::shared_ptr<cell_c>> _data;
       std::shared_ptr<env_c> _outer;
    };
 
-   enum class operations_e {
-      ADD, SUB, DIV, MOD, SET, LOAD
+   enum class data_type_e {
+      INTEGER, DOUBLE, STRING, IDENTIFIER
    };
 
    struct operation_s {
-      operations_e op;
-      std::shared_ptr<cell_c> cell;
+      data_type_e type;
+      std::variant<int64_t, double, std::string> data;
    };
+
+   using operand_f = std::function<void(const operation_s& lhs, const operation_s& rhs)>;
 
    // The visitor class 
    //
@@ -100,9 +113,13 @@ private:
       engine_c* _engine{nullptr};
    };
 
-
-
    std::shared_ptr<engine_loader_c> _cell_loader;
+   std::shared_ptr<env_c> _env;
+
+   std::stack<operation_s> _stack;
+   std::unordered_map<std::string, operand_f> _function_map;
+
+   void populate_function_map();
 };
 
 } // namespace sauros
