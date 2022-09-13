@@ -2,8 +2,8 @@
 #define SAUROS_PARSER_HPP
 
 //#include "ast.hpp"
-#include "types.hpp"
-#include "list.hpp"
+#include "sauros/types.hpp"
+#include "sauros/list.hpp"
 
 namespace sauros {
 namespace parser {

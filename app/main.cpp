@@ -2,7 +2,8 @@
 
 #include <iostream>
 #include "sauros/list.hpp"
-#include "sauros/parser.hpp"
+#include "sauros/front/parser.hpp"
+#include "sauros/engine/engine.hpp"
 
 namespace{
 class visitor : public sauros::cell_visitor_c {
@@ -62,6 +63,13 @@ int main(int argc, char** argv) {
       }
    }
    std::cout << "]" << std::endl;
+/*
+
+   std::vector<std::shared_ptr<sauros::list_c>> list_of_lists{result.list};
+
+   sauros::engine_c engine;
+   auto engine_result = engine.process(list_of_lists);
+*/
 
    return 0;
 }

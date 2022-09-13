@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 #include <functional>
+#include "types.hpp"
 
 namespace sauros {
 
@@ -29,14 +30,15 @@ public:
 
 class cell_c {
 public:
-   cell_c(cell_type_e type) : type(type){}
+   cell_c(cell_type_e type, location_s location) : type(type), location(location){}
    virtual void visit(cell_visitor_c &visitor) = 0;
    cell_type_e type;
+   location_s location;
 };
 
 class symbol_c : public cell_c {
 public:
-   symbol_c(std::string data) : cell_c(cell_type_e::SYMBOL), data(data) {}
+   symbol_c(std::string data, location_s locationa) : cell_c(cell_type_e::SYMBOL, location), data(data) {}
    std::string data;
 
    virtual void visit(cell_visitor_c &visitor) override final {
@@ -46,9 +48,9 @@ public:
 
 class list_c : public cell_c {
 public:
-   list_c() : cell_c(cell_type_e::LIST) {}
-   list_c(std::vector<std::unique_ptr<cell_c>> cells) : cell_c(cell_type_e::LIST), cells(std::move(cells)) {}
-   std::vector<std::unique_ptr<cell_c>> cells;
+   list_c(location_s location) : cell_c(cell_type_e::LIST, location) {}
+   list_c(std::vector<std::shared_ptr<cell_c>> cells, location_s location) : cell_c(cell_type_e::LIST, location), cells(std::move(cells)) {}
+   std::vector<std::shared_ptr<cell_c>> cells;
 
    virtual void visit(cell_visitor_c &visitor) override final {
       visitor.accept(*this);
@@ -57,7 +59,7 @@ public:
 
 class string_c : public cell_c {
 public:
-   string_c(std::string data) : cell_c(cell_type_e::STRING), data(data) {}
+   string_c(std::string data, location_s location) : cell_c(cell_type_e::STRING, location), data(data) {}
    std::string data;
 
    virtual void visit(cell_visitor_c &visitor) override final {
@@ -67,7 +69,7 @@ public:
 
 class integer_c : public cell_c {
 public:
-   integer_c(int64_t data) : cell_c(cell_type_e::INTEGER), data(data) {}
+   integer_c(int64_t data, location_s location) : cell_c(cell_type_e::INTEGER, location), data(data) {}
    int64_t data;
 
    virtual void visit(cell_visitor_c &visitor) override final {
@@ -77,7 +79,7 @@ public:
 
 class double_c : public cell_c {
 public:
-   double_c(double data) : cell_c(cell_type_e::DOUBLE), data(data) {}
+   double_c(double data, location_s location) : cell_c(cell_type_e::DOUBLE, location), data(data) {}
    double data;
 
    virtual void visit(cell_visitor_c &visitor) override final {

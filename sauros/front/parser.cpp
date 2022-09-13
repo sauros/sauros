@@ -167,10 +167,6 @@ std::tuple<std::vector<token_s>, std::unique_ptr<error::error_c>> tokenize(size_
    return std::make_tuple(tokens, nullptr);
 }
 
-namespace {
-   static uint64_t open_counter {0};
-}
-
 std::tuple<std::unique_ptr<list_c>, std::unique_ptr<error::error_c>> parse(std::vector<token_s>& tokens, list_c* current_list = nullptr) {
 
    if (tokens.empty()) {
@@ -184,10 +180,8 @@ std::tuple<std::unique_ptr<list_c>, std::unique_ptr<error::error_c>> parse(std::
 
       case token_e::L_BRACKET:
       {
-         open_counter++;
-
          // Populate the list
-         auto [list, err] = parse(tokens, new list_c());
+         auto [list, err] = parse(tokens, new list_c(current_token.location));
 
          if (err) {
             return std::make_tuple(nullptr, std::move(err));
@@ -216,8 +210,6 @@ std::tuple<std::unique_ptr<list_c>, std::unique_ptr<error::error_c>> parse(std::
             return std::make_tuple(nullptr, std::move(error));
          }
 
-         open_counter--;
-
          // return the current list as the thing
          return std::make_tuple(std::unique_ptr<list_c>(current_list), nullptr);
       }
@@ -232,7 +224,7 @@ std::tuple<std::unique_ptr<list_c>, std::unique_ptr<error::error_c>> parse(std::
             return std::make_tuple(nullptr, std::move(error));
          }
 
-         std::unique_ptr<cell_c> new_symbol(new symbol_c(current_token.data));
+         std::unique_ptr<cell_c> new_symbol(new symbol_c(current_token.data, current_token.location));
          current_list->cells.push_back(std::move(new_symbol));
 
          return parse(tokens, current_list);
@@ -248,7 +240,7 @@ std::tuple<std::unique_ptr<list_c>, std::unique_ptr<error::error_c>> parse(std::
             return std::make_tuple(nullptr, std::move(error));
          }
 
-         std::unique_ptr<cell_c> new_string(new string_c(current_token.data));
+         std::unique_ptr<cell_c> new_string(new string_c(current_token.data, current_token.location));
          current_list->cells.push_back(std::move(new_string));
 
          return parse(tokens, current_list);
@@ -263,7 +255,7 @@ std::tuple<std::unique_ptr<list_c>, std::unique_ptr<error::error_c>> parse(std::
                   "attempting to create string object prior to list creation");
             return std::make_tuple(nullptr, std::move(error));
          }
-         std::unique_ptr<cell_c> new_integer(new integer_c(std::stol(current_token.data)));
+         std::unique_ptr<cell_c> new_integer(new integer_c(std::stol(current_token.data), current_token.location));
          current_list->cells.push_back(std::move(new_integer));
 
          return parse(tokens, current_list);
@@ -278,7 +270,7 @@ std::tuple<std::unique_ptr<list_c>, std::unique_ptr<error::error_c>> parse(std::
                   "attempting to create string object prior to list creation");
             return std::make_tuple(nullptr, std::move(error));
          }
-         std::unique_ptr<cell_c> new_integer(new integer_c(std::stod(current_token.data)));
+         std::unique_ptr<cell_c> new_integer(new integer_c(std::stod(current_token.data), current_token.location));
          current_list->cells.push_back(std::move(new_integer));
 
          return parse(tokens, current_list);
