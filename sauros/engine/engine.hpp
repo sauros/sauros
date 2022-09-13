@@ -119,6 +119,7 @@ private:
    std::stack<operation_s> _stack;
    std::unordered_map<std::string, operand_f> _function_map;
 
+   std::shared_ptr<cell_c> load_variable_copy(const std::string& name);
    void populate_function_map();
 };
 

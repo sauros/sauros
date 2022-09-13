@@ -109,6 +109,17 @@ void engine_c::engine_loader_c::accept(symbol_c &cell) {
    return;
 }
 
+std::shared_ptr<cell_c> engine_c::load_variable_copy(const std::string& target_var) {
+   try {
+      auto env = _env.get()->find(target_var);
+      auto value = env[target_var];
+      std::shared_ptr<cell_c> cell(value);
+      return std::move(cell);
+   }
+   catch (env_exception_c& e) {
+      throw run_time_exception_c(e.what());
+   }
+}
 
 void engine_c::populate_function_map() {
 
@@ -141,16 +152,10 @@ void engine_c::populate_function_map() {
          }
          case data_type_e::IDENTIFIER: {
 
-            std::string target_var = std::get<std::string>(lhs.data);
-            try {
-               auto env = _env.get()->find(target_var);
-               auto value = env[target_var];
-               std::shared_ptr<cell_c> cell(value);
-               _env.get()->get(varible_name) = std::move(cell);
-            }
-            catch (env_exception_c& e) {
-               throw run_time_exception_c(e.what());
-            }
+            // Retrieve a copy of the value that the IDENTIFIER contains
+            //
+            auto cell = load_variable_copy(std::get<std::string>(lhs.data));
+            _env.get()->get(varible_name) = std::move(cell);
             break;
          }
       }
@@ -180,6 +185,7 @@ void engine_c::populate_function_map() {
                };
                case data_type_e::STRING: 
                {
+                  throw run_time_exception_c("Unable to perform operation on types  DOUBLE and STRING");
                   break;
                };
                case data_type_e::IDENTIFIER: 
