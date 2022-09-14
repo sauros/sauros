@@ -176,7 +176,7 @@ std::shared_ptr<error::error_c> get_no_list_error(token_s current_token) {
 }
 }
 
-std::tuple<cell_c, std::shared_ptr<error::error_c>> parse(std::shared_ptr<environment_c> env, std::vector<token_s>& tokens, cell_c* current_list = nullptr) {
+std::tuple<cell_c, std::shared_ptr<error::error_c>> parse(std::vector<token_s>& tokens, cell_c* current_list = nullptr) {
 
    if (tokens.empty()) {
       return std::make_tuple(cell_c(), nullptr);
@@ -191,10 +191,9 @@ std::tuple<cell_c, std::shared_ptr<error::error_c>> parse(std::shared_ptr<enviro
       {
          cell_c new_list; 
          new_list.type = cell_type_e::LIST;
-         new_list.env = std::make_shared<environment_c>(env);
 
          // Populate the list
-         auto [_, err] = parse(env, tokens, &new_list);
+         auto [_, err] = parse(tokens, &new_list);
 
          if (err) {
             return std::make_tuple(cell_c(), err);
@@ -204,7 +203,7 @@ std::tuple<cell_c, std::shared_ptr<error::error_c>> parse(std::shared_ptr<enviro
          if (current_list) {
             current_list->list.push_back(new_list);
 
-            return parse(env, tokens, current_list);
+            return parse(tokens, current_list);
 
          // otherwise we return the new list
          } else {
@@ -234,8 +233,8 @@ std::tuple<cell_c, std::shared_ptr<error::error_c>> parse(std::shared_ptr<enviro
             return std::make_tuple(cell_c(), get_no_list_error(current_token));
          }
 
-         current_list->list.push_back(cell_c(cell_type_e::SYMBOL, current_token.data, current_token.location, env));
-         return parse(env, tokens, current_list);
+         current_list->list.push_back(cell_c(cell_type_e::SYMBOL, current_token.data, current_token.location));
+         return parse(tokens, current_list);
       }
 
       case token_e::STRING:
@@ -244,8 +243,8 @@ std::tuple<cell_c, std::shared_ptr<error::error_c>> parse(std::shared_ptr<enviro
             return std::make_tuple(cell_c(), get_no_list_error(current_token));
          }
 
-         current_list->list.push_back(cell_c(cell_type_e::STRING, current_token.data, current_token.location, env));
-         return parse(env, tokens, current_list);
+         current_list->list.push_back(cell_c(cell_type_e::STRING, current_token.data, current_token.location));
+         return parse(tokens, current_list);
       }
 
       case token_e::INTEGER:
@@ -254,8 +253,8 @@ std::tuple<cell_c, std::shared_ptr<error::error_c>> parse(std::shared_ptr<enviro
             return std::make_tuple(cell_c(), get_no_list_error(current_token));
          }
 
-         current_list->list.push_back(cell_c(cell_type_e::INTEGER, current_token.data, current_token.location, env));
-         return parse(env, tokens, current_list);
+         current_list->list.push_back(cell_c(cell_type_e::INTEGER, current_token.data, current_token.location));
+         return parse(tokens, current_list);
       }
 
       case token_e::DOUBLE:
@@ -264,8 +263,8 @@ std::tuple<cell_c, std::shared_ptr<error::error_c>> parse(std::shared_ptr<enviro
             return std::make_tuple(cell_c(), get_no_list_error(current_token));
          }
 
-         current_list->list.push_back(cell_c(cell_type_e::DOUBLE, current_token.data, current_token.location, env));
-         return parse(env, tokens, current_list);
+         current_list->list.push_back(cell_c(cell_type_e::DOUBLE, current_token.data, current_token.location));
+         return parse(tokens, current_list);
       }
    }
 
@@ -289,7 +288,7 @@ product_s parse_line(std::shared_ptr<environment_c> env, const char* source_desc
       return resulting_product;
    }
    
-   auto [cell, parse_err] = parse(env, tokens);
+   auto [cell, parse_err] = parse(tokens);
 
    if (parse_err) {
       resulting_product.error_info = std::move(parse_err);

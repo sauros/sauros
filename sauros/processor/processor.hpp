@@ -22,12 +22,14 @@ public:
 
    struct result_s {
       result_code_e code{result_code_e::OKAY};
-
+      std::optional<cell_c> returned_value;
    };
 
-   processor_c(std::shared_ptr<environment_c> global_env);
+   processor_c();
 
-   result_s process(cell_c& cell);
+   result_s process(cell_c& cell, std::shared_ptr<environment_c> global_env);
+
+   void cell_to_string(std::string& out, cell_c& cell, std::shared_ptr<environment_c> env, bool show_space = true);
 
    class runtime_exception_c : public std::exception {
    public:
@@ -42,28 +44,16 @@ public:
       location_s _loc{0,0};
    };
 
-
 private:
 
-   std::shared_ptr<environment_c> _global_env;
    std::unordered_map<std::string, cell_c> _builtins;
 
    void populate_builtins();
 
-   std::optional<cell_c>  process_list(std::vector<cell_c>& cells);
-   std::optional<cell_c>  process_cell(cell_c& cell);
-
-   std::optional<cell_c> fn_define_variable(std::vector<cell_c>& cells);
-   std::optional<cell_c> fn_put(std::vector<cell_c>& cells);
-   std::optional<cell_c> fn_make_lambda(std::vector<cell_c>& cells);
-
-   cell_c perform_arithmetic(std::string op, std::vector<cell_c>& cells, std::function<double(double, double)>fn, bool force_double = false);
-   std::optional<cell_c> fn_add(std::vector<cell_c>& cells);
-   std::optional<cell_c> fn_sub(std::vector<cell_c>& cells);
-   std::optional<cell_c> fn_div(std::vector<cell_c>& cells);
-   std::optional<cell_c> fn_mul(std::vector<cell_c>& cells);
-   std::optional<cell_c> fn_mod(std::vector<cell_c>& cells);
-
+   std::optional<cell_c>  process_list(std::vector<cell_c>& cells, std::shared_ptr<environment_c> env);
+   std::optional<cell_c>  process_cell(cell_c& cell, std::shared_ptr<environment_c> env);
+   
+   cell_c perform_arithmetic(std::string op, std::vector<cell_c>& cells, std::function<double(double, double)>fn, std::shared_ptr<environment_c> env, bool force_double = false);
 };
 
 } // namespace sauros

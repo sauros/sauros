@@ -20,10 +20,8 @@ environment_c::environment_c(std::vector<cell_c>& params, std::vector<cell_c>& a
 
    auto arg = args.begin();
    for (auto param = params.begin(); param != params.end(); ++param) {
-      std::cout << param->data<< std::endl;
       _env[param->data] = *arg++;
    }
-   std::cout << "GOOD\n";
 }
 
 void environment_c::set(const std::string& item, cell_c cell) {
