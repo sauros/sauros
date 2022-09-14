@@ -14,7 +14,7 @@ enum class token_e {
    SYMBOL,
    INTEGER,
    DOUBLE,
-   STRING
+   STRING,
 };
 
 struct token_s {
@@ -93,12 +93,12 @@ std::tuple<std::vector<token_s>, std::shared_ptr<error::error_c>> tokenize(size_
                      "Unterminated string"
                );
 
-               return std::make_tuple(tokens, std::move(error));
+               return std::make_tuple(tokens, error);
             }
 
             tokens.push_back({
                token_e::STRING,
-               value,
+               value.substr(1, value.size()-2),
                {line_number, start}
             });
             continue;
@@ -143,7 +143,7 @@ std::tuple<std::vector<token_s>, std::shared_ptr<error::error_c>> tokenize(size_
                   "Malformed representation of suspected numerical"
             );
 
-            return std::make_tuple(tokens, std::move(error));
+            return std::make_tuple(tokens, error);
          }
       }
 
@@ -167,10 +167,19 @@ std::tuple<std::vector<token_s>, std::shared_ptr<error::error_c>> tokenize(size_
    return std::make_tuple(tokens, nullptr);
 }
 
-std::tuple<std::shared_ptr<list_c>, std::shared_ptr<error::error_c>> parse(std::vector<token_s>& tokens, list_c* current_list = nullptr) {
+namespace {
+std::shared_ptr<error::error_c> get_no_list_error(token_s current_token) {
+   return std::make_shared<error::error_c>(
+         current_token.location,
+         current_token.data,
+         "attempting to create object prior to list creation");
+}
+}
+
+std::tuple<cell_c, std::shared_ptr<error::error_c>> parse(std::shared_ptr<environment_c> env, std::vector<token_s>& tokens, cell_c* current_list = nullptr) {
 
    if (tokens.empty()) {
-      return std::make_tuple(nullptr, nullptr);
+      return std::make_tuple(cell_c(), nullptr);
    }
 
    auto current_token = tokens[0];
@@ -180,22 +189,26 @@ std::tuple<std::shared_ptr<list_c>, std::shared_ptr<error::error_c>> parse(std::
 
       case token_e::L_BRACKET:
       {
+         cell_c new_list; 
+         new_list.type = cell_type_e::LIST;
+         new_list.env = env;
+
          // Populate the list
-         auto [list, err] = parse(tokens, new list_c(current_token.location));
+         auto [_, err] = parse(env, tokens, &new_list);
 
          if (err) {
-            return std::make_tuple(nullptr, std::move(err));
+            return std::make_tuple(cell_c(), err);
          }
 
          // If we had  a list, we add our new list to it
          if (current_list) {
-            current_list->cells.push_back(std::move(list));
+            current_list->list.push_back(new_list);
 
-            return parse(tokens, current_list);
+            return parse(env, tokens, current_list);
 
          // otherwise we return the new list
          } else {
-            return std::make_tuple(std::move(list), nullptr);
+            return std::make_tuple(new_list, nullptr);
          }
       }
 
@@ -207,73 +220,52 @@ std::tuple<std::shared_ptr<list_c>, std::shared_ptr<error::error_c>> parse(std::
                   current_token.location,
                   current_token.data,
                   "unopened closing bracket `]` located");
-            return std::make_tuple(nullptr, std::move(error));
+            return std::make_tuple(cell_c(), error);
          }
 
-         // return the current list as the thing
-         return std::make_tuple(std::shared_ptr<list_c>(current_list), nullptr);
+         // The cell list being created has been populated recursively so
+         // we don't need to return anything here. 
+         return std::make_tuple(cell_c(), nullptr);
       }
 
       case token_e::SYMBOL:
       {
          if (!current_list) {
-            auto error = std::make_shared<error::error_c>(
-                  current_token.location,
-                  current_token.data,
-                  "attempting to create string object prior to list creation");
-            return std::make_tuple(nullptr, std::move(error));
+            return std::make_tuple(cell_c(), get_no_list_error(current_token));
          }
 
-         std::shared_ptr<cell_c> new_symbol(new symbol_c(current_token.data, current_token.location));
-         current_list->cells.push_back(std::move(new_symbol));
-
-         return parse(tokens, current_list);
+         current_list->list.push_back(cell_c(cell_type_e::SYMBOL, current_token.data, current_token.location, env));
+         return parse(env, tokens, current_list);
       }
 
       case token_e::STRING:
       {
          if (!current_list) {
-            auto error = std::make_shared<error::error_c>(
-                  current_token.location,
-                  current_token.data,
-                  "attempting to create string object prior to list creation");
-            return std::make_tuple(nullptr, std::move(error));
+            return std::make_tuple(cell_c(), get_no_list_error(current_token));
          }
 
-         std::shared_ptr<cell_c> new_string(new string_c(current_token.data, current_token.location));
-         current_list->cells.push_back(std::move(new_string));
-
-         return parse(tokens, current_list);
+         current_list->list.push_back(cell_c(cell_type_e::STRING, current_token.data, current_token.location, env));
+         return parse(env, tokens, current_list);
       }
 
       case token_e::INTEGER:
       {
          if (!current_list) {
-            auto error = std::make_shared<error::error_c>(
-                  current_token.location,
-                  current_token.data,
-                  "attempting to create string object prior to list creation");
-            return std::make_tuple(nullptr, std::move(error));
+            return std::make_tuple(cell_c(), get_no_list_error(current_token));
          }
-         std::shared_ptr<cell_c> new_integer(new integer_c(std::stol(current_token.data), current_token.location));
-         current_list->cells.push_back(std::move(new_integer));
 
-         return parse(tokens, current_list);
+         current_list->list.push_back(cell_c(cell_type_e::INTEGER, current_token.data, current_token.location, env));
+         return parse(env, tokens, current_list);
       }
 
       case token_e::DOUBLE:
       {
          if (!current_list) {
-            auto error = std::make_shared<error::error_c>(
-                  current_token.location,
-                  current_token.data,
-                  "attempting to create string object prior to list creation");
-            return std::make_tuple(nullptr, std::move(error));
+            return std::make_tuple(cell_c(), get_no_list_error(current_token));
          }
-         std::shared_ptr<cell_c> new_double(new double_c(std::stod(current_token.data), current_token.location));
-         current_list->cells.push_back(std::move(new_double));
 
-         return parse(tokens, current_list);
+         current_list->list.push_back(cell_c(cell_type_e::DOUBLE, current_token.data, current_token.location, env));
+         return parse(env, tokens, current_list);
       }
    }
 
@@ -281,11 +273,11 @@ std::tuple<std::shared_ptr<list_c>, std::shared_ptr<error::error_c>> parse(std::
          current_token.location,
          current_token.data,
          "internal error > unhandled token type");
-   return std::make_tuple(nullptr, std::move(error));
+   return std::make_tuple(cell_c(), error);
 }
 
 
-product_s parse_line(const char* source_descrption, std::size_t line_number, std::string line) {
+product_s parse_line(std::shared_ptr<environment_c> env, const char* source_descrption, std::size_t line_number, std::string line) {
 
    product_s resulting_product;
 
@@ -297,7 +289,7 @@ product_s parse_line(const char* source_descrption, std::size_t line_number, std
       return resulting_product;
    }
    
-   auto [cells, parse_err] = parse(tokens);
+   auto [cell, parse_err] = parse(env, tokens);
 
    if (parse_err) {
       resulting_product.error_info = std::move(parse_err);
@@ -305,7 +297,7 @@ product_s parse_line(const char* source_descrption, std::size_t line_number, std
       return resulting_product;
    }
 
-   resulting_product.list = std::move(cells);
+   resulting_product.cell = cell;
    resulting_product.error_info = nullptr;
    resulting_product.result = result_e::OKAY;
    return resulting_product;
