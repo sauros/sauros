@@ -21,6 +21,7 @@ public:
    using proc_f = std::function<std::optional<cell_c>(std::vector<cell_c>&, std::shared_ptr<environment_c> env)>;
 
    cell_c(cell_type_e type = cell_type_e::SYMBOL){}
+   cell_c(cell_type_e type, const std::string& data) : type(type), data(data), location(location){}
    cell_c(cell_type_e type, const std::string& data, location_s location) : type(type), data(data), location(location){}
    cell_c(proc_f proc) : type(cell_type_e::SYMBOL), proc(proc) {}
    cell_c(std::vector<cell_c> list) : type(cell_type_e::LIST), list(list) {}
@@ -32,9 +33,9 @@ public:
    std::vector<cell_c> list;
 };
 
-
-
-
+static const cell_c CELL_TRUE = cell_c(cell_type_e::SYMBOL, "#t");
+static const cell_c CELL_FALSE = cell_c(cell_type_e::SYMBOL, "#f");
+static const cell_c CELL_NIL= cell_c(cell_type_e::SYMBOL, "#n");
 
 
 } // namespace sauros
