@@ -191,7 +191,7 @@ std::tuple<cell_c, std::shared_ptr<error::error_c>> parse(std::shared_ptr<enviro
       {
          cell_c new_list; 
          new_list.type = cell_type_e::LIST;
-         new_list.env = env;
+         new_list.env = std::make_shared<environment_c>(env);
 
          // Populate the list
          auto [_, err] = parse(env, tokens, &new_list);

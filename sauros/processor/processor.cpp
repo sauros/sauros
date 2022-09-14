@@ -38,7 +38,7 @@ processor_c::result_s processor_c::process(cell_c& cell) {
    std::cout << std::endl;
 
    for (auto cell : cell.list) {
-      cell.env = _global_env;
+      cell.env = std::make_shared<environment_c>(_global_env);
    }
 
    process_list(cell.list);
@@ -90,6 +90,13 @@ std::optional<cell_c> processor_c::process_cell(cell_c& cell) {
 
       case cell_type_e::LAMBDA: {
          std::cout << "MOOT\n";
+         
+            std::cout << "LAMBDA DATA TO USE: \n";
+            show_list(cell.list);
+            std::cout << "\n";
+
+         process_list(cell.list);
+
       break;
       }
 
@@ -139,7 +146,7 @@ std::optional<cell_c>  processor_c::process_list(std::vector<cell_c>& cells) {
             auto target_lambda = cells[0].env->find(cells[0].data)->get(cells[0].data);
 
             std::cout << "LOADED ITEM: \n";
-            show_list(target_lambda.list[0].list);
+            show_list(target_lambda.list[1].list);
             std::cout << "\n";
 
             std::vector<cell_c> exps;
@@ -151,22 +158,27 @@ std::optional<cell_c>  processor_c::process_list(std::vector<cell_c>& cells) {
                   throw runtime_exception_c("Nothing returned evaluating parameter for lambda", cells[0].location);
                }
 
-               exps.push_back((*evaluated));
+               exps.push_back(std::move((*evaluated)));
             }
 
 
             // Some issue with shared pointers here
 
-            cells[2].env = std::make_shared<environment_c>(
+         //   cells[2].env = std::shared_ptr<environment_c>(new environment_c(
+         //      target_lambda.list[0].list,
+         //      exps,
+         //     cells[0].env));
+
+            cell_c c;
+            c.type = (*cell).type;
+            c.list = target_lambda.list[1].list;
+            c.env = std::shared_ptr<environment_c>(new environment_c(
                target_lambda.list[0].list,
                exps,
-               cells[0].env);
-
-
-
+              cells[0].env));
 
             std::cout << "WAHT\n";
-            return process_cell(cells[2]);
+            return process_cell(c);
          }
 
          // If its not then it has to be a proc
@@ -218,7 +230,7 @@ std::optional<cell_c> processor_c::fn_define_variable(std::vector<cell_c>& cells
    
    std::cout << "Setting the variable : " << (int)(*value).type << std::endl;;
 
-   (*value).env = _global_env;
+   (*value).env = std::make_shared<environment_c>(_global_env);
    _global_env->set(variable_name, (*value));
    return {};
 }

@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
    //run("[var y [lambda x [put x]]]");
    run("[var x 3]");
    run("[put \"x =\" x");
-   run("[var f [lambda [x] [put \"here:\" x]]]");
+   run("[var f [lambda [t] [put \"You called it:\" t]]]");
 
    run("[f 4]");
 
