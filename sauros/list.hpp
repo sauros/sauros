@@ -33,8 +33,8 @@ public:
    std::vector<cell_c> list;
 };
 
-static const cell_c CELL_TRUE = cell_c(cell_type_e::SYMBOL, "#t");
-static const cell_c CELL_FALSE = cell_c(cell_type_e::SYMBOL, "#f");
+static const cell_c CELL_TRUE = cell_c(cell_type_e::INTEGER, "1");
+static const cell_c CELL_FALSE = cell_c(cell_type_e::INTEGER, "0");
 static const cell_c CELL_NIL= cell_c(cell_type_e::SYMBOL, "#n");
 
 

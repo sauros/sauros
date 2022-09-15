@@ -276,7 +276,7 @@ std::tuple<cell_c, std::shared_ptr<error::error_c>> parse(std::vector<token_s>& 
 }
 
 
-product_s parse_line(std::shared_ptr<environment_c> env, const char* source_descrption, std::size_t line_number, std::string line) {
+product_s parse_line(const char* source_descrption, std::size_t line_number, std::string line) {
 
    product_s resulting_product;
 

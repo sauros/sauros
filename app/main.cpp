@@ -13,17 +13,17 @@ namespace {
 }
 
 void run(std::string line) {
-   auto result = sauros::parser::parse_line(env, "test", line_no++, line);
+   auto result = sauros::parser::parse_line("test", line_no++, line);
 
    if (result.error_info) {
       std::cout << result.error_info.get()->message << std::endl;
    }
 
-   auto proc_result = proc.process(result.cell, env);
+   auto cell = proc.process(result.cell, env);
 
-   if (proc_result.returned_value.has_value()) {
+   if (cell.has_value()) {
       std::string stringed_cell;
-      proc.cell_to_string(stringed_cell, (*proc_result.returned_value), env);
+      proc.cell_to_string(stringed_cell, (*cell), env);
       std::cout << stringed_cell << std::endl;
    }
 }

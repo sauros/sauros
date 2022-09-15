@@ -24,6 +24,7 @@ TEST(sauros_tests, all) {
       {"[- 3 4]", "-1"},
       {"[* 3 4 2]", "24"},
       {"[/ 10 5]", "2.000000"},
+      {"[% 10 9]", "1"},
       {"[+ [* 2 100] [* 1 10]]", "210"},
       {"[var x 3]", "3"},
       {"[var y [+ x 4]]", "7"},
@@ -64,6 +65,13 @@ TEST(sauros_tests, all) {
       {"[if [seq this that] [1] [0] ]", "0"},
       {"[if [sneq this this] [1] [0] ]", "0"},
       {"[if [sneq this that] [1] [0] ]", "1"},
+      {"[car [list 1 2 3]]", "1"},
+      {"[car [list [list 5 6 7] 2 3]]", "[5 6 7]"},
+      {"[cdr [list 1 2 3]]", "[2 3]"},
+      {"[cons 4 5", "[4 5]"},
+      {"[block [var q [list 1 2 3]] [var r 3.4] [cons q r]]", "[[1 2 3] 3.4]"},
+      {"[block [var monkey [cdr [list 1]]] [empty? monkey]]", "1"},
+      {"[empty? [list 1 2 3]", "0"}
    };
 
    
@@ -73,16 +81,16 @@ TEST(sauros_tests, all) {
 
    for (auto tc : tests) {
 
-      auto result = sauros::parser::parse_line(env, "test", line_no++, tc.input);
+      auto result = sauros::parser::parse_line("test", line_no++, tc.input);
 
       CHECK_FALSE(result.error_info);
 
-      auto proc_result = proc.process(result.cell, env);
+      auto cell_result = proc.process(result.cell, env);
 
-      CHECK_TRUE(proc_result.returned_value.has_value());
+      CHECK_TRUE(cell_result.has_value());
 
       std::string stringed_result;
-      proc.cell_to_string(stringed_result, (*proc_result.returned_value), env, false);
+      proc.cell_to_string(stringed_result, (*cell_result), env, false);
 
       CHECK_EQUAL(tc.expected_output, stringed_result);
    }

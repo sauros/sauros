@@ -35,6 +35,9 @@ void processor_c::cell_to_string(std::string& out, cell_c& cell, std::shared_ptr
             out.pop_back();
          }
          out += std::string("]");
+         if (show_space) {
+            out += " ";
+         }
          break;
       }
       case cell_type_e::LAMBDA:
@@ -45,15 +48,26 @@ void processor_c::cell_to_string(std::string& out, cell_c& cell, std::shared_ptr
 
 processor_c::processor_c() {
    populate_builtins();
+
+   _key_symbols.insert("var");
+   _key_symbols.insert("list");
+   _key_symbols.insert("set");
+   _key_symbols.insert("lambda");
+   _key_symbols.insert("block");
+   _key_symbols.insert("if");
+   _key_symbols.insert("==");
+   _key_symbols.insert("!=");
+   _key_symbols.insert("<=");
+   _key_symbols.insert(">=");
+   _key_symbols.insert("<");
+   _key_symbols.insert(">");
+   _key_symbols.insert("seq");
+   _key_symbols.insert("sneq");
 }
 
-processor_c::result_s processor_c::process(cell_c& cell, std::shared_ptr<environment_c> env) {
+std::optional<cell_c> processor_c::process(cell_c& cell, std::shared_ptr<environment_c> env) {
 
-   result_s result;
-
-   result.returned_value = process_list(cell.list, env);
-
-   return result;
+   return process_list(cell.list, env);
 }
 
 std::optional<cell_c> processor_c::process_cell(cell_c& cell, std::shared_ptr<environment_c> env) {
@@ -184,9 +198,97 @@ std::optional<cell_c>  processor_c::process_list(std::vector<cell_c>& cells, std
 
 void processor_c::populate_builtins() {
 
+   _builtins["car"] = cell_c(
+      [this](std::vector<cell_c>& cells, std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+         auto target = process_cell(cells[1], env);
+         if (!target.has_value()) {
+            throw runtime_exception_c("Unable to process value for car", cells[1].location);
+         }
+
+         if (!((*target).type == cell_type_e::LIST)) {
+            throw runtime_exception_c("Expected list parameter for car", cells[1].location);
+         }
+
+         if ((*target).list.empty()) {
+            return {CELL_NIL};
+         }
+
+         return {(*target).list[0]};
+      });
+
+   _builtins["cdr"] = cell_c(
+      [this](std::vector<cell_c>& cells, std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+         auto target = process_cell(cells[1], env);
+         if (!target.has_value()) {
+            throw runtime_exception_c("Unable to process value for cdr", cells[1].location);
+         }
+
+         if (!((*target).type == cell_type_e::LIST)) {
+            throw runtime_exception_c("Expected list parameter for cdr", cells[1].location);
+         }
+
+         if ((*target).list.empty()) {
+            return {CELL_NIL};
+         }
+
+         cell_c result((*target));
+         result.list.erase(result.list.begin());
+         return {result};
+      });
+
+   _builtins["cons"] = cell_c(
+      [this](std::vector<cell_c>& cells, std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+
+         if (cells.size() != 3) {
+            throw runtime_exception_c("set command expects 2 parameters, but" 
+               + std::to_string(cells.size()-1) 
+               + " were given", cells[0].location);
+         }
+
+         auto load = [&](cell_c& cell) -> cell_c {
+            auto target = process_cell(cell, env);
+            if (!target.has_value()) {
+               throw runtime_exception_c("Unable to process value", cells[1].location);
+            }
+            return (*target);
+         };
+
+         auto lhs = load(cells[1]);
+         auto rhs = load(cells[2]);
+
+         cell_c result(cell_type_e::LIST, "");
+         result.list.push_back(lhs);
+         result.list.push_back(rhs);
+         return {result};
+      });
+
+   _builtins["empty?"] = cell_c(
+      [this](std::vector<cell_c>& cells, std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+
+         if (cells.size() != 2) {
+            throw runtime_exception_c("set command expects 1 parameters, but" 
+               + std::to_string(cells.size()-1) 
+               + " were given", cells[0].location);
+         }
+
+         if (cells[1].list.empty()) return {CELL_TRUE};
+         return {CELL_FALSE};
+      });
+
    _builtins["var"] = cell_c(
       [this](std::vector<cell_c>& cells, std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+         if (cells.size() != 3) {
+            throw runtime_exception_c("var command expects 2 parameters, but" 
+               + std::to_string(cells.size()-1) 
+               + " were given", cells[0].location);
+         }
+
          auto& variable_name = cells[1].data;
+
+         if (_key_symbols.contains(variable_name)) {
+            throw runtime_exception_c("Attempting to define a key symbol: " + variable_name, cells[1].location);
+         }
+
          auto value = process_cell(cells[2], env);
 
          if ((*value).type == cell_type_e::SYMBOL) {
