@@ -14,7 +14,6 @@ public:
 
 private:
    buffer_c _buffer;
-   std::shared_ptr<sauros::environment_c> _env;
    sauros::processor_c _list_processor;
 };
 

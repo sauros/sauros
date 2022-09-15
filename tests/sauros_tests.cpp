@@ -67,7 +67,7 @@ TEST(sauros_tests, all) {
        {"[car [list 1 2 3]]", "1"},
        {"[car [list [list 5 6 7] 2 3]]", "[5 6 7]"},
        {"[cdr [list 1 2 3]]", "[2 3]"},
-       {"[cons 4 5", "[4 5]"},
+       {"[cons 4 5]", "[4 5]"},
        {"[block [var q [list 1 2 3]] [var r 3.4] [cons q r]]", "[[1 2 3] 3.4]"},
        {"[block [var monkey [cdr [list 1]]] [empty? monkey]]", "1"},
        {"[empty? [list 1 2 3]", "0"}};

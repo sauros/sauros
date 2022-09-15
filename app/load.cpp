@@ -36,7 +36,7 @@ int load_c::run(const std::string& file, std::shared_ptr<sauros::environment_c> 
       }
 
       try {
-         _list_processor.process(parser_result.cell, _env);
+         _list_processor.process(parser_result.cell, env);
 
       } catch (sauros::processor_c::runtime_exception_c& e) {
          std::cout << e.what() << std::endl;
