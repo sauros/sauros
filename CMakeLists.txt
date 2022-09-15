@@ -61,6 +61,7 @@ set(HEADERS
    ${CMAKE_SOURCE_DIR}/sauros/list.hpp
    ${CMAKE_SOURCE_DIR}/sauros/types.hpp
    ${CMAKE_SOURCE_DIR}/sauros/version.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/sauros.hpp
 )
 
 set(SOURCES
@@ -81,6 +82,9 @@ include(${CMAKE_SOURCE_DIR}/cmake/InstallConfig.cmake)
 # Setup sauros app
 #
 add_executable(sauros 
+  app/buffer.cpp
+  app/load.cpp
+  app/repl.cpp
   app/main.cpp
   ${SAUROS_SOURCES}
 )

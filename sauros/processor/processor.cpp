@@ -52,6 +52,9 @@ processor_c::processor_c() { populate_standard_builtins(); }
 
 std::optional<cell_c> processor_c::process(cell_c &cell,
                                            std::shared_ptr<environment_c> env) {
+   if (cell.list.empty()) {
+      return {};
+   }
 
    return process_list(cell.list, env);
 }
