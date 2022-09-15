@@ -50,6 +50,8 @@ set(SAUROS_SOURCES
    ${CMAKE_SOURCE_DIR}/sauros/environment.cpp
    ${CMAKE_SOURCE_DIR}/sauros/front/parser.cpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor.cpp
+   ${CMAKE_SOURCE_DIR}/sauros/processor/processor_arithmetic.cpp
+   ${CMAKE_SOURCE_DIR}/sauros/processor/processor_std_builtins.cpp
 )
 
 set(HEADERS

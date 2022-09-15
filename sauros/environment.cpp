@@ -4,11 +4,11 @@
 
 namespace sauros {
 
-bool environment_c::exists(const std::string& item) {
+bool environment_c::exists(const std::string &item) {
    if (_env.find(item) != _env.end()) {
       return true;
    }
-   
+
    if (_parent) {
       return _parent->exists(item);
    }
@@ -16,7 +16,10 @@ bool environment_c::exists(const std::string& item) {
    return false;
 }
 
-environment_c::environment_c(std::vector<cell_c>& params, std::vector<cell_c>& args, std::shared_ptr<environment_c> outer) : _parent(outer) {
+environment_c::environment_c(std::vector<cell_c> &params,
+                             std::vector<cell_c> &args,
+                             std::shared_ptr<environment_c> outer)
+    : _parent(outer) {
 
    auto arg = args.begin();
    for (auto param = params.begin(); param != params.end(); ++param) {
@@ -24,15 +27,13 @@ environment_c::environment_c(std::vector<cell_c>& params, std::vector<cell_c>& a
    }
 }
 
-void environment_c::set(const std::string& item, cell_c cell) {
+void environment_c::set(const std::string &item, cell_c cell) {
    _env[item] = cell;
 }
 
-cell_c environment_c::get(const std::string& item) {
-   return _env[item];
-}
+cell_c environment_c::get(const std::string &item) { return _env[item]; }
 
-environment_c* environment_c::find(const std::string &var) {
+environment_c *environment_c::find(const std::string &var) {
 
    if (_env.find(var) != _env.end()) {
       return this;
