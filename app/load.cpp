@@ -5,7 +5,8 @@
 
 namespace app {
 
-int load_c::run(const std::string& file, std::shared_ptr<sauros::environment_c> env) {
+int load_c::run(const std::string &file,
+                std::shared_ptr<sauros::environment_c> &env) {
 
    std::fstream fs;
    fs.open(file, std::fstream::in);
@@ -24,7 +25,8 @@ int load_c::run(const std::string& file, std::shared_ptr<sauros::environment_c> 
          continue;
       }
 
-      auto parser_result = sauros::parser::parse_line(file.c_str(), line_number, line);
+      auto parser_result =
+          sauros::parser::parse_line(file.c_str(), line_number, line);
 
       if (parser_result.result == sauros::parser::result_e::ERROR) {
          std::cerr << "Error parsing line";
@@ -38,9 +40,9 @@ int load_c::run(const std::string& file, std::shared_ptr<sauros::environment_c> 
       try {
          _list_processor.process(parser_result.cell, env);
 
-      } catch (sauros::processor_c::runtime_exception_c& e) {
+      } catch (sauros::processor_c::runtime_exception_c &e) {
          std::cout << e.what() << std::endl;
-      } catch (sauros::environment_c::unknown_identifier_c& e) {
+      } catch (sauros::environment_c::unknown_identifier_c &e) {
          std::cout << e.what() << " : " << e.get_id() << std::endl;
       }
    }
@@ -48,4 +50,4 @@ int load_c::run(const std::string& file, std::shared_ptr<sauros::environment_c> 
    return 0;
 }
 
-}
+} // namespace app

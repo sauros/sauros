@@ -13,7 +13,7 @@ void repl_c::start() {
 
       line_number++;
 
-      if (show_prompt){
+      if (show_prompt) {
          std::cout << "> ";
       }
 
@@ -22,18 +22,16 @@ void repl_c::start() {
 
       auto buffer = _buffer.submit(line);
       if (buffer.has_value()) {
-         
+
          run(line_number, (*buffer));
       }
    }
 }
 
-void repl_c::stop() {
-   _do = false;
-}
+void repl_c::stop() { _do = false; }
 
-void repl_c::run(const uint64_t line_number, std::string& line) {
-   
+void repl_c::run(const uint64_t line_number, std::string &line) {
+
    auto parser_result = sauros::parser::parse_line("repl", line_number, line);
 
    if (parser_result.result == sauros::parser::result_e::ERROR) {
@@ -55,9 +53,9 @@ void repl_c::run(const uint64_t line_number, std::string& line) {
       }
       std::cout << std::endl;
 
-   } catch (sauros::processor_c::runtime_exception_c& e) {
+   } catch (sauros::processor_c::runtime_exception_c &e) {
       std::cout << e.what() << std::endl;
-   } catch (sauros::environment_c::unknown_identifier_c& e) {
+   } catch (sauros::environment_c::unknown_identifier_c &e) {
       std::cout << e.what() << " : " << e.get_id() << std::endl;
    }
 }

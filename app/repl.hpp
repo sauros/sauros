@@ -7,18 +7,25 @@
 
 namespace app {
 
+//! \brief REPL
 class repl_c {
-public:
+ public:
+   //! \brief Create the repl object
+   //! \param env The environment to use
    repl_c(std::shared_ptr<sauros::environment_c> env) : _env(env) {}
+
+   //! \brief Start the REPL
    void start();
+
+   //! \brief Stop the REPL (interrupts etc)
    void stop();
 
-private:
+ private:
    std::shared_ptr<sauros::environment_c> _env;
    sauros::processor_c proc;
    bool _do{true};
    buffer_c _buffer;
-   void run(const uint64_t line_number, std::string& line);
+   void run(const uint64_t line_number, std::string &line);
 };
 
 } // namespace app
