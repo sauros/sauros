@@ -1,94 +1,77 @@
 #ifndef SAUROS_LIST_HPP
 #define SAUROS_LIST_HPP
 
+#include "types.hpp"
+#include <functional>
+#include <memory>
+#include <optional>
 #include <string>
 #include <vector>
-#include <memory>
-#include <functional>
 
 namespace sauros {
 
+//! \brief Types of cells
 enum class cell_type_e {
-   SYMBOL, LIST, STRING, INTEGER, DOUBLE
+   SYMBOL,
+   LIST,
+   LAMBDA,
+   STRING,
+   INTEGER,
+   DOUBLE,
 };
 
-class symbol_c;
-class list_c;
-class string_c;
-class integer_c;
-class double_c;
+//! \brief Forward of environment for proc_f
+class environment_c;
 
-class cell_visitor_c {
-public:
-   virtual void accept(symbol_c &cell) = 0;
-   virtual void accept(list_c &cell) = 0;
-   virtual void accept(string_c &cell) = 0;
-   virtual void accept(integer_c &cell) = 0;
-   virtual void accept(double_c &cell) = 0;
-};
-
+//! \brief An cell representation
 class cell_c {
-public:
-   cell_c(cell_type_e type) : type(type){}
-   virtual void visit(cell_visitor_c &visitor) = 0;
-   cell_type_e type;
-};
+ public:
+   //! \brief Function pointer definition for a cell
+   //!        used to execute code
+   using proc_f = std::function<std::optional<cell_c>(
+       std::vector<cell_c> &, std::shared_ptr<environment_c> env)>;
 
-class symbol_c : public cell_c {
-public:
-   symbol_c(std::string data) : cell_c(cell_type_e::SYMBOL), data(data) {}
+   //! \brief Create an empty cell
+   //! \param type The type to set (Defaults to SYMBOL)
+   cell_c(cell_type_e type = cell_type_e::SYMBOL) {}
+
+   //! \brief Create a standard cell
+   //! \param type The type to set
+   //! \param data The data to set
+   cell_c(cell_type_e type, const std::string &data) : type(type), data(data) {}
+
+   //! \brief Create a standard cell
+   //! \param type The type to set
+   //! \param data The data to set
+   //! \param location The location in source that the cell originated from
+   cell_c(cell_type_e type, const std::string &data, location_s location)
+       : type(type), data(data), location(location) {}
+
+   //! \brief Create a process cell
+   //! \param proc The process function to set
+   //! \note Process cells are declared as SYMBOL to reduce number of
+   //!       given celltypes. A process cell can be quickly identified
+   //!       by the existence of a valid proc_f being set
+   cell_c(proc_f proc) : type(cell_type_e::SYMBOL), proc(proc) {}
+
+   //! \brief Create a list cell
+   //! \param list The list to set in the cell
+   cell_c(std::vector<cell_c> list) : type(cell_type_e::LIST), list(list) {}
+
+   // Data
    std::string data;
-
-   virtual void visit(cell_visitor_c &visitor) override final {
-      visitor.accept(*this);
-   }
+   cell_type_e type{cell_type_e::SYMBOL};
+   location_s location;
+   proc_f proc;
+   std::vector<cell_c> list;
 };
 
-class list_c : public cell_c {
-public:
-   list_c() : cell_c(cell_type_e::LIST) {}
-   list_c(std::vector<std::unique_ptr<cell_c>> cells) : cell_c(cell_type_e::LIST), cells(std::move(cells)) {}
-   std::vector<std::unique_ptr<cell_c>> cells;
-
-   virtual void visit(cell_visitor_c &visitor) override final {
-      visitor.accept(*this);
-   }
-};
-
-class string_c : public cell_c {
-public:
-   string_c(std::string data) : cell_c(cell_type_e::STRING), data(data) {}
-   std::string data;
-
-   virtual void visit(cell_visitor_c &visitor) override final {
-      visitor.accept(*this);
-   }
-};
-
-class integer_c : public cell_c {
-public:
-   integer_c(int64_t data) : cell_c(cell_type_e::INTEGER), data(data) {}
-   int64_t data;
-
-   virtual void visit(cell_visitor_c &visitor) override final {
-      visitor.accept(*this);
-   }
-};
-
-class double_c : public cell_c {
-public:
-   double_c(double data) : cell_c(cell_type_e::DOUBLE), data(data) {}
-   double data;
-
-   virtual void visit(cell_visitor_c &visitor) override final {
-      visitor.accept(*this);
-   }
-};
-
-
-
-
-
+static const cell_c CELL_TRUE =
+    cell_c(cell_type_e::INTEGER, "1"); //! A cell that represents TRUE
+static const cell_c CELL_FALSE =
+    cell_c(cell_type_e::INTEGER, "0"); //! A cell that represents FALSE
+static const cell_c CELL_NIL =
+    cell_c(cell_type_e::SYMBOL, "#n"); //! A cell that represents NIL
 
 } // namespace sauros
 

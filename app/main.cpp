@@ -1,67 +1,133 @@
 
 
-#include <iostream>
+#include "sauros/environment.hpp"
+#include "sauros/front/parser.hpp"
 #include "sauros/list.hpp"
-#include "sauros/parser.hpp"
+#include "sauros/processor/processor.hpp"
+#include "sauros/version.hpp"
 
-namespace{
-class visitor : public sauros::cell_visitor_c {
-public:
-   virtual void accept(sauros::symbol_c &cell) override final {
-      std::cout << cell.data << " ";
-   }
+#include "load.hpp"
+#include "repl.hpp"
 
-   virtual void accept(sauros::list_c &cell) override final {
-      std::cout << "[ ";
-      for (auto& c : cell.cells ) {
-         c.get()->visit(*this);
-      }
-      std::cout << "] ";
-   }
+#include <csignal>
+#include <filesystem>
+#include <iostream>
 
-   virtual void accept(sauros::string_c &cell) override final {
-      std::cout << cell.data << " ";
-   }
+namespace {
+std::shared_ptr<sauros::environment_c> env =
+    std::make_shared<sauros::environment_c>();
 
-   virtual void accept(sauros::integer_c &cell) override final {
-      std::cout << cell.data << " ";
-   }
+app::repl_c *repl{nullptr};
+app::load_c *load{nullptr};
+} // namespace
 
-   virtual void accept(sauros::double_c &cell) override final {
-      std::cout << cell.data << " ";
-   }
+// Add some environment variables to the system
+//    - This serves as a good example of how to externally extend the language
+//
+void setup_env() {
+   env->set("@version",
+            sauros::cell_c([=](std::vector<sauros::cell_c> &cells,
+                               std::shared_ptr<sauros::environment_c> env)
+                               -> std::optional<sauros::cell_c> {
+               if (cells.size() != 1) {
+                  throw sauros::processor_c::runtime_exception_c(
+                      "`__version` expects no arguments, but " +
+                          std::to_string(cells.size() - 1) + " were given",
+                      cells[0].location);
+               }
 
-};
+               return {sauros::cell_c(sauros::cell_type_e::STRING,
+                                      std::string(LIBSAUROS_VERSION),
+                                      cells[0].location)};
+            }));
+
+   env->set("@import",
+            sauros::cell_c([=](std::vector<sauros::cell_c> &cells,
+                               std::shared_ptr<sauros::environment_c> env)
+                               -> std::optional<sauros::cell_c> {
+               app::load_c loader;
+               for (auto i = cells.begin() + 1; i < cells.end(); i++) {
+                  if ((*i).type != sauros::cell_type_e::STRING) {
+                     throw sauros::processor_c::runtime_exception_c(
+                         "Import objects are expected to be raw strings",
+                         (*i).location);
+                  }
+                  if (0 != loader.run((*i).data, env)) {
+                     throw sauros::processor_c::runtime_exception_c(
+                         "Unable to load import: " + (*i).data, (*i).location);
+                  }
+               }
+               return {sauros::CELL_TRUE};
+            }));
 }
 
-int main(int argc, char** argv) {
-
-/*
-   { auto result = sauros::parser::parse_line("test", 0, "(define x (+ 1 (- 10 7)))", true); }
-   { auto result = sauros::parser::parse_line("test", 1, "(define x 430)", true); }
-   { auto result = sauros::parser::parse_line("test", 2, R"((define x "Some string"))", true); }
-   { auto result = sauros::parser::parse_line("test", 3, R"((define x "Some \"other\" string"))", true); }
-   { auto result = sauros::parser::parse_line("test", 4, R"((define x "Some\" string"))", true); }
-   { auto result = sauros::parser::parse_line("test", 6, "(+ 3 4)", true); }
-   { auto result = sauros::parser::parse_line("test", 7, "(define x (- 10 3))", true); }
-*/
-
-   visitor cell_visitor;
-
-   //auto result = sauros::parser::parse_line("test", 8, "[define x [+ [- 10 2] 10]]");
-   auto result = sauros::parser::parse_line("test", 8, "[block [c] [[def] d [+ 3 1] ] ]");
-
-   if (result.error_info) {
-      std::cout << result.error_info.get()->message << std::endl;
+void run_file(const std::string &file) {
+   if (!std::filesystem::is_regular_file(file)) {
+      std::cerr << "Given item `" << file << "` is not a file" << std::endl;
+      std::exit(1);
    }
 
-   std::cout << "[ ";
-   if (result.list ) {
-      for (auto& c : result.list.get()->cells){
-         c->visit(cell_visitor);
+   load = new app::load_c();
+   load->run(file, env);
+}
+
+void show_help() {
+
+   std::string help = R"(
+
+<filename>           Execute file
+--help      -h       Show help
+--version   -v       Show version info
+   )";
+   std::cout << help << std::endl;
+}
+
+void handle_signal(int signal) {
+   if (repl) {
+      repl->stop();
+   }
+
+   if (load) {
+      delete load;
+   }
+
+   std::exit(0);
+}
+
+int main(int argc, char **argv) {
+
+   std::vector<std::string> args(argv + 1, argv + argc);
+
+   signal(SIGHUP, handle_signal);  /* Hangup the process */
+   signal(SIGINT, handle_signal);  /* Interrupt the process */
+   signal(SIGQUIT, handle_signal); /* Quit the process */
+   signal(SIGILL, handle_signal);  /* Illegal instruction. */
+   signal(SIGTRAP, handle_signal); /* Trace trap. */
+   signal(SIGABRT, handle_signal); /* Abort. */
+
+   setup_env();
+
+   for (size_t i = 0; i < args.size(); i++) {
+      if (args[i] == "--help" || args[i] == "-h") {
+         show_help();
+         return 0;
+      }
+
+      if (args[i] == "--version" || args[i] == "-v") {
+         std::cout << LIBSAUROS_VERSION << std::endl;
+         return 0;
       }
    }
-   std::cout << "]" << std::endl;
+
+   if (args.empty()) {
+      repl = new app::repl_c(env);
+      repl->start();
+      delete repl;
+   }
+
+   for (auto arg : args) {
+      run_file(arg);
+   }
 
    return 0;
 }

@@ -47,14 +47,21 @@ endif()
 include(${CMAKE_SOURCE_DIR}/cmake/SetEnv.cmake)
 
 set(SAUROS_SOURCES
-  ${CMAKE_SOURCE_DIR}/sauros/parser.cpp
+   ${CMAKE_SOURCE_DIR}/sauros/environment.cpp
+   ${CMAKE_SOURCE_DIR}/sauros/front/parser.cpp
+   ${CMAKE_SOURCE_DIR}/sauros/processor/processor.cpp
+   ${CMAKE_SOURCE_DIR}/sauros/processor/processor_arithmetic.cpp
+   ${CMAKE_SOURCE_DIR}/sauros/processor/processor_std_builtins.cpp
 )
 
 set(HEADERS
-    ${CMAKE_SOURCE_DIR}/sauros/list.hpp
-    ${CMAKE_SOURCE_DIR}/sauros/parser.hpp
-    ${CMAKE_SOURCE_DIR}/sauros/types.hpp
-    ${CMAKE_SOURCE_DIR}/sauros/version.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/front/parser.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/processor/processor.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/environment.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/list.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/types.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/version.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/sauros.hpp
 )
 
 set(SOURCES
@@ -75,6 +82,9 @@ include(${CMAKE_SOURCE_DIR}/cmake/InstallConfig.cmake)
 # Setup sauros app
 #
 add_executable(sauros 
+  app/buffer.cpp
+  app/load.cpp
+  app/repl.cpp
   app/main.cpp
   ${SAUROS_SOURCES}
 )
