@@ -58,7 +58,7 @@ set(HEADERS
    ${CMAKE_SOURCE_DIR}/sauros/front/parser.hpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor.hpp
    ${CMAKE_SOURCE_DIR}/sauros/environment.hpp
-   ${CMAKE_SOURCE_DIR}/sauros/list.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/cell.hpp
    ${CMAKE_SOURCE_DIR}/sauros/types.hpp
    ${CMAKE_SOURCE_DIR}/sauros/version.hpp
    ${CMAKE_SOURCE_DIR}/sauros/sauros.hpp

@@ -1,17 +1,15 @@
 
-#include "sauros/environment.hpp"
-#include "sauros/front/parser.hpp"
-#include "sauros/list.hpp"
-#include "sauros/processor/processor.hpp"
+#include "sauros/sauros.hpp"
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include <CppUTest/TestHarness.h>
 
 TEST_GROUP(sauros_tests){};
 
-TEST(sauros_tests, all) {
+TEST(sauros_tests, piecemeal) {
 
    struct test_case_t {
       std::string input;
@@ -21,6 +19,9 @@ TEST(sauros_tests, all) {
    std::vector<test_case_t> tests = {
        {"[+ 3 4]", "7"},
        {"[- 3 4]", "-1"},
+       {"[+ -1 1]", "0"},
+       {"[- -1 -1]", "0"},
+       {"[+ -1 -1]", "-2"},
        {"[* 3 4 2]", "24"},
        {"[/ 10 5]", "2.000000"},
        {"[% 10 9]", "1"},
@@ -60,17 +61,31 @@ TEST(sauros_tests, all) {
        {"[if [!= 4 3] [1] [0] ]", "1"},
        {"[var this \"A String\"", "A String"},
        {"[var that \"A Longer String\"", "A Longer String"},
+       {"[if [seq this \"A String\"] [1] [0] ]", "1"},
        {"[if [seq this this] [1] [0] ]", "1"},
        {"[if [seq this that] [1] [0] ]", "0"},
        {"[if [sneq this this] [1] [0] ]", "0"},
        {"[if [sneq this that] [1] [0] ]", "1"},
+       {"[if [sneq this \"A Longer String\"] [1] [0] ]", "1"},
        {"[car [list 1 2 3]]", "1"},
        {"[car [list [list 5 6 7] 2 3]]", "[5 6 7]"},
        {"[cdr [list 1 2 3]]", "[2 3]"},
        {"[cons 4 5]", "[4 5]"},
        {"[block [var q [list 1 2 3]] [var r 3.4] [cons q r]]", "[[1 2 3] 3.4]"},
        {"[block [var monkey [cdr [list 1]]] [empty? monkey]]", "1"},
-       {"[empty? [list 1 2 3]", "0"}};
+       {"[empty? [list 1 2 3]", "0"},
+       {"[var is_true 1]", "1"},
+       {"[var is_false 0]", "0"},
+       {"[not 1]", "0"},
+       {"[not 0]", "1"},
+       {"[not is_true]", "0"},
+       {"[not is_false]", "1"},
+       {"[assert \"is true\" is_true]", "1"},
+       {"[assert \"not is_false\" [not is_false]]", "1"},
+       {"[assert \"Direct string\" \"Any non empty string should produce a 1\"]", "1"},
+       {"[assert \"not integer\" 420]", "1"},
+       {"[assert \"a double\" 2.1828]", "1"},
+   };
 
    size_t line_no = 0;
    std::shared_ptr<sauros::environment_c> env =
@@ -83,13 +98,24 @@ TEST(sauros_tests, all) {
 
       CHECK_FALSE(result.error_info);
 
-      auto cell_result = proc.process(result.cell, env);
+      try{
+         auto cell_result = proc.process(result.cell, env);
 
-      CHECK_TRUE(cell_result.has_value());
+         CHECK_TRUE(cell_result.has_value());
 
-      std::string stringed_result;
-      proc.cell_to_string(stringed_result, (*cell_result), env, false);
+         std::string stringed_result;
+         proc.cell_to_string(stringed_result, (*cell_result), env, false);
 
-      CHECK_EQUAL(tc.expected_output, stringed_result);
+         CHECK_EQUAL(tc.expected_output, stringed_result);
+      } catch (sauros::processor_c::runtime_exception_c &e) {
+         std::cout << e.what() << std::endl;
+         FAIL("exception");
+      } catch (sauros::processor_c::assertion_exception_c &e) {
+         std::cout << e.what() << std::endl;
+         FAIL("exception");
+      } catch (sauros::environment_c::unknown_identifier_c &e) {
+         std::cout << e.what() << " : " << e.get_id() << std::endl;
+         FAIL("exception");
+      }
    }
 }
