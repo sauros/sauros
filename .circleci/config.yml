@@ -23,13 +23,13 @@ jobs:
           command: 'mkdir build && mkdir build-release && mkdir build-asan'
       - run:
           name: Debug Build
-          command: 'cd build && cmake ../sauros -DCMAKE_BUILD_TYPE=Debug && make -j5'
+          command: 'cd build && cmake ../ -DCMAKE_BUILD_TYPE=Debug && make -j5'
       - run:
           name: Release Build
-          command: 'cd build-release && cmake ../sauros -DCMAKE_BUILD_TYPE=Release && make -j5'
+          command: 'cd build-release && cmake ../ -DCMAKE_BUILD_TYPE=Release && make -j5'
       - run:
           name: ASAN Build
-          command: 'cd build-asan && cmake ../sauros -DCMAKE_BUILD_TYPE=Release -DWITH_ASAN=ON && make -j5'
+          command: 'cd build-asan && cmake ../ -DCMAKE_BUILD_TYPE=Release -DWITH_ASAN=ON && make -j5'
       - run:
           name: Execution Tests
           command: 'cd test_scripts && python3 run.py ../build/sauros'
