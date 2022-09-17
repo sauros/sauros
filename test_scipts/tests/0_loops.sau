@@ -1,0 +1,30 @@
+; Loop testing
+
+[var total 0]
+[var i 0]
+[loop [< i 10] [set i [+ 1 i]]
+   [block 
+      [var j 0]
+      [loop [< j 10] [set j [+ 1 j]]
+         [block
+            [set total [+ 1 total]]
+         ]
+      ]
+   ]
+]
+
+[assert "loop.sau > total count nested loop" [== 100 total]]
+
+; No explicit post condition
+;
+[set i 0]
+[loop [< i 10]
+   [block
+      ; Item is in block for clairity sake
+      [set i [+ i 1]]
+   ]
+]
+
+[assert "loop.sau > No explicit post operation" [== 10 i]]
+
+[exit 0]

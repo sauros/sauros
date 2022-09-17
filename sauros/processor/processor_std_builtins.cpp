@@ -4,6 +4,40 @@
 
 namespace sauros {
 
+namespace {
+
+static inline bool eval_truthy(cell_c &cell, location_s &location) {
+   switch (cell.type) {
+   case cell_type_e::STRING:
+      return (!cell.data.empty());
+      break;
+   case cell_type_e::LIST:
+      return (!cell.list.empty());
+      break;
+   case cell_type_e::LAMBDA:
+      return true;
+      break;
+   case cell_type_e::DOUBLE:
+      [[fallthrough]];
+   case cell_type_e::INTEGER: {
+      try {
+         auto v = std::stod(cell.data);
+         return (v > 0.0);
+      } catch (const std::invalid_argument &) {
+         throw processor_c::runtime_exception_c("Invalid data type given for operand",
+                                 location);
+      } catch (const std::out_of_range &) {
+         throw processor_c::runtime_exception_c("Item caused out of range exception",
+                                 location);
+      }
+      break;
+   }
+   }
+   return false;
+}
+
+}
+
 void processor_c::populate_standard_builtins() {
 
    // Populate symbols that users are not allowed to redefine
@@ -35,6 +69,7 @@ void processor_c::populate_standard_builtins() {
    _key_symbols.insert("seq");
    _key_symbols.insert("sneq");
    _key_symbols.insert("assert");
+   _key_symbols.insert("loop");
 
    _builtins["exit"] = cell_c(
        [this](std::vector<cell_c> &cells,
@@ -190,11 +225,11 @@ void processor_c::populate_standard_builtins() {
             }
 
             if (cell_type_e::STRING == (*result).type && (*result).data.empty()) {
-               throw assertion_exception_c(cells[1].data, (*c).location);
+               throw assertion_exception_c("assertion failure: " + cells[1].data, (*c).location);
             } else if (cell_type_e::INTEGER == (*result).type && std::stoull((*result).data) < 1) {
-               throw assertion_exception_c(cells[1].data, (*c).location);
+               throw assertion_exception_c("assertion failure: " + cells[1].data, (*c).location);
             } else if (cell_type_e::DOUBLE == (*result).type && std::stod((*result).data) <= 0.0) {
-               throw assertion_exception_c(cells[1].data, (*c).location);
+               throw assertion_exception_c("assertion failure: " + cells[1].data, (*c).location);
             }
          }
          return {CELL_TRUE};
@@ -281,6 +316,54 @@ void processor_c::populate_standard_builtins() {
           return {lambda};
        });
 
+   _builtins["loop"] = cell_c(
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+          if (cells.size() != 3 && cells.size() != 4) {
+             throw runtime_exception_c("loop command expects 3 parameters, but" +
+                                           std::to_string(cells.size() - 1) +
+                                           " were given",
+                                       cells[0].location);
+          }
+
+          auto &conditional_cell = cells[1];
+
+          cell_c* body{nullptr};
+          cell_c* post{nullptr};
+
+          if (cells.size() == 3) {
+            body = &cells[2];
+          }
+          else if (cells.size() == 4) {
+            post = &cells[2];
+            body = &cells[3];
+          }
+
+          while (1) {
+
+            auto loop_environment = std::make_shared<environment_c> (env);
+
+            // Check the condition
+            auto conditional_result = process_cell(conditional_cell, loop_environment);
+            if (! conditional_result.has_value()) {
+               break;
+            }
+
+            if (!eval_truthy((*conditional_result), cells[0].location)) {
+               break;
+            }
+
+            // Execute the body
+            process_cell(*body, loop_environment);
+
+            if (post) {
+               process_cell(*post, loop_environment);
+            }
+          }
+
+          return {};
+       });
+
    _builtins["block"] = cell_c(
        [this](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
@@ -305,8 +388,7 @@ void processor_c::populate_standard_builtins() {
           auto &variable_name = cells[1].data;
 
           // If this isn't found it will throw :)
-          { auto _ = env->find(variable_name); }
-
+          auto containing_env = env->find(variable_name);
           auto value = process_cell(cells[2], env);
 
           if ((*value).type == cell_type_e::SYMBOL) {
@@ -319,8 +401,8 @@ void processor_c::populate_standard_builtins() {
                                        cells[2].location);
           }
 
-          env->set(variable_name, (*value));
-          return {env->get(variable_name)};
+          containing_env->set(variable_name, (*value));
+          return {containing_env->get(variable_name)};
        });
 
    _builtins["list"] = cell_c(
@@ -371,35 +453,7 @@ void processor_c::populate_standard_builtins() {
                  cells[1].location);
           }
 
-          bool is_true{false};
-          switch ((*eval).type) {
-          case cell_type_e::STRING:
-             is_true = (!(*eval).data.empty());
-             break;
-          case cell_type_e::LIST:
-             is_true = (!(*eval).list.empty());
-             break;
-          case cell_type_e::LAMBDA:
-             is_true = true;
-             break;
-          case cell_type_e::DOUBLE:
-             [[fallthrough]];
-          case cell_type_e::INTEGER: {
-             try {
-                auto v = std::stod((*eval).data);
-                is_true = (v > 0.0);
-             } catch (const std::invalid_argument &) {
-                throw runtime_exception_c("Invalid data type given for operand",
-                                          cells[0].location);
-             } catch (const std::out_of_range &) {
-                throw runtime_exception_c("Item caused out of range exception",
-                                          cells[0].location);
-             }
-             break;
-          }
-          }
-
-          if (is_true) {
+          if (eval_truthy((*eval), cells[0].location)) {
             return process_cell(cells[2], env);
           } else if (cells.size() == 4) {
             return process_cell(cells[3], env);
