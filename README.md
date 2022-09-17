@@ -1,27 +1,9 @@
-# sauros
+# Sauros
+[![GitHub license](https://badgen.net/github/license/Naereen/Strapdown.js)](https://github.com/bosley/sauros/blob/main/LICENSE)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/bosley/sauros/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/bosley/sauros/tree/main)
 
 
-```
+Sauros is an interpreted language based on list execution. 
 
-var - Create a variable (string/ integer/ double)
+Check out the [wiki](https://github.com/bosley/sauros/wiki).
 
-set - Set the value of an existing variable - Like var but ensures that the item alraedy exists
-
-list - Create a list
-
-lambda - Create a lambda expression
-
-block - A block of lists to be executed sequentially 
-
-if - Check a condition and execute one list, or another
-
-```
-
-Conditionals
-
-```
-==, !=, <=, >=, <, > - Numerical conditionals
-
-seq, sneq - String conditionals 
-
-```
