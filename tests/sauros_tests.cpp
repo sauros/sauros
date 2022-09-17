@@ -86,6 +86,7 @@ TEST(sauros_tests, piecemeal) {
        {"[assert \"Direct string\" \"Any non empty string should produce a 1\"]", "1"},
        {"[assert \"not integer\" 420]", "1"},
        {"[assert \"a double\" 2.1828]", "1"},
+       {"[block [var x 1] [loop [< x 10] [[block [set x [+ x 1]] ]]] [x]]", "10"}
    };
 
    size_t line_no = 0;
