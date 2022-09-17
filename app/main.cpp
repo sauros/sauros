@@ -1,11 +1,4 @@
-
-
-#include "sauros/environment.hpp"
-#include "sauros/front/parser.hpp"
-#include "sauros/list.hpp"
-#include "sauros/processor/processor.hpp"
-#include "sauros/version.hpp"
-
+#include "sauros/sauros.hpp"
 #include "load.hpp"
 #include "repl.hpp"
 

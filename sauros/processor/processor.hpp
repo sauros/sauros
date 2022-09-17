@@ -2,7 +2,7 @@
 #define SAUROS_PROCESSOR_HPP
 
 #include "sauros/environment.hpp"
-#include "sauros/list.hpp"
+#include "sauros/cell.hpp"
 
 #include <exception>
 #include <functional>
@@ -16,6 +16,30 @@ namespace sauros {
 //! \brief A list processor
 class processor_c {
  public:
+
+   //!\brief An exception that will be thrown on assertion failure
+   class assertion_exception_c : public std::exception {
+   public:
+      assertion_exception_c() = delete;
+
+      //! \brief Construct the expception
+      //! \param message The message that is to be displayed
+      //! \param location The location (line/col) that the error arose
+      assertion_exception_c(std::string label, location_s location)
+         : _label(label), _loc(location) {}
+
+      //! \brief Retrieve the description of the exception
+      const char *what() const throw() { return _label.c_str(); }
+
+      //! \brief Retrieve the location (line/col) that caused the exception to
+      //! be thrown
+      const location_s get_location() { return _loc; }
+
+    private:
+      std::string _label;
+      location_s _loc{0, 0};
+   };
+
    //!\brief An exception that can be thrown during processing
    class runtime_exception_c : public std::exception {
     public:

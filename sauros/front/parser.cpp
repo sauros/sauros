@@ -97,10 +97,10 @@ tokenize(size_t line_number, const std::string line) {
 
       // Check for an integer / double
       //
-      if (is_digit(line[idx])) {
+      if (is_digit(line[idx]) || (line[idx] == '-' && is_digit(line[idx+1]))) {
 
          decltype(idx) start = idx;
-         while (is_digit(line[idx]) || line[idx] == '.') {
+         while (is_digit(line[idx]) || line[idx] == '.' || line[idx] == '-') {
             current_data += line[idx];
             idx++;
          }
@@ -255,16 +255,18 @@ product_s parse_line(const char *source_descrption, std::size_t line_number,
    auto [tokens, token_err] = tokenize(line_number, line);
 
    if (token_err) {
-      resulting_product.error_info = std::move(token_err);
+      resulting_product.error_info = token_err;
       resulting_product.result = result_e::ERROR;
+      std::cout << token_err->message << std::endl;
       return resulting_product;
    }
 
    auto [cell, parse_err] = parse(tokens);
 
    if (parse_err) {
-      resulting_product.error_info = std::move(parse_err);
+      resulting_product.error_info = parse_err;
       resulting_product.result = result_e::ERROR;
+      std::cout << parse_err->message << std::endl;
       return resulting_product;
    }
 

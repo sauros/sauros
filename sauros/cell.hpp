@@ -1,5 +1,5 @@
-#ifndef SAUROS_LIST_HPP
-#define SAUROS_LIST_HPP
+#ifndef SAUROS_CELL_HPP
+#define SAUROS_CELL_HPP
 
 #include "types.hpp"
 #include <functional>

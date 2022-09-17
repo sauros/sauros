@@ -55,6 +55,8 @@ void repl_c::run(const uint64_t line_number, std::string &line) {
 
    } catch (sauros::processor_c::runtime_exception_c &e) {
       std::cout << e.what() << std::endl;
+   } catch (sauros::processor_c::assertion_exception_c &e) {
+      std::cout << e.what() << std::endl;
    } catch (sauros::environment_c::unknown_identifier_c &e) {
       std::cout << e.what() << " : " << e.get_id() << std::endl;
    }

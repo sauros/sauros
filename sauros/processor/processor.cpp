@@ -7,7 +7,6 @@ namespace sauros {
 void processor_c::cell_to_string(std::string &out, cell_c &cell,
                                  std::shared_ptr<environment_c> env,
                                  bool show_space) {
-
    switch (cell.type) {
    case cell_type_e::DOUBLE:
       [[fallthrough]];
@@ -42,9 +41,10 @@ void processor_c::cell_to_string(std::string &out, cell_c &cell,
       }
       break;
    }
-   case cell_type_e::LAMBDA:
-      out += std::string("<lambda>");
+   case cell_type_e::LAMBDA: {
+      out += "<lambda>";
       break;
+   }
    }
 }
 
@@ -179,6 +179,7 @@ processor_c::process_lambda(cell_c &cell, std::vector<cell_c> &cells,
 
    // Create the lambda cell
    cell_c lambda_cell;
+   lambda_cell.data = cells[0].data;
    lambda_cell.type = cell.type;
    lambda_cell.list = target_lambda.list[1].list;
 

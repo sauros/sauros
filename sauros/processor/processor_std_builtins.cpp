@@ -34,6 +34,33 @@ void processor_c::populate_standard_builtins() {
    _key_symbols.insert(">");
    _key_symbols.insert("seq");
    _key_symbols.insert("sneq");
+   _key_symbols.insert("assert");
+
+   _builtins["exit"] = cell_c(
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+          if (cells.size() != 2) {
+             throw runtime_exception_c("var command expects 1 parameters, but" +
+                                           std::to_string(cells.size() - 1) +
+                                           " were given",
+                                       cells[0].location);
+          }
+
+
+          auto value = process_cell(cells[1], env);
+
+          if ((*value).type != cell_type_e::INTEGER) {
+             throw runtime_exception_c("Expected integer type for exit value",
+                                       cells[1].location);
+          }
+
+          if (!value.has_value()) {
+             throw runtime_exception_c("Unable to locate value for exit",
+                                       cells[1].location);
+          }
+
+          std::exit(std::stoull((*value).data));
+       });
 
    _builtins["car"] = cell_c(
        [this](std::vector<cell_c> &cells,
@@ -93,7 +120,7 @@ void processor_c::populate_standard_builtins() {
              auto target = process_cell(cell, env);
              if (!target.has_value()) {
                 throw runtime_exception_c("Unable to process value",
-                                          cells[1].location);
+                                          cell.location);
              }
              return (*target);
           };
@@ -107,14 +134,80 @@ void processor_c::populate_standard_builtins() {
           return {result};
        });
 
+   _builtins["not"] = cell_c(
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+         
+         if (cells.size() != 2) {
+            throw runtime_exception_c("not command expects 1 parameters, but" +
+                                          std::to_string(cells.size() - 1) +
+                                          " were given",
+                                    cells[0].location);
+         }
+
+         auto target = process_cell(cells[1], env);
+         if (!target.has_value()) {
+            throw runtime_exception_c("Unable to process value",
+                                    cells[1].location);
+         }
+
+         if ((*target).type != cell_type_e::INTEGER && (*target).type != cell_type_e::DOUBLE) {
+            throw runtime_exception_c("not command expects parameter to evaluate to a numerical type", cells[1].location);
+         }
+
+         if (std::stod((*target).data) > 0.0) {
+            return {CELL_FALSE};
+         } else {
+            return {CELL_TRUE};
+         }
+       });
+
+   _builtins["assert"] = cell_c(
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+         
+         if (cells.size() < 3) {
+            throw runtime_exception_c("assert command expects at least 3 parameters, but" +
+                                          std::to_string(cells.size() - 1) +
+                                          " were given",
+                                    cells[0].location);
+         }
+
+         if (cells[1].type != cell_type_e::STRING) {
+            throw runtime_exception_c("assertion label bust be a raw string", cells[1].location);
+         }
+
+         for (auto c = cells.begin()+2; c != cells.end(); c++) {
+
+            auto result = process_cell((*c), env);
+
+            if (!result.has_value()) {
+               throw runtime_exception_c("failed to process assertion condition", (*c).location);
+            }
+
+            if ( static_cast<int>((*result).type) < static_cast<int>(cell_type_e::STRING) ) {
+               throw runtime_exception_c("assertion condition did not evaluate to a direectly comparable type (string, int, double)", (*c).location);
+            }
+
+            if (cell_type_e::STRING == (*result).type && (*result).data.empty()) {
+               throw assertion_exception_c(cells[1].data, (*c).location);
+            } else if (cell_type_e::INTEGER == (*result).type && std::stoull((*result).data) < 1) {
+               throw assertion_exception_c(cells[1].data, (*c).location);
+            } else if (cell_type_e::DOUBLE == (*result).type && std::stod((*result).data) <= 0.0) {
+               throw assertion_exception_c(cells[1].data, (*c).location);
+            }
+         }
+         return {CELL_TRUE};
+       });
+
    _builtins["empty?"] = cell_c(
        [this](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           if (cells.size() != 2) {
-             throw runtime_exception_c("set command expects 1 parameters, but" +
-                                           std::to_string(cells.size() - 1) +
-                                           " were given",
-                                       cells[0].location);
+            throw runtime_exception_c("empty? command expects 1 parameters, but" +
+                                          std::to_string(cells.size() - 1) +
+                                          " were given",
+                                    cells[0].location);
           }
 
           if (cells[1].list.empty())
@@ -264,8 +357,8 @@ void processor_c::populate_standard_builtins() {
    _builtins["if"] = cell_c(
        [this](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
-          if (cells.size() != 4) {
-             throw runtime_exception_c("if command expects 4 parameters, but " +
+          if (cells.size() != 3 && cells.size() != 4) {
+             throw runtime_exception_c("if command expects 2-3 parameters, but " +
                                            std::to_string(cells.size() - 1) +
                                            " were given",
                                        cells[0].location);
@@ -306,8 +399,12 @@ void processor_c::populate_standard_builtins() {
           }
           }
 
-          return (is_true) ? process_cell(cells[2], env)
-                           : process_cell(cells[3], env);
+          if (is_true) {
+            return process_cell(cells[2], env);
+          } else if (cells.size() == 4) {
+            return process_cell(cells[3], env);
+          }
+          return {};
        });
 
    _builtins["seq"] = cell_c(
@@ -320,13 +417,20 @@ void processor_c::populate_standard_builtins() {
                                        cells[0].location);
           }
 
-          auto eval = process_cell(cells[1], env);
-          if (!eval.has_value()) {
-             return {CELL_FALSE};
-          }
+          auto load = [&](cell_c &cell) -> cell_c {
+             auto target = process_cell(cell, env);
+             if (!target.has_value()) {
+                throw runtime_exception_c("Unable to process value",
+                                          cell.location);
+             }
+             return (*target);
+          };
+
+          auto lhs = load(cells[1]);
+          auto rhs = load(cells[2]);
 
           return cell_c(cell_type_e::INTEGER,
-                        std::to_string((cells[1].data == cells[2].data)),
+                        std::to_string((lhs.data == rhs.data)),
                         cells[0].location);
        });
 
@@ -340,13 +444,21 @@ void processor_c::populate_standard_builtins() {
                                        cells[0].location);
           }
 
-          auto eval = process_cell(cells[1], env);
-          if (!eval.has_value()) {
-             return {CELL_FALSE};
-          }
+
+          auto load = [&](cell_c &cell) -> cell_c {
+             auto target = process_cell(cell, env);
+             if (!target.has_value()) {
+                throw runtime_exception_c("Unable to process value",
+                                          cell.location);
+             }
+             return (*target);
+          };
+
+          auto lhs = load(cells[1]);
+          auto rhs = load(cells[2]);
 
           return cell_c(cell_type_e::INTEGER,
-                        std::to_string((cells[1].data != cells[2].data)),
+                        std::to_string((lhs.data != rhs.data)),
                         cells[0].location);
        });
 

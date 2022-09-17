@@ -26,7 +26,7 @@ int load_c::run(const std::string &file,
       }
 
       auto parser_result =
-          sauros::parser::parse_line(file.c_str(), line_number, line);
+          sauros::parser::parse_line(file.c_str(), line_number, (*buffer));
 
       if (parser_result.result == sauros::parser::result_e::ERROR) {
          std::cerr << "Error parsing line";
@@ -42,8 +42,13 @@ int load_c::run(const std::string &file,
 
       } catch (sauros::processor_c::runtime_exception_c &e) {
          std::cout << e.what() << std::endl;
+         std::exit(1);
+      } catch (sauros::processor_c::assertion_exception_c &e) {
+         std::cout << e.what() << std::endl;
+         std::exit(1);
       } catch (sauros::environment_c::unknown_identifier_c &e) {
          std::cout << e.what() << " : " << e.get_id() << std::endl;
+         std::exit(1);
       }
    }
 
