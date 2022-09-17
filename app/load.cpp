@@ -26,7 +26,7 @@ int load_c::run(const std::string &file,
       }
 
       auto parser_result =
-          sauros::parser::parse_line(file.c_str(), line_number, line);
+          sauros::parser::parse_line(file.c_str(), line_number, (*buffer));
 
       if (parser_result.result == sauros::parser::result_e::ERROR) {
          std::cerr << "Error parsing line";

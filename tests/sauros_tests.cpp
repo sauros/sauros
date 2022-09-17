@@ -59,6 +59,7 @@ TEST(sauros_tests, piecemeal) {
        {"[if [== 4 3] [1] [0] ]", "0"},
        {"[if [!= 4 4] [1] [0] ]", "0"},
        {"[if [!= 4 3] [1] [0] ]", "1"},
+       {"[if [!= 4 3] [1] ]", "1"},
        {"[var this \"A String\"", "A String"},
        {"[var that \"A Longer String\"", "A Longer String"},
        {"[if [seq this \"A String\"] [1] [0] ]", "1"},

@@ -357,8 +357,8 @@ void processor_c::populate_standard_builtins() {
    _builtins["if"] = cell_c(
        [this](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
-          if (cells.size() != 4) {
-             throw runtime_exception_c("if command expects 4 parameters, but " +
+          if (cells.size() != 3 && cells.size() != 4) {
+             throw runtime_exception_c("if command expects 2-3 parameters, but " +
                                            std::to_string(cells.size() - 1) +
                                            " were given",
                                        cells[0].location);
@@ -399,8 +399,12 @@ void processor_c::populate_standard_builtins() {
           }
           }
 
-          return (is_true) ? process_cell(cells[2], env)
-                           : process_cell(cells[3], env);
+          if (is_true) {
+            return process_cell(cells[2], env);
+          } else if (cells.size() == 4) {
+            return process_cell(cells[3], env);
+          }
+          return {};
        });
 
    _builtins["seq"] = cell_c(
