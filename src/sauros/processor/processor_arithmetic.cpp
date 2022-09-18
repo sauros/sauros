@@ -36,7 +36,7 @@ cell_c processor_c::perform_arithmetic(std::string op,
       auto cell_value = process_cell((*i), env);
       if (!cell_value) {
          throw runtime_exception_c("Unknown operand given to '" + op + "'",
-                                   cells[0].location);
+                                   (*i).location);
       }
 
       if ((*cell_value).type == cell_type_e::DOUBLE) {
@@ -49,10 +49,10 @@ cell_c processor_c::perform_arithmetic(std::string op,
          result = fn(result, std::stod((*cell_value).data));
       } catch (const std::invalid_argument &) {
          throw runtime_exception_c("Invalid data type given for operand",
-                                   cells[0].location);
+                                   (*i).location);
       } catch (const std::out_of_range &) {
          throw runtime_exception_c("Item caused out of range exception",
-                                   cells[0].location);
+                                   (*i).location);
       }
    }
 

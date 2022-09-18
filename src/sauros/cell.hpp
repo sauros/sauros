@@ -77,6 +77,7 @@ class cell_c {
    location_s location;
    proc_f proc;
    std::vector<cell_c> list;
+   bool stop_processing{false};
 };
 
 static const cell_c CELL_TRUE =
