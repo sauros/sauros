@@ -164,6 +164,16 @@ processor_c::process_lambda(cell_c &cell, std::vector<cell_c> &cells,
 
    auto target_lambda = env->find(cells[0].data)->get(cells[0].data);
 
+   if (target_lambda.list[0].list.size() != cells.size()-1) {
+      throw runtime_exception_c(
+            "Parameters mismatch for lambda `" + cells[0].data + 
+            "` :: Expected " + 
+               std::to_string(target_lambda.list[0].list.size()) + 
+               " parameters, got " + 
+               std::to_string(cells.size()-1),
+            cells[0].location);
+   }
+
    std::vector<cell_c> exps;
    for (auto param = cells.begin() + 1; param != cells.end(); ++param) {
 

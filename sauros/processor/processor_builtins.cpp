@@ -49,15 +49,15 @@ void processor_c::populate_standard_builtins() {
    //       May remove this in the future
    //
    //
-   _key_symbols.insert("car");
-   _key_symbols.insert("cons");
-   _key_symbols.insert("cdr");
+   _key_symbols.insert("front");
+   _key_symbols.insert("back");
+   _key_symbols.insert("push");
+   _key_symbols.insert("pop");
    _key_symbols.insert("list");
    _key_symbols.insert("set");
    _key_symbols.insert("lambda");
    _key_symbols.insert("block");
    _key_symbols.insert("len");
-   _key_symbols.insert("empty?");
    _key_symbols.insert("put");
    _key_symbols.insert("if");
    _key_symbols.insert("==");
@@ -71,126 +71,146 @@ void processor_c::populate_standard_builtins() {
    _key_symbols.insert("assert");
    _key_symbols.insert("loop");
 
+   auto load = [&](cell_c &cell, std::shared_ptr<environment_c> env) -> cell_c {
+      auto target = process_cell(cell, env);
+      if (!target.has_value()) {
+         throw runtime_exception_c("Unable to process value",
+                                 cell.location);
+      }
+      return (*target);
+   };
+
    _builtins["exit"] = cell_c(
-       [this](std::vector<cell_c> &cells,
+       [this, load](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           if (cells.size() != 2) {
-             throw runtime_exception_c("var command expects 1 parameters, but" +
+             throw runtime_exception_c("exit command expects 1 parameters, but " +
                                            std::to_string(cells.size() - 1) +
                                            " were given",
                                        cells[0].location);
           }
 
-
-          auto value = process_cell(cells[1], env);
-
-          if ((*value).type != cell_type_e::INTEGER) {
-             throw runtime_exception_c("Expected integer type for exit value",
-                                       cells[1].location);
-          }
-
-          if (!value.has_value()) {
-             throw runtime_exception_c("Unable to locate value for exit",
-                                       cells[1].location);
-          }
-
-          std::exit(std::stoull((*value).data));
+          std::exit(std::stoull(load(cells[1], env).data));
        });
 
-   _builtins["car"] = cell_c(
-       [this](std::vector<cell_c> &cells,
+   _builtins["front"] = cell_c(
+       [this, load](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
-          auto target = process_cell(cells[1], env);
-          if (!target.has_value()) {
-             throw runtime_exception_c("Unable to process value for car",
+
+          if (cells.size() != 2) {
+             throw runtime_exception_c("front command expects 1 parameters, but " +
+                                           std::to_string(cells.size() - 1) +
+                                           " were given",
+                                       cells[0].location);
+          }
+
+          auto target = load(cells[1], env);
+
+          if (!(target.type == cell_type_e::LIST)) {
+             throw runtime_exception_c("Expected list parameter for front",
                                        cells[1].location);
           }
 
-          if (!((*target).type == cell_type_e::LIST)) {
-             throw runtime_exception_c("Expected list parameter for car",
-                                       cells[1].location);
-          }
-
-          if ((*target).list.empty()) {
+          if (target.list.empty()) {
              return {CELL_NIL};
           }
 
-          return {(*target).list[0]};
+          return {target.list[0]};
        });
 
-   _builtins["cdr"] = cell_c(
-       [this](std::vector<cell_c> &cells,
+   _builtins["back"] = cell_c(
+       [this, load](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
-          auto target = process_cell(cells[1], env);
-          if (!target.has_value()) {
-             throw runtime_exception_c("Unable to process value for cdr",
+
+          if (cells.size() != 2) {
+             throw runtime_exception_c("back command expects 1 parameters, but " +
+                                           std::to_string(cells.size() - 1) +
+                                           " were given",
+                                       cells[0].location);
+          }
+
+          auto target = load(cells[1], env);
+
+          if (!(target.type == cell_type_e::LIST)) {
+             throw runtime_exception_c("Expected list parameter for back",
                                        cells[1].location);
           }
 
-          if (!((*target).type == cell_type_e::LIST)) {
-             throw runtime_exception_c("Expected list parameter for cdr",
-                                       cells[1].location);
-          }
-
-          if ((*target).list.empty()) {
+          if (target.list.empty()) {
              return {CELL_NIL};
           }
 
-          cell_c result((*target));
+          return {*(target.list.end()-1)};
+       });
+
+   _builtins["pop"] = cell_c(
+       [this, load](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+
+          if (cells.size() != 2) {
+             throw runtime_exception_c("pop command expects 1 parameters, but " +
+                                           std::to_string(cells.size() - 1) +
+                                           " were given",
+                                       cells[0].location);
+          }
+
+          auto target = load(cells[1], env);
+
+          if (!(target.type == cell_type_e::LIST)) {
+             throw runtime_exception_c("Expected list parameter for pop",
+                                       cells[1].location);
+          }
+
+          if (target.list.empty()) {
+             return {CELL_NIL};
+          }
+
+          cell_c result(target);
           result.list.erase(result.list.begin());
           return {result};
        });
 
-   _builtins["cons"] = cell_c(
-       [this](std::vector<cell_c> &cells,
+   _builtins["push"] = cell_c(
+       [this, load](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
-          if (cells.size() != 3) {
-             throw runtime_exception_c("set command expects 2 parameters, but" +
-                                           std::to_string(cells.size() - 1) +
-                                           " were given",
-                                       cells[0].location);
-          }
 
-          auto load = [&](cell_c &cell) -> cell_c {
-             auto target = process_cell(cell, env);
-             if (!target.has_value()) {
-                throw runtime_exception_c("Unable to process value",
-                                          cell.location);
-             }
-             return (*target);
-          };
-
-          auto lhs = load(cells[1]);
-          auto rhs = load(cells[2]);
-
-          cell_c result(cell_type_e::LIST, "");
-          result.list.push_back(lhs);
-          result.list.push_back(rhs);
-          return {result};
-       });
-
-   _builtins["not"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
-         
-         if (cells.size() != 2) {
-            throw runtime_exception_c("not command expects 1 parameters, but" +
+         if (cells.size() != 3) {
+            throw runtime_exception_c("push command expects 2 parameters, but " +
                                           std::to_string(cells.size() - 1) +
                                           " were given",
                                     cells[0].location);
          }
 
-         auto target = process_cell(cells[1], env);
-         if (!target.has_value()) {
-            throw runtime_exception_c("Unable to process value",
+         auto target = load(cells[1], env);
+         if (target.type != cell_type_e::LIST) {
+            throw runtime_exception_c("Expected list parameter for push target",
                                     cells[1].location);
          }
 
-         if ((*target).type != cell_type_e::INTEGER && (*target).type != cell_type_e::DOUBLE) {
+         auto source = load(cells[2], env);
+
+         target.list.push_back(source);
+         return {target};
+       });
+
+   _builtins["not"] = cell_c(
+       [this, load](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+
+         if (cells.size() != 2) {
+            throw runtime_exception_c("not command expects 1 parameters, but " +
+                                          std::to_string(cells.size() - 1) +
+                                          " were given",
+                                    cells[0].location);
+         }
+
+         auto target = load(cells[1], env);
+
+         if (target.type != cell_type_e::INTEGER && target.type != cell_type_e::DOUBLE) {
             throw runtime_exception_c("not command expects parameter to evaluate to a numerical type", cells[1].location);
          }
 
-         if (std::stod((*target).data) > 0.0) {
+         if (std::stod(target.data) > 0.0) {
             return {CELL_FALSE};
          } else {
             return {CELL_TRUE};
@@ -198,11 +218,11 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins["assert"] = cell_c(
-       [this](std::vector<cell_c> &cells,
+       [this, load](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
          
          if (cells.size() < 3) {
-            throw runtime_exception_c("assert command expects at least 3 parameters, but" +
+            throw runtime_exception_c("assert command expects at least 3 parameters, but " +
                                           std::to_string(cells.size() - 1) +
                                           " were given",
                                     cells[0].location);
@@ -214,47 +234,28 @@ void processor_c::populate_standard_builtins() {
 
          for (auto c = cells.begin()+2; c != cells.end(); c++) {
 
-            auto result = process_cell((*c), env);
+            auto result = load((*c), env);
 
-            if (!result.has_value()) {
-               throw runtime_exception_c("failed to process assertion condition", (*c).location);
-            }
-
-            if ( static_cast<int>((*result).type) < static_cast<int>(cell_type_e::STRING) ) {
+            if ( static_cast<int>(result.type) < static_cast<int>(cell_type_e::STRING) ) {
                throw runtime_exception_c("assertion condition did not evaluate to a direectly comparable type (string, int, double)", (*c).location);
             }
 
-            if (cell_type_e::STRING == (*result).type && (*result).data.empty()) {
+            if (cell_type_e::STRING == result.type && result.data.empty()) {
                throw assertion_exception_c("assertion failure: " + cells[1].data, (*c).location);
-            } else if (cell_type_e::INTEGER == (*result).type && std::stoull((*result).data) < 1) {
+            } else if (cell_type_e::INTEGER == result.type && std::stoull(result.data) < 1) {
                throw assertion_exception_c("assertion failure: " + cells[1].data, (*c).location);
-            } else if (cell_type_e::DOUBLE == (*result).type && std::stod((*result).data) <= 0.0) {
+            } else if (cell_type_e::DOUBLE == result.type && std::stod(result.data) <= 0.0) {
                throw assertion_exception_c("assertion failure: " + cells[1].data, (*c).location);
             }
          }
          return {CELL_TRUE};
        });
 
-   _builtins["empty?"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
-          if (cells.size() != 2) {
-            throw runtime_exception_c("empty? command expects 1 parameters, but" +
-                                          std::to_string(cells.size() - 1) +
-                                          " were given",
-                                    cells[0].location);
-          }
-
-          if (cells[1].list.empty())
-             return {CELL_TRUE};
-          return {CELL_FALSE};
-       });
-
    _builtins["var"] = cell_c(
-       [this](std::vector<cell_c> &cells,
+       [this, load](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           if (cells.size() != 3) {
-             throw runtime_exception_c("var command expects 2 parameters, but" +
+             throw runtime_exception_c("var command expects 2 parameters, but " +
                                            std::to_string(cells.size() - 1) +
                                            " were given",
                                        cells[0].location);
@@ -268,36 +269,26 @@ void processor_c::populate_standard_builtins() {
                                        cells[1].location);
           }
 
-          auto value = process_cell(cells[2], env);
+          auto value = load(cells[2], env);
 
-          if ((*value).type == cell_type_e::SYMBOL) {
+          if (value.type == cell_type_e::SYMBOL) {
              throw runtime_exception_c("Expected list or datum value",
                                        cells[2].location);
           }
 
-          if (!value.has_value()) {
-             throw runtime_exception_c("Unable to locate value for assignment",
-                                       cells[2].location);
-          }
-
-          env->set(variable_name, (*value));
+          env->set(variable_name, value);
           return {env->get(variable_name)};
        });
 
    _builtins["put"] = cell_c(
-       [this](std::vector<cell_c> &cells,
+       [this, load](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           for (auto i = cells.begin() + 1; i != cells.end(); ++i) {
 
-             auto item = process_cell((*i), env);
-
-             if (!item.has_value()) {
-                throw runtime_exception_c("Unknown operand given to 'put'",
-                                          cells[1].location);
-             }
+             auto item = load((*i), env);
 
              std::string stringed;
-             cell_to_string(stringed, (*item), env, false);
+             cell_to_string(stringed, item, env, false);
              std::cout << stringed;
           }
           std::cout << std::endl;
@@ -317,10 +308,10 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins["loop"] = cell_c(
-       [this](std::vector<cell_c> &cells,
+       [this, load](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           if (cells.size() != 3 && cells.size() != 4) {
-             throw runtime_exception_c("loop command expects 3 parameters, but" +
+             throw runtime_exception_c("loop command expects 3 parameters, but " +
                                            std::to_string(cells.size() - 1) +
                                            " were given",
                                        cells[0].location);
@@ -344,12 +335,9 @@ void processor_c::populate_standard_builtins() {
             auto loop_environment = std::make_shared<environment_c> (env);
 
             // Check the condition
-            auto conditional_result = process_cell(conditional_cell, loop_environment);
-            if (! conditional_result.has_value()) {
-               break;
-            }
+            auto conditional_result = load(conditional_cell, loop_environment);
 
-            if (!eval_truthy((*conditional_result), cells[0].location)) {
+            if (!eval_truthy(conditional_result, cells[0].location)) {
                break;
             }
 
@@ -364,22 +352,11 @@ void processor_c::populate_standard_builtins() {
           return {};
        });
 
-   _builtins["block"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
-          // First item following lambda must be a list of parameters
-
-          for (size_t i = 1; i < cells.size() - 1; i++) {
-             process_cell(cells[i], env);
-          }
-          return process_cell(cells[cells.size() - 1], env);
-       });
-
    _builtins["set"] = cell_c(
-       [this](std::vector<cell_c> &cells,
+       [this, load](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           if (cells.size() != 3) {
-             throw runtime_exception_c("set command expects 2 parameters, but" +
+             throw runtime_exception_c("set command expects 2 parameters, but " +
                                            std::to_string(cells.size() - 1) +
                                            " were given",
                                        cells[0].location);
@@ -389,30 +366,37 @@ void processor_c::populate_standard_builtins() {
 
           // If this isn't found it will throw :)
           auto containing_env = env->find(variable_name);
-          auto value = process_cell(cells[2], env);
+          auto value = load(cells[2], env);
 
-          if ((*value).type == cell_type_e::SYMBOL) {
+          if (value.type == cell_type_e::SYMBOL) {
              throw runtime_exception_c("Expected list or datum value",
                                        cells[2].location);
           }
 
-          if (!value.has_value()) {
-             throw runtime_exception_c("Unable to locate value for assignment",
-                                       cells[2].location);
-          }
-
-          containing_env->set(variable_name, (*value));
+          containing_env->set(variable_name, value);
           return {containing_env->get(variable_name)};
        });
 
-   _builtins["list"] = cell_c(
+   // List and block are extremely similar, and realistically `list` coult be used
+   // instead of `block` but its "less efficient" as it does the work to construct what
+   // would be a temporary cell, while `block` does not. 
+   _builtins["block"] = cell_c(
        [this](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
-          // First item following lambda must be a list of parameters
+
+          for (size_t i = 1; i < cells.size() - 1; i++) {
+             process_cell(cells[i], env);
+          }
+          return process_cell(cells[cells.size() - 1], env);
+       });
+
+   _builtins["list"] = cell_c(
+       [this, load](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           std::vector<cell_c> body;
 
           for (auto i = cells.begin() + 1; i != cells.end(); ++i) {
-             body.push_back((*process_cell(*i, env)));
+             body.push_back(load(*i, env));
           }
 
           cell_c list(body);
@@ -421,7 +405,7 @@ void processor_c::populate_standard_builtins() {
           return {list};
        });
 
-   _builtins["len"] = cell_c([this](std::vector<cell_c> &cells,
+   _builtins["len"] = cell_c([this, load](std::vector<cell_c> &cells,
                                     std::shared_ptr<environment_c> env)
                                  -> std::optional<cell_c> {
       if (cells.size() != 2) {
@@ -432,12 +416,12 @@ void processor_c::populate_standard_builtins() {
       }
 
       return {cell_c(cell_type_e::INTEGER,
-                     std::to_string((*process_cell(cells[1], env)).list.size()),
+                     std::to_string(load(cells[1], env).list.size()),
                      cells[1].location)};
    });
 
    _builtins["if"] = cell_c(
-       [this](std::vector<cell_c> &cells,
+       [this, load](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           if (cells.size() != 3 && cells.size() != 4) {
              throw runtime_exception_c("if command expects 2-3 parameters, but " +
@@ -446,14 +430,9 @@ void processor_c::populate_standard_builtins() {
                                        cells[0].location);
           }
 
-          auto eval = process_cell(cells[1], env);
-          if (!eval.has_value()) {
-             throw runtime_exception_c(
-                 "Evaluated cell contained no value to evaluate",
-                 cells[1].location);
-          }
+          auto eval = load(cells[1], env);
 
-          if (eval_truthy((*eval), cells[0].location)) {
+          if (eval_truthy(eval, cells[0].location)) {
             return process_cell(cells[2], env);
           } else if (cells.size() == 4) {
             return process_cell(cells[3], env);
@@ -462,7 +441,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins["seq"] = cell_c(
-       [this](std::vector<cell_c> &cells,
+       [this, load](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           if (cells.size() != 3) {
              throw runtime_exception_c("eq command expects 3 parameters, but " +
@@ -471,17 +450,8 @@ void processor_c::populate_standard_builtins() {
                                        cells[0].location);
           }
 
-          auto load = [&](cell_c &cell) -> cell_c {
-             auto target = process_cell(cell, env);
-             if (!target.has_value()) {
-                throw runtime_exception_c("Unable to process value",
-                                          cell.location);
-             }
-             return (*target);
-          };
-
-          auto lhs = load(cells[1]);
-          auto rhs = load(cells[2]);
+          auto lhs = load(cells[1], env);
+          auto rhs = load(cells[2], env);
 
           return cell_c(cell_type_e::INTEGER,
                         std::to_string((lhs.data == rhs.data)),
@@ -489,7 +459,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins["sneq"] = cell_c(
-       [this](std::vector<cell_c> &cells,
+       [this, load](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           if (cells.size() != 3) {
              throw runtime_exception_c("eq command expects 3 parameters, but " +
@@ -498,18 +468,8 @@ void processor_c::populate_standard_builtins() {
                                        cells[0].location);
           }
 
-
-          auto load = [&](cell_c &cell) -> cell_c {
-             auto target = process_cell(cell, env);
-             if (!target.has_value()) {
-                throw runtime_exception_c("Unable to process value",
-                                          cell.location);
-             }
-             return (*target);
-          };
-
-          auto lhs = load(cells[1]);
-          auto rhs = load(cells[2]);
+          auto lhs = load(cells[1], env);
+          auto rhs = load(cells[2], env);
 
           return cell_c(cell_type_e::INTEGER,
                         std::to_string((lhs.data != rhs.data)),
