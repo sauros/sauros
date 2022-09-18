@@ -62,6 +62,9 @@ std::optional<cell_c> processor_c::process(cell_c &cell,
 std::optional<cell_c>
 processor_c::process_list(std::vector<cell_c> &cells,
                           std::shared_ptr<environment_c> env) {
+   if (cells.empty()) {
+      return {};
+   }
 
    auto suspect_cell = cells[0];
 
@@ -91,7 +94,6 @@ processor_c::process_list(std::vector<cell_c> &cells,
 
    case cell_type_e::LIST:
       return process_list(suspect_cell.list, env);
-      break;
 
    case cell_type_e::DOUBLE:
       [[fallthrough]];
@@ -129,12 +131,10 @@ processor_c::process_cell(cell_c &cell, std::shared_ptr<environment_c> env) {
       auto env_with_data = env->find(cell.data);
       auto r = env_with_data->get(cell.data);
       return {r};
-      break;
    }
 
    case cell_type_e::LIST:
       return process_list(cell.list, env);
-      break;
 
    case cell_type_e::DOUBLE:
       [[fallthrough]];
@@ -142,7 +142,6 @@ processor_c::process_cell(cell_c &cell, std::shared_ptr<environment_c> env) {
       [[fallthrough]];
    case cell_type_e::INTEGER:
       return cell;
-      break;
 
    case cell_type_e::LAMBDA: {
       return process_list(cell.list, env);

@@ -31,7 +31,7 @@ void environment_c::set(const std::string &item, cell_c cell) {
    _env[item] = cell;
 }
 
-cell_c environment_c::get(const std::string &item) { return _env[item]; }
+cell_c& environment_c::get(const std::string &item) { return _env[item]; }
 
 environment_c *environment_c::find(const std::string &var) {
 

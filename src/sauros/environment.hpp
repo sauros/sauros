@@ -60,7 +60,7 @@ class environment_c {
    //! \note This does not check for existence and can cause
    //!       an OOB error if the item does not exist -
    //!       `exists` or `find` should be used prior to this call
-   cell_c get(const std::string &item);
+   cell_c &get(const std::string &item);
 
    //! \brief Set an item to a value
    //! \param item The item name to set
