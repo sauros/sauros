@@ -1,0 +1,30 @@
+;  This program populates a list of integers from 0-1000,
+;  sums them up and then divides that sum by the length of
+;  the list. Its pointless but it shows off the list stuff
+
+[var counter 0]
+[var items]
+[loop [< counter 1000] [set counter [+ 1 counter]] [
+   [block
+      [push items counter]
+   ]
+]]
+
+[put "list is len: " [len items]]
+
+[set counter 0]
+[var total 0]
+[loop [< counter [len items]] [set counter [+ 1 counter]] [
+   [block
+      [set total [+ total [at counter items]]]
+   ]
+]]
+
+[put "list total is: " total]
+
+[var average [/ total [len items]]]
+
+[put "list average is: " average]
+
+[clear items]
+[exit 0]

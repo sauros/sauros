@@ -78,11 +78,12 @@ void processor_c::populate_standard_builtins() {
    _key_symbols.insert("and");
    _key_symbols.insert("xor");
    _key_symbols.insert("break");
+   _key_symbols.insert("at");
+   _key_symbols.insert("clear");
 
    auto load = [&](cell_c &cell, std::shared_ptr<environment_c> env) -> cell_c {
 
       //std::cout << "TYPE: " << cell_type_to_string(cell.type) << " CELL: " << cell.data << std::endl; 
-
       auto target = process_cell(cell, env);
       if (!target.has_value()) {
          throw runtime_exception_c("Unable to process value",
@@ -212,6 +213,67 @@ void processor_c::populate_standard_builtins() {
           return {*(target.list.end()-1)};
        });
 
+   _builtins["at"] = cell_c(
+       [this, load](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+
+          if (cells.size() != 3) {
+             throw runtime_exception_c("at command expects 2 parameters, but " +
+                                           std::to_string(cells.size() - 1) +
+                                           " were given",
+                                       cells[0].location);
+          }
+
+          auto index = load(cells[1], env);
+          if (index.type != cell_type_e::INTEGER) {
+             throw runtime_exception_c("at command index must me an integer type",
+                                       cells[0].location);
+          }
+
+          uint64_t idx = std::stoull(index.data);
+
+          if (cells[2].type != cell_type_e::SYMBOL) {
+             throw runtime_exception_c("Second parameter of at must be a variable",
+                                       cells[2].location);
+          }
+
+          auto &variable_name = cells[2].data;
+
+          // If this isn't found it will throw :)
+          auto containing_env = env->find(variable_name);
+          cell_c &target = containing_env->get(variable_name);
+
+          if (target.list.size() <= idx) {
+            return {CELL_NIL};
+          }
+          return {target.list[idx]};
+       });
+
+   _builtins["clear"] = cell_c(
+       [this, load](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+
+          if (cells.size() != 2) {
+             throw runtime_exception_c("clear command expects 1 parameters, but " +
+                                           std::to_string(cells.size() - 1) +
+                                           " were given",
+                                       cells[0].location);
+          }
+
+          if (cells[1].type != cell_type_e::SYMBOL) {
+             throw runtime_exception_c("First parameter of clear must be a variable",
+                                       cells[1].location);
+          }
+
+          auto &variable_name = cells[1].data;
+
+          // If this isn't found it will throw :)
+          auto containing_env = env->find(variable_name);
+          cell_c &target = containing_env->get(variable_name);
+          target.list.clear();
+          return {CELL_TRUE};
+       });
+
    _builtins["pop"] = cell_c(
        [this, load](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
@@ -223,44 +285,52 @@ void processor_c::populate_standard_builtins() {
                                        cells[0].location);
           }
 
-          auto target = load(cells[1], env);
-
-          if (!(target.type == cell_type_e::LIST)) {
-             throw runtime_exception_c("Expected list parameter for pop",
+          if (cells[1].type != cell_type_e::SYMBOL) {
+             throw runtime_exception_c("First parameter of pop must be a variable",
                                        cells[1].location);
           }
 
-          if (target.list.empty()) {
-             return {CELL_NIL};
-          }
+          auto &variable_name = cells[1].data;
 
-          cell_c result(target);
-          result.list.erase(result.list.begin());
-          return {result};
+          // If this isn't found it will throw :)
+          auto containing_env = env->find(variable_name);
+          cell_c &target = containing_env->get(variable_name);
+          if (!target.list.empty()) {
+            target.list.pop_back();
+          }
+          return {CELL_TRUE};
        });
 
    _builtins["push"] = cell_c(
        [this, load](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+          if (cells.size() != 3) {
+             throw runtime_exception_c("push command expects 2 parameters, but " +
+                                           std::to_string(cells.size() - 1) +
+                                           " were given",
+                                       cells[0].location);
+          }
 
-         if (cells.size() != 3) {
-            throw runtime_exception_c("push command expects 2 parameters, but " +
-                                          std::to_string(cells.size() - 1) +
-                                          " were given",
-                                    cells[0].location);
-         }
+          if (cells[1].type != cell_type_e::SYMBOL) {
+             throw runtime_exception_c("First parameter of push must be a variable",
+                                       cells[1].location);
+          }
 
-         auto target = load(cells[1], env);
-         if (target.type != cell_type_e::LIST) {
-            throw runtime_exception_c("Expected list parameter for push target",
-                                    cells[1].location);
-         }
+          auto &variable_name = cells[1].data;
 
-         auto source = load(cells[2], env);
+          // If this isn't found it will throw :)
+          auto containing_env = env->find(variable_name);
+          auto value = load(cells[2], env);
 
-         target.list.push_back(source);
-         return {target};
-       });
+          if (value.type == cell_type_e::SYMBOL) {
+             throw runtime_exception_c("Expected list or datum value (push)",
+                                       cells[2].location);
+          }
+
+          cell_c &target = containing_env->get(variable_name);
+          target.list.push_back(value);
+          return {CELL_TRUE};
+   });
 
    _builtins["not"] = cell_c(
        [this, load](std::vector<cell_c> &cells,
@@ -323,11 +393,10 @@ void processor_c::populate_standard_builtins() {
    _builtins["var"] = cell_c(
        [this, load](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
-          if (cells.size() != 3) {
-             throw runtime_exception_c("var command expects 2 parameters, but " +
-                                           std::to_string(cells.size() - 1) +
-                                           " were given",
-                                       cells[0].location);
+
+
+          if (cells.size() < 2) {
+             throw runtime_exception_c("Nothing given to var command", cells[0].location);
           }
 
           auto &variable_name = cells[1].data;
@@ -336,6 +405,19 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c("Attempting to define a key symbol: " +
                                            variable_name,
                                        cells[1].location);
+          }
+
+          if (cells.size() == 2) {
+            env->set(variable_name, cell_c(cell_type_e::LIST, "<list>"));
+            return {env->get(variable_name)};
+          }
+
+
+          if (cells.size() != 3) {
+             throw runtime_exception_c("var command expects 2 parameters, but " +
+                                           std::to_string(cells.size() - 1) +
+                                           " were given",
+                                       cells[0].location);
           }
 
           auto value = load(cells[2], env);
