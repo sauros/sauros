@@ -73,6 +73,10 @@ void processor_c::populate_standard_builtins() {
    _key_symbols.insert("loop");
    _key_symbols.insert("type");
    _key_symbols.insert("import");
+   _key_symbols.insert("not");
+   _key_symbols.insert("or");
+   _key_symbols.insert("and");
+   _key_symbols.insert("xor");
 
    auto load = [&](cell_c &cell, std::shared_ptr<environment_c> env) -> cell_c {
       auto target = process_cell(cell, env);
@@ -619,6 +623,44 @@ void processor_c::populate_standard_builtins() {
               "%", cells,
               [](double lhs, double rhs) -> double {
                  return static_cast<int64_t>(lhs) % static_cast<int64_t>(rhs);
+              },
+              env)};
+       });
+
+   _builtins["or"] = cell_c(
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+          return {perform_arithmetic(
+              "%", cells,
+              [](double lhs, double rhs) -> double {
+                 bool result = (static_cast<bool>(lhs) || static_cast<bool>(rhs)) ? true : false;
+                 return result;
+              },
+              env)};
+       });
+
+   _builtins["and"] = cell_c(
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+          return {perform_arithmetic(
+              "%", cells,
+              [](double lhs, double rhs) -> double {
+                 bool result = (static_cast<bool>(lhs) && static_cast<bool>(rhs)) ? true : false;
+                 return result;
+              },
+              env)};
+       });
+
+   _builtins["xor"] = cell_c(
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+          return {perform_arithmetic(
+              "%", cells,
+              [](double lhs, double rhs) -> double {
+                 auto _lhs = static_cast<bool>(lhs);
+                 auto _rhs = static_cast<bool>(rhs);
+                 bool result = ((_lhs && !_rhs) || (_rhs && !_lhs)) ? true : false;
+                 return result;
               },
               env)};
        });

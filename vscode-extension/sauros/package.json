@@ -1,0 +1,26 @@
+{
+   "name": "vsc-sauros-lang-extension",
+   "displayName": "Sauros Syntax Highlighting",
+   "description": "A VSC extension to support Sauros syntax",
+   "publisher": "Josh A. Bosley",
+   "version": "0.0.1",
+   "engines": {
+       "vscode": "^1.35.0"
+   },
+   "categories": [
+       "Programming Languages"
+   ],
+   "contributes": {
+       "languages": [{
+           "id": "sau",
+           "aliases": ["sau", "sau"],
+           "extensions": [".sau"],
+           "configuration": "./language-configuration.json"
+       }],
+       "grammars": [{
+           "language": "sau",
+           "scopeName": "source.sau",
+           "path": "./syntaxes/sau.tmLanguage.json"
+       }]
+   }
+}

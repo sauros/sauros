@@ -94,6 +94,18 @@ TEST(sauros_tests, piecemeal) {
        {"[block [var x 2.1828] [type x] ]", "double"},
        {"[block [var x [list 1 2 3]] [type x] ]", "list"},
        {"[block [var x [lambda [x] [x]] ] [type x] ]", "lambda"},
+       {"[block [var lhs 1] [var rhs 0] [if [or lhs rhs] [1] [0] ]]", "1"},
+       {"[block [var lhs 0] [var rhs 1] [if [or lhs rhs] [1] [0] ]]", "1"},
+       {"[block [var lhs 1] [var rhs 1] [if [or lhs rhs] [1] [0] ]]", "1"},
+       {"[block [var lhs 0] [var rhs 0] [if [or lhs rhs] [1] [0] ]]", "0"},
+       {"[block [var lhs 1] [var rhs 0] [if [and lhs rhs] [1] [0] ]]", "0"},
+       {"[block [var lhs 0] [var rhs 1] [if [and lhs rhs] [1] [0] ]]", "0"},
+       {"[block [var lhs 1] [var rhs 1] [if [and lhs rhs] [1] [0] ]]", "1"},
+       {"[block [var lhs 0] [var rhs 0] [if [and lhs rhs] [1] [0] ]]", "0"},
+       {"[block [var lhs 1] [var rhs 0] [if [xor lhs rhs] [1] [0] ]]", "1"},
+       {"[block [var lhs 0] [var rhs 1] [if [xor lhs rhs] [1] [0] ]]", "1"},
+       {"[block [var lhs 1] [var rhs 1] [if [xor lhs rhs] [1] [0] ]]", "0"},
+       {"[block [var lhs 0] [var rhs 0] [if [xor lhs rhs] [1] [0] ]]", "0"},
    };
 
    size_t line_no = 0;

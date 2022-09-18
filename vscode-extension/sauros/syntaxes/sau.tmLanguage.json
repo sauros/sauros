@@ -1,0 +1,78 @@
+{
+   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "sauros-lang",
+  "patterns": [
+     {
+        "include": "#keywords"
+     },
+     {
+        "include": "#comments"
+     },
+     {
+        "include": "#entity"
+     },
+     {
+        "include": "#strings"
+     },
+     {
+        "include": "#variables"
+     },
+     {
+        "include": "#constants"
+     }
+  ],
+  "repository": {
+     "keywords": {
+        "patterns": [
+           {
+           "name": "keyword.control.sau",
+           "match": "\\b(var|front|back|push|pop|list|set|block|len|put|if|assert|loop|type|import)\\b"
+           },
+           {
+           "name": "keyword.operator.sau",
+           "match": "\\b(\\+|\\-\\/|\\*|\\>\\=|\\<\\=|\\>|\\<|seq|sneq|not|or|and|xor)\\b"
+           }
+        ]
+        },
+     "entity": {
+        "patterns": [
+           {
+           "name": "entity.name.function",
+           "match": "\\b(lambda)\\b"
+           }
+        ]
+     },
+     "comments": {
+        "patterns": [
+           {
+           "name": "comment.line.semi-colon.sau",
+           "begin": ";",
+           "end": "\n"
+           }
+        ]
+     },
+     "strings":{
+        "patterns": [
+           {
+           "name":"string.quoted.single.sau",
+           "begin": "'",
+           "end": "'"
+           },
+           {
+           "name":"string.quoted.double.sau",
+           "begin": "\"",
+           "end": "\""
+           }
+        ]
+     },
+     "variables":{
+        "patterns": [
+           {
+           "name": "variable.language.sau"	,
+           "match": "[a-zA-Z0-9_]"
+           }
+        ]
+     }
+  },
+  "scopeName": "source.sau"
+}
