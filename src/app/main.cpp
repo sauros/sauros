@@ -4,6 +4,8 @@
 #include <filesystem>
 #include <iostream>
 
+#include "hwinfo/hwinfo.h"
+
 namespace {
 std::shared_ptr<sauros::environment_c> env =
     std::make_shared<sauros::environment_c>();
@@ -23,13 +25,23 @@ void setup_env() {
                                -> std::optional<sauros::cell_c> {
                if (cells.size() != 1) {
                   throw sauros::processor_c::runtime_exception_c(
-                      "`__version` expects no arguments, but " +
+                      "`@version` expects no arguments, but " +
                           std::to_string(cells.size() - 1) + " were given",
                       cells[0].location);
                }
 
                return {sauros::cell_c(sauros::cell_type_e::STRING,
                                       std::string(LIBSAUROS_VERSION),
+                                      cells[0].location)};
+            }));
+
+   env->set("@build",
+            sauros::cell_c([=](std::vector<sauros::cell_c> &cells,
+                               std::shared_ptr<sauros::environment_c> env)
+                               -> std::optional<sauros::cell_c> {
+
+               return {sauros::cell_c(sauros::cell_type_e::STRING,
+                                      std::string(get_build_hash()),
                                       cells[0].location)};
             }));
 }
@@ -51,8 +63,71 @@ void show_help() {
 <filename>           Execute file
 --help      -h       Show help
 --version   -v       Show version info
+--system    -s       Retrieve system information (for bug reports)
    )";
    std::cout << help << std::endl;
+}
+
+void version_info() {
+   std::cout << std::left << std::setw(20) << "version:";
+   std::cout << LIBSAUROS_VERSION << std::endl;
+
+   std::cout << std::left << std::setw(20) << "build:";
+   std::cout << get_build_hash() << std::endl;
+}
+
+void system_report() {
+   std::cout << "--------------------------------- SAUROS ----------------------------------" << std::endl;
+   version_info();
+
+   hwinfo::OS os;
+   std::cout << "----------------------------------- OS ------------------------------------" << std::endl;
+   std::cout << std::left << std::setw(20) << "operating system:";
+   std::cout << os.fullName() <<std::endl;
+   std::cout << std::left << std::setw(20) << "short name:";
+   std::cout << os.name() <<std::endl;
+   std::cout << std::left << std::setw(20) << "version:";
+   std::cout << os.version() <<std::endl;
+   std::cout << std::left << std::setw(20) << "kernel:";
+   std::cout << os.kernel() <<std::endl;
+   std::cout << std::left << std::setw(20) << "architecture:";
+   std::cout << (os.is32bit() ? "32 bit" : "64 bit") << std::endl;
+   std::cout << std::left << std::setw(20) << "endianess:";
+   std::cout << (os.isLittleEndian() ? "little endian" : "big endian") << std::endl;
+
+   hwinfo::CPU cpu;
+   std::cout << "----------------------------------- CPU -----------------------------------" << std::endl;
+   std::cout << std::left << std::setw(20) << "vendor:";
+   std::cout << cpu.vendor() << std::endl;
+   std::cout << std::left << std::setw(20) << "model:";
+   std::cout << cpu.modelName() << std::endl;
+   std::cout << std::left << std::setw(20) << "physical cores:";
+   std::cout << cpu.numPhysicalCores() << std::endl;
+   std::cout << std::left << std::setw(20) << "logical cores:";
+   std::cout << cpu.numLogicalCores() << std::endl;
+   std::cout << std::left << std::setw(20) << "max frequency:";
+   std::cout << cpu.maxClockSpeed_kHz() << std::endl;
+   std::cout << std::left << std::setw(20) << "regular frequency:";
+   std::cout << cpu.regularClockSpeed_kHz() << std::endl;
+   std::cout << std::left << std::setw(20) << "current frequency:";
+   std::cout << hwinfo::CPU::currentClockSpeed_kHz() << std::endl;
+   std::cout << std::left << std::setw(20) << "cache size:";
+   std::cout << cpu.cacheSize_Bytes() << std::endl;
+
+   hwinfo::RAM ram;
+   std::cout << "----------------------------------- RAM -----------------------------------" << std::endl;
+   std::cout << std::left << std::setw(20) << "vendor:";
+   std::cout << ram.vendor() << std::endl;
+   std::cout << std::left << std::setw(20) << "model:";
+   std::cout << ram.model() << std::endl;
+   std::cout << std::left << std::setw(20) << "name:";
+   std::cout << ram.name() << std::endl;
+   std::cout << std::left << std::setw(20) << "serial-number:";
+   std::cout << ram.serialNumber() << std::endl;
+   std::cout << std::left << std::setw(20) << "size [MiB]:";
+   std::cout << static_cast<double>(ram.totalSize_Bytes()) / 1024.0 / 1024.0 << std::endl;
+   
+   std::cout << "---------------------------------------------------------------------------" << std::endl;
 }
 
 void handle_signal(int signal) {
@@ -87,7 +162,12 @@ int main(int argc, char **argv) {
       }
 
       if (args[i] == "--version" || args[i] == "-v") {
-         std::cout << LIBSAUROS_VERSION << std::endl;
+         version_info();
+         return 0;
+      }
+
+      if (args[i] == "--system" || args[i] == "-s") {
+         system_report();
          return 0;
       }
    }
