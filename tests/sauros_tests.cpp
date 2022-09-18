@@ -88,7 +88,12 @@ TEST(sauros_tests, piecemeal) {
        {"[assert \"Direct string\" \"Any non empty string should produce a 1\"]", "1"},
        {"[assert \"not integer\" 420]", "1"},
        {"[assert \"a double\" 2.1828]", "1"},
-       {"[block [var x 1] [loop [< x 10] [[block [set x [+ x 1]] ]]] [x]]", "10"}
+       {"[block [var x 1] [loop [< x 10] [[block [set x [+ x 1]] ]]] [x]]", "10"},
+       {"[block [var x \"A string!\"] [type x] ]", "string"},
+       {"[block [var x 42] [type x] ]", "integer"},
+       {"[block [var x 2.1828] [type x] ]", "double"},
+       {"[block [var x [list 1 2 3]] [type x] ]", "list"},
+       {"[block [var x [lambda [x] [x]] ] [type x] ]", "lambda"},
    };
 
    size_t line_no = 0;
