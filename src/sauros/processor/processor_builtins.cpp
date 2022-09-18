@@ -73,8 +73,16 @@ void processor_c::populate_standard_builtins() {
    _key_symbols.insert("loop");
    _key_symbols.insert("type");
    _key_symbols.insert("import");
+   _key_symbols.insert("not");
+   _key_symbols.insert("or");
+   _key_symbols.insert("and");
+   _key_symbols.insert("xor");
+   _key_symbols.insert("break");
 
    auto load = [&](cell_c &cell, std::shared_ptr<environment_c> env) -> cell_c {
+
+      //std::cout << "TYPE: " << cell_type_to_string(cell.type) << " CELL: " << cell.data << std::endl; 
+
       auto target = process_cell(cell, env);
       if (!target.has_value()) {
          throw runtime_exception_c("Unable to process value",
@@ -120,6 +128,22 @@ void processor_c::populate_standard_builtins() {
           }
 
           std::exit(std::stoull(load(cells[1], env).data));
+       });
+
+   _builtins["break"] = cell_c(
+       [this, load](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+
+         if (cells.size() != 1) {
+            throw runtime_exception_c("break command expects 0 parameters, but " +
+                                          std::to_string(cells.size() - 1) +
+                                          " were given",
+                                    cells[0].location);
+         }
+
+         auto return_value = CELL_NIL;
+         return_value.stop_processing = true;
+         return {return_value};
        });
 
    _builtins["type"] = cell_c(
@@ -317,7 +341,8 @@ void processor_c::populate_standard_builtins() {
           auto value = load(cells[2], env);
 
           if (value.type == cell_type_e::SYMBOL) {
-             throw runtime_exception_c("Expected list or datum value",
+            std::cout << value.data << std::endl;
+             throw runtime_exception_c("Expected list or datum value (var)",
                                        cells[2].location);
           }
 
@@ -387,14 +412,17 @@ void processor_c::populate_standard_builtins() {
             }
 
             // Execute the body
-            process_cell(*body, loop_environment);
+            auto r = process_cell(*body, loop_environment);
+            if (r.has_value() && (*r).stop_processing) {
+               break;
+            }
 
             if (post) {
                process_cell(*post, loop_environment);
             }
           }
 
-          return {};
+          return {CELL_NIL};
        });
 
    _builtins["set"] = cell_c(
@@ -414,7 +442,7 @@ void processor_c::populate_standard_builtins() {
           auto value = load(cells[2], env);
 
           if (value.type == cell_type_e::SYMBOL) {
-             throw runtime_exception_c("Expected list or datum value",
+             throw runtime_exception_c("Expected list or datum value (set)",
                                        cells[2].location);
           }
 
@@ -429,10 +457,15 @@ void processor_c::populate_standard_builtins() {
        [this](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
 
-          for (size_t i = 1; i < cells.size() - 1; i++) {
-             process_cell(cells[i], env);
-          }
-          return process_cell(cells[cells.size() - 1], env);
+         for (size_t i = 1; i < cells.size() - 1; i++) {
+            auto r = process_cell(cells[i], env);
+            if (r.has_value() && (*r).stop_processing) {
+               // We want to pass the stop flag up
+               return r;
+            }
+         }
+
+         return process_cell(cells[cells.size() - 1], env);
        });
 
    _builtins["list"] = cell_c(
@@ -619,6 +652,44 @@ void processor_c::populate_standard_builtins() {
               "%", cells,
               [](double lhs, double rhs) -> double {
                  return static_cast<int64_t>(lhs) % static_cast<int64_t>(rhs);
+              },
+              env)};
+       });
+
+   _builtins["or"] = cell_c(
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+          return {perform_arithmetic(
+              "%", cells,
+              [](double lhs, double rhs) -> double {
+                 bool result = (static_cast<bool>(lhs) || static_cast<bool>(rhs)) ? true : false;
+                 return result;
+              },
+              env)};
+       });
+
+   _builtins["and"] = cell_c(
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+          return {perform_arithmetic(
+              "%", cells,
+              [](double lhs, double rhs) -> double {
+                 bool result = (static_cast<bool>(lhs) && static_cast<bool>(rhs)) ? true : false;
+                 return result;
+              },
+              env)};
+       });
+
+   _builtins["xor"] = cell_c(
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+          return {perform_arithmetic(
+              "%", cells,
+              [](double lhs, double rhs) -> double {
+                 auto _lhs = static_cast<bool>(lhs);
+                 auto _rhs = static_cast<bool>(rhs);
+                 bool result = ((_lhs && !_rhs) || (_rhs && !_lhs)) ? true : false;
+                 return result;
               },
               env)};
        });

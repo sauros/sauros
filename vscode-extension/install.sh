@@ -1,0 +1,1 @@
+cp -r sauros ~/.vscode/extensions/sauros-0.0.1

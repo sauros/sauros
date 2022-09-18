@@ -77,6 +77,7 @@ class cell_c {
    location_s location;
    proc_f proc;
    std::vector<cell_c> list;
+   bool stop_processing{false};
 };
 
 static const cell_c CELL_TRUE =
@@ -84,7 +85,7 @@ static const cell_c CELL_TRUE =
 static const cell_c CELL_FALSE =
     cell_c(cell_type_e::INTEGER, "0"); //! A cell that represents FALSE
 static const cell_c CELL_NIL =
-    cell_c(cell_type_e::SYMBOL, "#n"); //! A cell that represents NIL
+    cell_c(cell_type_e::STRING, "#nil"); //! A cell that represents NIL
 
 } // namespace sauros
 
