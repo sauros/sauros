@@ -414,8 +414,7 @@ void processor_c::populate_standard_builtins() {
             // Execute the body
             auto r = process_cell(*body, loop_environment);
             if (r.has_value() && (*r).stop_processing) {
-               (*r).stop_processing = false;
-               return r;
+               break;
             }
 
             if (post) {
