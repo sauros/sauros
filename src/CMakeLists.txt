@@ -44,6 +44,11 @@ if(WITH_ASAN)
   set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
 endif()
 
+#
+#  Update version file
+#
+include("cmake/CheckGit.cmake")
+
 include(${CMAKE_SOURCE_DIR}/cmake/SetEnv.cmake)
 
 set(SAUROS_SOURCES
@@ -81,6 +86,11 @@ include(${CMAKE_SOURCE_DIR}/cmake/LibraryConfig.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/InstallConfig.cmake)
 
 #
+# Add third party directories for app
+#
+add_subdirectory(third_party/hwinfo)
+
+#
 # Setup sauros app
 #
 add_executable(sauros
@@ -91,7 +101,10 @@ add_executable(sauros
 target_include_directories(sauros
     PUBLIC 
         ${PROJECT_SOURCE_DIR}
+        ${PROJECT_SOURCE_DIR}/third_party/hwinfo/include
 )
+
+target_link_libraries(sauros PUBLIC hwinfo::HWinfo)
 
 #
 # Install bin
