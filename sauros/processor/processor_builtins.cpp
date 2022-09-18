@@ -1,4 +1,5 @@
 #include "processor.hpp"
+#include "../driver.hpp"
 
 #include <iostream>
 
@@ -71,6 +72,7 @@ void processor_c::populate_standard_builtins() {
    _key_symbols.insert("assert");
    _key_symbols.insert("loop");
    _key_symbols.insert("type");
+   _key_symbols.insert("import");
 
    auto load = [&](cell_c &cell, std::shared_ptr<environment_c> env) -> cell_c {
       auto target = process_cell(cell, env);
@@ -80,6 +82,32 @@ void processor_c::populate_standard_builtins() {
       }
       return (*target);
    };
+
+   _builtins["import"] = cell_c(
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+          if (cells.size() < 2) {
+             throw runtime_exception_c("import command expects at least 1 parameters, but " +
+                                           std::to_string(cells.size() - 1) +
+                                           " were given",
+                                       cells[0].location);
+          }
+
+         file_executor_c loader(env);
+         for (auto i = cells.begin() + 1; i < cells.end(); i++) {
+            if ((*i).type != sauros::cell_type_e::STRING) {
+               throw sauros::processor_c::runtime_exception_c(
+                     "Import objects are expected to be raw strings",
+                     (*i).location);
+            }
+            if (0 != loader.run((*i).data)) {
+               throw sauros::processor_c::runtime_exception_c(
+                     "Unable to load import: " + (*i).data, (*i).location);
+            }
+         }
+         return {sauros::CELL_TRUE};
+
+       });
 
    _builtins["exit"] = cell_c(
        [this, load](std::vector<cell_c> &cells,

@@ -32,25 +32,6 @@ void setup_env() {
                                       std::string(LIBSAUROS_VERSION),
                                       cells[0].location)};
             }));
-
-  // env->set("@import",
-  //          sauros::cell_c([=](std::vector<sauros::cell_c> &cells,
-  //                             std::shared_ptr<sauros::environment_c> env)
-  //                             -> std::optional<sauros::cell_c> {
-  //             app::load_c loader;
-  //             for (auto i = cells.begin() + 1; i < cells.end(); i++) {
-  //                if ((*i).type != sauros::cell_type_e::STRING) {
-  //                   throw sauros::processor_c::runtime_exception_c(
-  //                       "Import objects are expected to be raw strings",
-  //                       (*i).location);
-  //                }
-  //                if (0 != loader.run((*i).data, env)) {
-  //                   throw sauros::processor_c::runtime_exception_c(
-  //                       "Unable to load import: " + (*i).data, (*i).location);
-  //                }
-  //             }
-  //             return {sauros::CELL_TRUE};
-  //          }));
 }
 
 void run_file(const std::string &file) {
