@@ -70,6 +70,7 @@ void processor_c::populate_standard_builtins() {
    _key_symbols.insert("sneq");
    _key_symbols.insert("assert");
    _key_symbols.insert("loop");
+   _key_symbols.insert("type");
 
    auto load = [&](cell_c &cell, std::shared_ptr<environment_c> env) -> cell_c {
       auto target = process_cell(cell, env);
@@ -91,6 +92,22 @@ void processor_c::populate_standard_builtins() {
           }
 
           std::exit(std::stoull(load(cells[1], env).data));
+       });
+
+   _builtins["type"] = cell_c(
+       [this, load](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+          if (cells.size() != 2) {
+             throw runtime_exception_c("type command expects 1 parameters, but " +
+                                           std::to_string(cells.size() - 1) +
+                                           " were given",
+                                       cells[0].location);
+          }
+
+          auto target = load(cells[1], env);
+
+
+          return {cell_c(cell_type_e::STRING, cell_type_to_string(target.type), cells[1].location)};
        });
 
    _builtins["front"] = cell_c(

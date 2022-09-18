@@ -6,6 +6,7 @@
 #include "types.hpp"
 #include "version.hpp"
 
+#include "front/input_buffer.hpp"
 #include "front/parser.hpp"
 #include "processor/processor.hpp"
 

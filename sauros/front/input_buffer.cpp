@@ -1,8 +1,8 @@
-#include "buffer.hpp"
+#include "input_buffer.hpp"
 
-namespace app {
+namespace sauros {
 
-std::optional<std::string> buffer_c::submit(std::string &line) {
+std::optional<std::string> input_buffer_c::submit(std::string &line) {
 
    // Remove comments
    std::size_t comment_loc = line.find_first_of(";");
@@ -38,4 +38,4 @@ std::optional<std::string> buffer_c::submit(std::string &line) {
    return {};
 }
 
-} // namespace app
+} // namespace sauros
