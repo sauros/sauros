@@ -1,6 +1,4 @@
 #include "sauros/sauros.hpp"
-#include "load.hpp"
-#include "repl.hpp"
 
 #include <csignal>
 #include <filesystem>
@@ -10,8 +8,9 @@ namespace {
 std::shared_ptr<sauros::environment_c> env =
     std::make_shared<sauros::environment_c>();
 
-app::repl_c *repl{nullptr};
-app::load_c *load{nullptr};
+sauros::repl_c *repl{nullptr};
+sauros::file_executor_c *file_executor{nullptr};
+
 } // namespace
 
 // Add some environment variables to the system
@@ -34,24 +33,24 @@ void setup_env() {
                                       cells[0].location)};
             }));
 
-   env->set("@import",
-            sauros::cell_c([=](std::vector<sauros::cell_c> &cells,
-                               std::shared_ptr<sauros::environment_c> env)
-                               -> std::optional<sauros::cell_c> {
-               app::load_c loader;
-               for (auto i = cells.begin() + 1; i < cells.end(); i++) {
-                  if ((*i).type != sauros::cell_type_e::STRING) {
-                     throw sauros::processor_c::runtime_exception_c(
-                         "Import objects are expected to be raw strings",
-                         (*i).location);
-                  }
-                  if (0 != loader.run((*i).data, env)) {
-                     throw sauros::processor_c::runtime_exception_c(
-                         "Unable to load import: " + (*i).data, (*i).location);
-                  }
-               }
-               return {sauros::CELL_TRUE};
-            }));
+  // env->set("@import",
+  //          sauros::cell_c([=](std::vector<sauros::cell_c> &cells,
+  //                             std::shared_ptr<sauros::environment_c> env)
+  //                             -> std::optional<sauros::cell_c> {
+  //             app::load_c loader;
+  //             for (auto i = cells.begin() + 1; i < cells.end(); i++) {
+  //                if ((*i).type != sauros::cell_type_e::STRING) {
+  //                   throw sauros::processor_c::runtime_exception_c(
+  //                       "Import objects are expected to be raw strings",
+  //                       (*i).location);
+  //                }
+  //                if (0 != loader.run((*i).data, env)) {
+  //                   throw sauros::processor_c::runtime_exception_c(
+  //                       "Unable to load import: " + (*i).data, (*i).location);
+  //                }
+  //             }
+  //             return {sauros::CELL_TRUE};
+  //          }));
 }
 
 void run_file(const std::string &file) {
@@ -60,8 +59,8 @@ void run_file(const std::string &file) {
       std::exit(1);
    }
 
-   load = new app::load_c();
-   load->run(file, env);
+   file_executor = new sauros::file_executor_c(env);
+   file_executor->run(file);
 }
 
 void show_help() {
@@ -80,8 +79,8 @@ void handle_signal(int signal) {
       repl->stop();
    }
 
-   if (load) {
-      delete load;
+   if (file_executor) {
+      delete file_executor;
    }
 
    std::exit(0);
@@ -113,7 +112,7 @@ int main(int argc, char **argv) {
    }
 
    if (args.empty()) {
-      repl = new app::repl_c(env);
+      repl = new sauros::repl_c(env);
       repl->start();
       delete repl;
    }

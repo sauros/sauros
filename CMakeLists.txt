@@ -48,8 +48,8 @@ include(${CMAKE_SOURCE_DIR}/cmake/SetEnv.cmake)
 
 set(SAUROS_SOURCES
    ${CMAKE_SOURCE_DIR}/sauros/environment.cpp
+   ${CMAKE_SOURCE_DIR}/sauros/driver.cpp
    ${CMAKE_SOURCE_DIR}/sauros/front/parser.cpp
-   ${CMAKE_SOURCE_DIR}/sauros/front/input_buffer.cpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor.cpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor_arithmetic.cpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor_builtins.cpp
@@ -57,7 +57,7 @@ set(SAUROS_SOURCES
 
 set(HEADERS
    ${CMAKE_SOURCE_DIR}/sauros/front/parser.hpp
-   ${CMAKE_SOURCE_DIR}/sauros/front/input_buffer.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/driver.hpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor.hpp
    ${CMAKE_SOURCE_DIR}/sauros/environment.hpp
    ${CMAKE_SOURCE_DIR}/sauros/cell.hpp
@@ -83,9 +83,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/InstallConfig.cmake)
 #
 # Setup sauros app
 #
-add_executable(sauros 
-  app/load.cpp
-  app/repl.cpp
+add_executable(sauros
   app/main.cpp
   ${SAUROS_SOURCES}
 )
