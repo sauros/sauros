@@ -35,7 +35,7 @@
 [var dy [/ [- y_end y_start] [- height 1]]]
 
 
-[var pixels [list "." "," "+" "=" "-" "_" "*" "&" "^" "%" "1" "2" "3" "4" "5"]]
+[var pixels [list "." "." "," "-" "^" "_" "*" "&" "^" "%" "1" "2" "3" "4" "5"]]
 
 [var i 0.0]
 [loop [< i height] [set i [+ 1 i]] [
