@@ -60,6 +60,7 @@ void processor_c::populate_standard_builtins() {
    _key_symbols.insert("block");
    _key_symbols.insert("len");
    _key_symbols.insert("put");
+   _key_symbols.insert("putln");
    _key_symbols.insert("if");
    _key_symbols.insert("==");
    _key_symbols.insert("!=");
@@ -433,6 +434,21 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins["put"] = cell_c(
+       [this, load](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+          for (auto i = cells.begin() + 1; i != cells.end(); ++i) {
+
+             auto item = load((*i), env);
+
+             std::string stringed;
+             cell_to_string(stringed, item, env, false);
+             std::cout << stringed;
+          }
+
+          return {};
+       });
+
+   _builtins["putln"] = cell_c(
        [this, load](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           for (auto i = cells.begin() + 1; i != cells.end(); ++i) {
