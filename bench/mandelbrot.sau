@@ -1,4 +1,3 @@
-
 [var mandelbrot [lambda [real image] [
    [block
       [var result]
@@ -33,7 +32,6 @@
 
 [var dx [/ [- x_end x_start] [- width 1]]]
 [var dy [/ [- y_end y_start] [- height 1]]]
-
 
 [var pixels [list "." "." "," "-" "^" "_" "*" "&" "^" "%" "1" "2" "3" "4" "5"]]
 
