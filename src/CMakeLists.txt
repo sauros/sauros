@@ -89,7 +89,6 @@ include(${CMAKE_SOURCE_DIR}/cmake/InstallConfig.cmake)
 # Add third party directories for app
 #
 add_subdirectory(third_party/hwinfo)
-
 #
 # Setup sauros app
 #
@@ -102,9 +101,13 @@ target_include_directories(sauros
     PUBLIC 
         ${PROJECT_SOURCE_DIR}
         ${PROJECT_SOURCE_DIR}/third_party/hwinfo/include
+        ${PROJECT_SOURCE_DIR}/third_party/RLL/include
 )
 
-target_link_libraries(sauros PUBLIC hwinfo::HWinfo)
+target_link_libraries(sauros 
+   PUBLIC hwinfo::HWinfo
+   dl
+)
 
 #
 # Install bin
