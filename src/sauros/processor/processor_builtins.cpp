@@ -74,6 +74,7 @@ void processor_c::populate_standard_builtins() {
    _key_symbols.insert("loop");
    _key_symbols.insert("type");
    _key_symbols.insert("import");
+   _key_symbols.insert("use");
    _key_symbols.insert("not");
    _key_symbols.insert("or");
    _key_symbols.insert("and");
@@ -116,7 +117,28 @@ void processor_c::populate_standard_builtins() {
             }
          }
          return {sauros::CELL_TRUE};
+       });
 
+   _builtins["use"] = cell_c(
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+          if (cells.size() < 2) {
+             throw runtime_exception_c("use command expects at least 1 parameters, but " +
+                                           std::to_string(cells.size() - 1) +
+                                           " were given",
+                                       cells[0].location);
+          }
+
+         for (auto i = cells.begin() + 1; i < cells.end(); i++) {
+            if ((*i).type != sauros::cell_type_e::STRING) {
+               throw sauros::processor_c::runtime_exception_c(
+                     "use command expects parameters to be raw strings",
+                     (*i).location);
+            }
+
+            load_library((*i).data, (*i).location, env);
+         }
+         return {sauros::CELL_TRUE};
        });
 
    _builtins["exit"] = cell_c(

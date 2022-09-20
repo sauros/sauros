@@ -54,8 +54,10 @@ include(${CMAKE_SOURCE_DIR}/cmake/SetEnv.cmake)
 set(SAUROS_SOURCES
    ${CMAKE_SOURCE_DIR}/sauros/environment.cpp
    ${CMAKE_SOURCE_DIR}/sauros/driver.cpp
+   ${CMAKE_SOURCE_DIR}/sauros/system/system.cpp
    ${CMAKE_SOURCE_DIR}/sauros/front/parser.cpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor.cpp
+   ${CMAKE_SOURCE_DIR}/sauros/processor/processor_load_lib.cpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor_arithmetic.cpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor_builtins.cpp
 )
@@ -63,12 +65,14 @@ set(SAUROS_SOURCES
 set(HEADERS
    ${CMAKE_SOURCE_DIR}/sauros/front/parser.hpp
    ${CMAKE_SOURCE_DIR}/sauros/driver.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/system/system.hpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor.hpp
    ${CMAKE_SOURCE_DIR}/sauros/environment.hpp
    ${CMAKE_SOURCE_DIR}/sauros/cell.hpp
    ${CMAKE_SOURCE_DIR}/sauros/types.hpp
    ${CMAKE_SOURCE_DIR}/sauros/version.hpp
    ${CMAKE_SOURCE_DIR}/sauros/sauros.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/RLL/RLL.hpp
 )
 
 set(SOURCES
@@ -89,7 +93,6 @@ include(${CMAKE_SOURCE_DIR}/cmake/InstallConfig.cmake)
 # Add third party directories for app
 #
 add_subdirectory(third_party/hwinfo)
-
 #
 # Setup sauros app
 #
@@ -104,7 +107,10 @@ target_include_directories(sauros
         ${PROJECT_SOURCE_DIR}/third_party/hwinfo/include
 )
 
-target_link_libraries(sauros PUBLIC hwinfo::HWinfo)
+target_link_libraries(sauros 
+   PUBLIC hwinfo::HWinfo
+   dl
+)
 
 #
 # Install bin

@@ -9,5 +9,6 @@
 #include "driver.hpp"
 #include "front/parser.hpp"
 #include "processor/processor.hpp"
+#include "system/system.hpp"
 
 #endif
