@@ -11,7 +11,7 @@ class input_buffer_c;
 
 //! \brief Interface for the types of processor drivers (REPL, File, Etc)
 class driver_if {
-public:
+ public:
    driver_if() = delete;
    ~driver_if();
 
@@ -19,9 +19,10 @@ public:
    //! \param env The environment
    driver_if(std::shared_ptr<sauros::environment_c> &env);
 
-protected:
-   void execute(const char* source, const uint64_t line_number, std::string& line);
-   virtual void cell_returned(cell_c& cell) = 0;
+ protected:
+   void execute(const char *source, const uint64_t line_number,
+                std::string &line);
+   virtual void cell_returned(cell_c &cell) = 0;
    virtual void except(sauros::processor_c::runtime_exception_c &e) = 0;
    virtual void except(sauros::processor_c::assertion_exception_c &e) = 0;
    virtual void except(sauros::environment_c::unknown_identifier_c &e) = 0;
@@ -34,27 +35,31 @@ protected:
 //! \brief A file input object that reads an entire
 //!        file into the given environment
 class file_executor_c : private driver_if {
-public:
+ public:
    file_executor_c() = delete;
 
    //! \brief Create the executor
    //! \param env The environment to use
-   file_executor_c(std::shared_ptr<sauros::environment_c> &env) : driver_if(env) {}
+   file_executor_c(std::shared_ptr<sauros::environment_c> &env)
+       : driver_if(env) {}
 
    //! \brief Load and execute the file
    //! \param file The file to laod
    int run(const std::string &file);
 
-private:
-   virtual void cell_returned(cell_c& cell) override final;
-   virtual void except(sauros::processor_c::runtime_exception_c &e) override final;
-   virtual void except(sauros::processor_c::assertion_exception_c &e) override final;
-   virtual void except(sauros::environment_c::unknown_identifier_c &e) override final;
+ private:
+   virtual void cell_returned(cell_c &cell) override final;
+   virtual void
+   except(sauros::processor_c::runtime_exception_c &e) override final;
+   virtual void
+   except(sauros::processor_c::assertion_exception_c &e) override final;
+   virtual void
+   except(sauros::environment_c::unknown_identifier_c &e) override final;
 };
 
 //! \brief REPL
 class repl_c : private driver_if {
-public:
+ public:
    repl_c() = delete;
 
    //! \brief Create the repl object
@@ -67,12 +72,15 @@ public:
    //! \brief Stop the REPL (interrupts etc)
    void stop();
 
-private:
+ private:
    bool _do{true};
-   virtual void cell_returned(cell_c& cell) override final;
-   virtual void except(sauros::processor_c::runtime_exception_c &e) override final;
-   virtual void except(sauros::processor_c::assertion_exception_c &e) override final;
-   virtual void except(sauros::environment_c::unknown_identifier_c &e) override final;
+   virtual void cell_returned(cell_c &cell) override final;
+   virtual void
+   except(sauros::processor_c::runtime_exception_c &e) override final;
+   virtual void
+   except(sauros::processor_c::assertion_exception_c &e) override final;
+   virtual void
+   except(sauros::environment_c::unknown_identifier_c &e) override final;
 };
 
 } // namespace sauros

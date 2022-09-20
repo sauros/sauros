@@ -97,7 +97,8 @@ tokenize(size_t line_number, const std::string line) {
 
       // Check for an integer / double
       //
-      if (is_digit(line[idx]) || (line[idx] == '-' && is_digit(line[idx+1]))) {
+      if (is_digit(line[idx]) ||
+          (line[idx] == '-' && is_digit(line[idx + 1]))) {
 
          decltype(idx) start = idx;
          while (is_digit(line[idx]) || line[idx] == '.' || line[idx] == '-') {

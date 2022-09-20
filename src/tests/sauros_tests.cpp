@@ -1,9 +1,9 @@
 
 #include "sauros/sauros.hpp"
 
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
 
 #include <CppUTest/TestHarness.h>
 
@@ -71,7 +71,9 @@ TEST(sauros_tests, piecemeal) {
        {"[front [list 1 2 3]]", "1"},
        {"[block [var shark [list 1 2 3]] [at 1 shark]]", "2"},
        {"[block [clear shark] [shark]]", "[]"},
-       {"[block [var target] [push target 1] [push target 2] [push target 3] [target] ]", "[1 2 3]"},
+       {"[block [var target] [push target 1] [push target 2] [push target 3] "
+        "[target] ]",
+        "[1 2 3]"},
        {"[block [pop target] [target]]", "[1 2]"},
        {"[back [list 1 2 3]]", "3"},
        {"[len [list 1 2 3]]", "3"},
@@ -86,10 +88,13 @@ TEST(sauros_tests, piecemeal) {
        {"[not is_false]", "1"},
        {"[assert \"is true\" is_true]", "1"},
        {"[assert \"not is_false\" [not is_false]]", "1"},
-       {"[assert \"Direct string\" \"Any non empty string should produce a 1\"]", "1"},
+       {"[assert \"Direct string\" \"Any non empty string should produce a "
+        "1\"]",
+        "1"},
        {"[assert \"not integer\" 420]", "1"},
        {"[assert \"a double\" 2.1828]", "1"},
-       {"[block [var x 1] [loop [< x 10] [[block [set x [+ x 1]] ]]] [x]]", "10"},
+       {"[block [var x 1] [loop [< x 10] [[block [set x [+ x 1]] ]]] [x]]",
+        "10"},
        {"[block [var x \"A string!\"] [type x] ]", "string"},
        {"[block [var x 42] [type x] ]", "integer"},
        {"[block [var x 2.1828] [type x] ]", "double"},
@@ -120,7 +125,7 @@ TEST(sauros_tests, piecemeal) {
 
       CHECK_FALSE(result.error_info);
 
-      try{
+      try {
          auto cell_result = proc.process(result.cell, env);
 
          CHECK_TRUE(cell_result.has_value());
