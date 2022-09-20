@@ -43,7 +43,6 @@
          [block
             [var x  [ + x_start [* j dx] ]]
             [var y  [ - y_end [* i dy] ]]
-            [block ]
             [var value [mandelbrot x y]]
             [if [seq value "#nil"] [put " "] [
                [block
