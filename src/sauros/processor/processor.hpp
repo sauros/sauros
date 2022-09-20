@@ -3,6 +3,7 @@
 
 #include "sauros/environment.hpp"
 #include "sauros/cell.hpp"
+#include "sauros/system/system.hpp"
 
 #include <exception>
 #include <functional>
@@ -83,6 +84,7 @@ class processor_c {
                        bool show_space = true);
 
  private:
+   sauros::system_c _system;
    std::set<std::string> _key_symbols;
    std::unordered_map<std::string, cell_c> _builtins;
 
