@@ -12,6 +12,7 @@ add_executable(sauros_unit_tests
 
 target_link_libraries(sauros_unit_tests
   ${CPPUTEST_LDFLAGS}
+  dl
 )
 
 add_custom_command(TARGET sauros_unit_tests COMMAND ./sauros_unit_tests POST_BUILD)
