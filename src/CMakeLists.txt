@@ -57,6 +57,7 @@ set(SAUROS_SOURCES
    ${CMAKE_SOURCE_DIR}/sauros/system/system.cpp
    ${CMAKE_SOURCE_DIR}/sauros/front/parser.cpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor.cpp
+   ${CMAKE_SOURCE_DIR}/sauros/processor/processor_load_lib.cpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor_arithmetic.cpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor_builtins.cpp
 )
@@ -71,6 +72,7 @@ set(HEADERS
    ${CMAKE_SOURCE_DIR}/sauros/types.hpp
    ${CMAKE_SOURCE_DIR}/sauros/version.hpp
    ${CMAKE_SOURCE_DIR}/sauros/sauros.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/RLL/RLL.hpp
 )
 
 set(SOURCES
@@ -103,7 +105,6 @@ target_include_directories(sauros
     PUBLIC 
         ${PROJECT_SOURCE_DIR}
         ${PROJECT_SOURCE_DIR}/third_party/hwinfo/include
-        ${PROJECT_SOURCE_DIR}/third_party/RLL/include
 )
 
 target_link_libraries(sauros 

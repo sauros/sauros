@@ -2,6 +2,9 @@
 // It is public domain:
 // Copyright (c) 2020 Elijah Hopp, No Rights Reserved.
 
+#ifndef RLL_PLATFORM_INCLUDED
+#define RLL_PLATFORM_INCLUDED
+
 std::mutex shared_library::_mutex;
 
 shared_library::shared_library(){
@@ -97,3 +100,5 @@ std::string shared_library::get_platform_suffix(){
 		return ".so";
 	#endif
 }
+
+#endif

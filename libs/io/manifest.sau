@@ -1,21 +1,21 @@
-; Name of the library
-[var library_name "standard"]
-
 ; Semantic version of the library
 [var library_semver "0.0.0"]
 
 ; Prefix of the library that will be used to 
 ; artificially scope functions in the library 
 ;     (https://github.com/bosley/sauros/wiki/Tutorial#naming-conventions)
-[var prefix "std"]
+[var prefix "io"]
 
 ; Name of the library file that needs to be 
 ; linked to
-[var target_name "sauros.std.lib"]
+[var target_name "sauros.io.lib"]
 
 ;  List of functions that should be loadable
 ;  from the shared object that is the external
-;  library
+;  library - anything omitted from this list will
+;  not be populated into the sauros environment
 [var function_list [list 
-   "print"
+   "get_str"
+   "get_double"
+   "get_int"
 ]]

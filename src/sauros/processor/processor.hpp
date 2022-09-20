@@ -12,6 +12,11 @@
 #include <unordered_map>
 #include <vector>
 
+// Forward declaration for RLL library loader
+namespace rll {
+   class shared_library;
+}
+
 namespace sauros {
 
 //! \brief A list processor
@@ -66,6 +71,7 @@ class processor_c {
 
    //! \brief Construct the processor
    processor_c();
+   ~processor_c();
 
    //! \brief Process a cell (generated from parser, or otherwise)
    //! \param cell The cell to process
@@ -87,6 +93,7 @@ class processor_c {
    sauros::system_c _system;
    std::set<std::string> _key_symbols;
    std::unordered_map<std::string, cell_c> _builtins;
+   std::unordered_map<std::string, rll::shared_library*> _loaded_libs;
 
    void populate_standard_builtins();
 
@@ -103,6 +110,10 @@ class processor_c {
                              std::function<double(double, double)> fn,
                              std::shared_ptr<environment_c> env,
                              bool force_double = false);
+
+   void load_library(const std::string& target,
+                     location_s location,
+                     std::shared_ptr<environment_c> env);
 };
 
 } // namespace sauros

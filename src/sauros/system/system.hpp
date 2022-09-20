@@ -18,7 +18,9 @@ public:
    //! \returns optional string that will be populated
    //!          iff the object was able to detect the home
    //!          directory of sauros AND it exists
-   std::optional<std::string> get_sauros_directory();
+   std::optional<std::string> get_sauros_directory() {
+      return _home;
+   }
 
 private:
    std::optional<std::string> _home;
