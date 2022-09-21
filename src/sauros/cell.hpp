@@ -20,15 +20,21 @@ enum class cell_type_e {
    DOUBLE,
 };
 
-//! \brief Retrieve the type as a string 
-static const char * cell_type_to_string(const cell_type_e type) {
+//! \brief Retrieve the type as a string
+static const char *cell_type_to_string(const cell_type_e type) {
    switch (type) {
-      case cell_type_e::SYMBOL: return "symbol";
-      case cell_type_e::LIST: return "list";
-      case cell_type_e::LAMBDA: return "lambda";
-      case cell_type_e::STRING: return "string";
-      case cell_type_e::INTEGER: return "integer";
-      case cell_type_e::DOUBLE: return "double";
+   case cell_type_e::SYMBOL:
+      return "symbol";
+   case cell_type_e::LIST:
+      return "list";
+   case cell_type_e::LAMBDA:
+      return "lambda";
+   case cell_type_e::STRING:
+      return "string";
+   case cell_type_e::INTEGER:
+      return "integer";
+   case cell_type_e::DOUBLE:
+      return "double";
    }
    return "unknown";
 }

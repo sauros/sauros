@@ -10,6 +10,6 @@
 #define LIBSAUROS_PATCH_VERSION (0)
 #define LIBSAUROS_VERSION "0.1.0"
 
-static const char * get_build_hash() { return COMPILED_GIT_HASH; }
+static const char *get_build_hash() { return COMPILED_GIT_HASH; }
 
 #endif // LIBSAUROS_VERSION_

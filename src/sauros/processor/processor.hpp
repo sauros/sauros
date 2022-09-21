@@ -1,8 +1,8 @@
 #ifndef SAUROS_PROCESSOR_HPP
 #define SAUROS_PROCESSOR_HPP
 
-#include "sauros/environment.hpp"
 #include "sauros/cell.hpp"
+#include "sauros/environment.hpp"
 #include "sauros/system/system.hpp"
 
 #include <exception>
@@ -14,7 +14,7 @@
 
 // Forward declaration for RLL library loader
 namespace rll {
-   class shared_library;
+class shared_library;
 }
 
 namespace sauros {
@@ -22,17 +22,16 @@ namespace sauros {
 //! \brief A list processor
 class processor_c {
  public:
-
    //!\brief An exception that will be thrown on assertion failure
    class assertion_exception_c : public std::exception {
-   public:
+    public:
       assertion_exception_c() = delete;
 
       //! \brief Construct the expception
       //! \param message The message that is to be displayed
       //! \param location The location (line/col) that the error arose
       assertion_exception_c(std::string label, location_s location)
-         : _label(label), _loc(location) {}
+          : _label(label), _loc(location) {}
 
       //! \brief Retrieve the description of the exception
       const char *what() const throw() { return _label.c_str(); }
@@ -93,7 +92,7 @@ class processor_c {
    sauros::system_c _system;
    std::set<std::string> _key_symbols;
    std::unordered_map<std::string, cell_c> _builtins;
-   std::unordered_map<std::string, rll::shared_library*> _loaded_libs;
+   std::unordered_map<std::string, rll::shared_library *> _loaded_libs;
 
    void populate_standard_builtins();
 
@@ -111,8 +110,7 @@ class processor_c {
                              std::shared_ptr<environment_c> env,
                              bool force_double = false);
 
-   void load_library(const std::string& target,
-                     location_s location,
+   void load_library(const std::string &target, location_s location,
                      std::shared_ptr<environment_c> env);
 };
 

@@ -1,8 +1,8 @@
 #ifndef SAUROS_HPP
 #define SAUROS_HPP
 
-#include "environment.hpp"
 #include "cell.hpp"
+#include "environment.hpp"
 #include "types.hpp"
 #include "version.hpp"
 

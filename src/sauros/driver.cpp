@@ -1,8 +1,8 @@
 #include "driver.hpp"
-#include <iostream>
+#include "front/parser.hpp"
 #include <filesystem>
 #include <fstream>
-#include "front/parser.hpp"
+#include <iostream>
 
 namespace sauros {
 
@@ -55,14 +55,12 @@ driver_if::driver_if(std::shared_ptr<sauros::environment_c> &env) : _env(env) {
    _buffer = new input_buffer_c();
 }
 
-driver_if::~driver_if() {
-   delete _buffer;
-}
+driver_if::~driver_if() { delete _buffer; }
 
-void driver_if::execute(const char* source, uint64_t line_number, std::string& line) {
-   
-   auto parser_result =
-         sauros::parser::parse_line(source, line_number, line);
+void driver_if::execute(const char *source, uint64_t line_number,
+                        std::string &line) {
+
+   auto parser_result = sauros::parser::parse_line(source, line_number, line);
 
    if (parser_result.result == sauros::parser::result_e::ERROR) {
       std::cerr << "Error parsing line";
@@ -110,7 +108,8 @@ int file_executor_c::run(const std::string &file) {
    return 0;
 }
 
-void file_executor_c::cell_returned(cell_c& cell) { /* Not needed */ }
+void file_executor_c::cell_returned(cell_c &cell) { /* Not needed */
+}
 
 void file_executor_c::except(sauros::processor_c::runtime_exception_c &e) {
    std::cout << e.what() << std::endl;
@@ -153,7 +152,7 @@ void repl_c::start() {
 
 void repl_c::stop() { _do = false; }
 
-void repl_c::cell_returned(cell_c& cell) {
+void repl_c::cell_returned(cell_c &cell) {
    std::string s_cell;
    _list_processor.cell_to_string(s_cell, cell, _env, true);
    std::cout << s_cell << std::endl;

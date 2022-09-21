@@ -39,7 +39,6 @@ void setup_env() {
             sauros::cell_c([=](std::vector<sauros::cell_c> &cells,
                                std::shared_ptr<sauros::environment_c> env)
                                -> std::optional<sauros::cell_c> {
-
                return {sauros::cell_c(sauros::cell_type_e::STRING,
                                       std::string(get_build_hash()),
                                       cells[0].location)};
@@ -77,26 +76,33 @@ void version_info() {
 }
 
 void system_report() {
-   std::cout << "--------------------------------- SAUROS ----------------------------------" << std::endl;
+   std::cout << "--------------------------------- SAUROS "
+                "----------------------------------"
+             << std::endl;
    version_info();
 
    hwinfo::OS os;
-   std::cout << "----------------------------------- OS ------------------------------------" << std::endl;
+   std::cout << "----------------------------------- OS "
+                "------------------------------------"
+             << std::endl;
    std::cout << std::left << std::setw(20) << "operating system:";
-   std::cout << os.fullName() <<std::endl;
+   std::cout << os.fullName() << std::endl;
    std::cout << std::left << std::setw(20) << "short name:";
-   std::cout << os.name() <<std::endl;
+   std::cout << os.name() << std::endl;
    std::cout << std::left << std::setw(20) << "version:";
-   std::cout << os.version() <<std::endl;
+   std::cout << os.version() << std::endl;
    std::cout << std::left << std::setw(20) << "kernel:";
-   std::cout << os.kernel() <<std::endl;
+   std::cout << os.kernel() << std::endl;
    std::cout << std::left << std::setw(20) << "architecture:";
    std::cout << (os.is32bit() ? "32 bit" : "64 bit") << std::endl;
    std::cout << std::left << std::setw(20) << "endianess:";
-   std::cout << (os.isLittleEndian() ? "little endian" : "big endian") << std::endl;
+   std::cout << (os.isLittleEndian() ? "little endian" : "big endian")
+             << std::endl;
 
    hwinfo::CPU cpu;
-   std::cout << "----------------------------------- CPU -----------------------------------" << std::endl;
+   std::cout << "----------------------------------- CPU "
+                "-----------------------------------"
+             << std::endl;
    std::cout << std::left << std::setw(20) << "vendor:";
    std::cout << cpu.vendor() << std::endl;
    std::cout << std::left << std::setw(20) << "model:";
@@ -115,7 +121,9 @@ void system_report() {
    std::cout << cpu.cacheSize_Bytes() << std::endl;
 
    hwinfo::RAM ram;
-   std::cout << "----------------------------------- RAM -----------------------------------" << std::endl;
+   std::cout << "----------------------------------- RAM "
+                "-----------------------------------"
+             << std::endl;
    std::cout << std::left << std::setw(20) << "vendor:";
    std::cout << ram.vendor() << std::endl;
    std::cout << std::left << std::setw(20) << "model:";
@@ -125,9 +133,12 @@ void system_report() {
    std::cout << std::left << std::setw(20) << "serial-number:";
    std::cout << ram.serialNumber() << std::endl;
    std::cout << std::left << std::setw(20) << "size [MiB]:";
-   std::cout << static_cast<double>(ram.totalSize_Bytes()) / 1024.0 / 1024.0 << std::endl;
-   
-   std::cout << "---------------------------------------------------------------------------" << std::endl;
+   std::cout << static_cast<double>(ram.totalSize_Bytes()) / 1024.0 / 1024.0
+             << std::endl;
+
+   std::cout << "--------------------------------------------------------------"
+                "-------------"
+             << std::endl;
 }
 
 void handle_signal(int signal) {

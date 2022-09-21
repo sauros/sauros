@@ -72,7 +72,7 @@ set(HEADERS
    ${CMAKE_SOURCE_DIR}/sauros/types.hpp
    ${CMAKE_SOURCE_DIR}/sauros/version.hpp
    ${CMAKE_SOURCE_DIR}/sauros/sauros.hpp
-   ${CMAKE_SOURCE_DIR}/sauros/RLL/RLL.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/RLL/RLL.h
 )
 
 set(SOURCES

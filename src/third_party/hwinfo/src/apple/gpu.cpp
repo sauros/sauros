@@ -5,9 +5,9 @@
 
 #ifdef HWINFO_APPLE
 
-#include <vector>
-#include <string>
 #include <regex>
+#include <string>
+#include <vector>
 
 #include "hwinfo/gpu.h"
 
@@ -15,28 +15,28 @@ namespace hwinfo {
 
 // _____________________________________________________________________________________________________________________
 std::string GPU::getVendor() {
-  // TODO: implement
-  return "<unknown>";
+   // TODO: implement
+   return "<unknown>";
 }
 
 // _____________________________________________________________________________________________________________________
 std::string GPU::getName() {
-  // TODO: implement
-  return "<unknown>";
+   // TODO: implement
+   return "<unknown>";
 }
 
 // _____________________________________________________________________________________________________________________
 std::string GPU::getDriverVersion() {
-  // TODO: implement
-  return "<unknown>";
+   // TODO: implement
+   return "<unknown>";
 }
 
 // _____________________________________________________________________________________________________________________
 int64_t GPU::getMemory_Bytes() {
-  // TODO: implement
-  return -1;
+   // TODO: implement
+   return -1;
 }
 
-}  // namespace hwinfo
+} // namespace hwinfo
 
-#endif  // HWINFO_APPLE
+#endif // HWINFO_APPLE
