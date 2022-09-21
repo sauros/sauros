@@ -33,16 +33,16 @@ void environment_c::set(const std::string &item, cell_c cell) {
 
 cell_c &environment_c::get(const std::string &item) { return _env[item]; }
 
-environment_c *environment_c::find(const std::string &var) {
+environment_c *environment_c::find(const std::string &var, location_s location) {
 
    if (_env.find(var) != _env.end()) {
       return this;
    }
    if (_parent) {
-      return _parent->find(var);
+      return _parent->find(var, location);
    }
 
-   throw unknown_identifier_c(var);
+   throw unknown_identifier_c(var, location);
 }
 
 } // namespace sauros

@@ -1,6 +1,5 @@
 #include "parser.hpp"
 
-#include <iostream>
 #include <regex>
 #include <tuple>
 #include <vector>
@@ -258,7 +257,6 @@ product_s parse_line(const char *source_descrption, std::size_t line_number,
    if (token_err) {
       resulting_product.error_info = token_err;
       resulting_product.result = result_e::ERROR;
-      std::cout << token_err->message << std::endl;
       return resulting_product;
    }
 
@@ -267,7 +265,6 @@ product_s parse_line(const char *source_descrption, std::size_t line_number,
    if (parse_err) {
       resulting_product.error_info = parse_err;
       resulting_product.result = result_e::ERROR;
-      std::cout << parse_err->message << std::endl;
       return resulting_product;
    }
 

@@ -263,7 +263,7 @@ void processor_c::populate_standard_builtins() {
       auto &variable_name = cells[2].data;
 
       // If this isn't found it will throw :)
-      auto containing_env = env->find(variable_name);
+      auto containing_env = env->find(variable_name, cells[1].location);
       cell_c &target = containing_env->get(variable_name);
 
       if (target.list.size() <= idx) {
@@ -290,7 +290,7 @@ void processor_c::populate_standard_builtins() {
       auto &variable_name = cells[1].data;
 
       // If this isn't found it will throw :)
-      auto containing_env = env->find(variable_name);
+      auto containing_env = env->find(variable_name, cells[1].location);
       cell_c &target = containing_env->get(variable_name);
       target.list.clear();
       return {CELL_TRUE};
@@ -314,7 +314,7 @@ void processor_c::populate_standard_builtins() {
       auto &variable_name = cells[1].data;
 
       // If this isn't found it will throw :)
-      auto containing_env = env->find(variable_name);
+      auto containing_env = env->find(variable_name, cells[1].location);
       cell_c &target = containing_env->get(variable_name);
       if (!target.list.empty()) {
          target.list.pop_back();
@@ -340,7 +340,7 @@ void processor_c::populate_standard_builtins() {
       auto &variable_name = cells[1].data;
 
       // If this isn't found it will throw :)
-      auto containing_env = env->find(variable_name);
+      auto containing_env = env->find(variable_name, cells[1].location);
       auto value = load(cells[2], env);
 
       if (value.type == cell_type_e::SYMBOL) {
@@ -569,7 +569,7 @@ void processor_c::populate_standard_builtins() {
           auto &variable_name = cells[1].data;
 
           // If this isn't found it will throw :)
-          auto containing_env = env->find(variable_name);
+          auto containing_env = env->find(variable_name, cells[1].location);
           auto value = load(cells[2], env);
 
           if (value.type == cell_type_e::SYMBOL) {
