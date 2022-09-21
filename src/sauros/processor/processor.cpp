@@ -161,7 +161,8 @@ processor_c::process_lambda(cell_c &cell, std::vector<cell_c> &cells,
    // create an environment, pass the data in as the variable
    // that they will be expected as, then call
 
-   auto target_lambda = env->find(cells[0].data, cells[0].location)->get(cells[0].data);
+   auto target_lambda =
+       env->find(cells[0].data, cells[0].location)->get(cells[0].data);
 
    if (target_lambda.list[0].list.size() != cells.size() - 1) {
       throw runtime_exception_c(

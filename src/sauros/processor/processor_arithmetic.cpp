@@ -42,7 +42,8 @@ cell_c processor_c::perform_arithmetic(std::string op,
       if ((*cell_value).type == cell_type_e::DOUBLE) {
          store_as_double = true;
       } else if ((*cell_value).type != cell_type_e::INTEGER) {
-         throw runtime_exception_c("Invalid type for operand", (*cell_value).location);
+         throw runtime_exception_c("Invalid type for operand",
+                                   (*cell_value).location);
       }
 
       try {

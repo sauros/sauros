@@ -1,8 +1,8 @@
 #include "driver.hpp"
 #include "front/parser.hpp"
+#include "rang.hpp"
 #include <filesystem>
 #include <iostream>
-#include "rang.hpp"
 
 namespace sauros {
 
@@ -63,7 +63,8 @@ void driver_if::execute(const char *source, uint64_t line_number,
    auto parser_result = sauros::parser::parse_line(source, line_number, line);
 
    if (parser_result.result == sauros::parser::result_e::ERROR) {
-      parser_error(parser_result.error_info->message, parser_result.error_info->location);
+      parser_error(parser_result.error_info->message,
+                   parser_result.error_info->location);
       return;
    }
 
@@ -81,7 +82,7 @@ void driver_if::execute(const char *source, uint64_t line_number,
    }
 }
 
-int file_executor_c::run(const std::string &file) {\
+int file_executor_c::run(const std::string &file) {
 
    _file = file;
    _fs.open(_file, std::fstream::in);
@@ -125,7 +126,7 @@ void file_executor_c::except(sauros::environment_c::unknown_identifier_c &e) {
    std::exit(1);
 }
 
-void file_executor_c::parser_error(std::string& e, location_s location) {
+void file_executor_c::parser_error(std::string &e, location_s location) {
    std::cout << rang::fg::red << e << rang::fg::reset << std::endl;
    display_error_from_file(location);
    std::exit(1);
@@ -133,7 +134,9 @@ void file_executor_c::parser_error(std::string& e, location_s location) {
 
 void file_executor_c::display_error_from_file(location_s location) {
 
-   std::cout << rang::fg::magenta << _file << rang::fg::reset << " : (" << rang::fg::blue << location.line << rang::fg::reset << "," << rang::fg::blue << location.col << rang::fg::reset << ")\n";
+   std::cout << rang::fg::magenta << _file << rang::fg::reset << " : ("
+             << rang::fg::blue << location.line << rang::fg::reset << ","
+             << rang::fg::blue << location.col << rang::fg::reset << ")\n";
 
    struct line_data_pair_s {
       uint64_t number;
@@ -152,7 +155,7 @@ void file_executor_c::display_error_from_file(location_s location) {
 
    // Determine the upper and lower bound for a source code window
    int64_t upper_bound = location.line + 4;
-   int64_t lower_bound = (int64_t)location.line - 5; 
+   int64_t lower_bound = (int64_t)location.line - 5;
    if (lower_bound < 0) {
       lower_bound = 0;
    }
@@ -161,15 +164,12 @@ void file_executor_c::display_error_from_file(location_s location) {
    while (std::getline(_fs, line_data)) {
 
       line_number++;
-      if ((line_number >= lower_bound && lower_bound < location.line) || 
-            location.line == line_number ||
-            line_number > location.line && line_number < upper_bound) {
-         window.push_back({
-            .number = line_number,
-            .data = line_data
-         });
+      if ((line_number >= lower_bound && lower_bound < location.line) ||
+          location.line == line_number ||
+          line_number > location.line && line_number < upper_bound) {
+         window.push_back({.number = line_number, .data = line_data});
       }
-      
+
       if (line_number >= upper_bound) {
          break;
       }
@@ -179,9 +179,9 @@ void file_executor_c::display_error_from_file(location_s location) {
    size_t width = 2;
    {
       auto s = std::to_string(upper_bound);
-      if (s.length()+1 > width) {
+      if (s.length() + 1 > width) {
          width = s.length() + 1;
-      } 
+      }
    }
 
    // Make an arrow to show where the error is
@@ -192,15 +192,20 @@ void file_executor_c::display_error_from_file(location_s location) {
    pointer += "^";
 
    // Draw the window
-   for(auto line_data : window) {
+   for (auto line_data : window) {
       if (line_data.number == location.line) {
-         std::cout << rang::fg::yellow << std::right << std::setw(width) << line_data.number << rang::fg::reset << " | " << line_data.data << std::endl;
-         std::cout << rang::fg::cyan << std::right << std::setw(width) << ">>" << rang::fg::reset << " | " << rang::fg::red << pointer << rang::fg::reset << std::endl;
+         std::cout << rang::fg::yellow << std::right << std::setw(width)
+                   << line_data.number << rang::fg::reset << " | "
+                   << line_data.data << std::endl;
+         std::cout << rang::fg::cyan << std::right << std::setw(width) << ">>"
+                   << rang::fg::reset << " | " << rang::fg::red << pointer
+                   << rang::fg::reset << std::endl;
       } else {
-         std::cout << rang::fg::green << std::right << std::setw(width) << line_data.number << rang::fg::reset << " | " << line_data.data << std::endl;
+         std::cout << rang::fg::green << std::right << std::setw(width)
+                   << line_data.number << rang::fg::reset << " | "
+                   << line_data.data << std::endl;
       }
    }
-
 }
 
 void repl_c::start() {
@@ -263,7 +268,7 @@ void repl_c::except(sauros::environment_c::unknown_identifier_c &e) {
    std::cout << rang::fg::red << e.what() << rang::fg::reset << std::endl;
 }
 
-void repl_c::parser_error(std::string& e, location_s location) {
+void repl_c::parser_error(std::string &e, location_s location) {
    std::cout << rang::fg::red << e << rang::fg::reset << std::endl;
 }
 

@@ -18,7 +18,8 @@ class environment_c {
 
       //! \brief Create the exception
       //! \param identifier The identifier that was unknown
-      unknown_identifier_c(std::string identifier, location_s location) : _id(identifier), _location(location) {}
+      unknown_identifier_c(std::string identifier, location_s location)
+          : _id(identifier), _location(location) {}
       const char *what() const throw() { return "Unknown identifier"; }
 
       //! \brief Retrieve the identifier that was requested

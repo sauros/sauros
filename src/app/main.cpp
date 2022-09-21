@@ -69,20 +69,24 @@ void show_help() {
 
 void version_info() {
    std::cout << std::left << std::setw(20) << "version:";
-   std::cout << rang::fg::cyan <<LIBSAUROS_VERSION << rang::fg::reset << std::endl;
+   std::cout << rang::fg::cyan << LIBSAUROS_VERSION << rang::fg::reset
+             << std::endl;
 
    std::cout << std::left << std::setw(20) << "build:";
-   std::cout << rang::fg::cyan << get_build_hash() << rang::fg::reset << std::endl;
+   std::cout << rang::fg::cyan << get_build_hash() << rang::fg::reset
+             << std::endl;
 }
 
 void system_report() {
-   std::cout << rang::fg::green << "--------------------------------- SAUROS "
+   std::cout << rang::fg::green
+             << "--------------------------------- SAUROS "
                 "----------------------------------"
              << rang::fg::reset << std::endl;
    version_info();
 
    hwinfo::OS os;
-   std::cout << rang::fg::green << "----------------------------------- OS "
+   std::cout << rang::fg::green
+             << "----------------------------------- OS "
                 "------------------------------------"
              << rang::fg::reset << std::endl;
    std::cout << std::left << std::setw(20) << "operating system:";
@@ -100,7 +104,8 @@ void system_report() {
              << std::endl;
 
    hwinfo::CPU cpu;
-   std::cout << rang::fg::green << "----------------------------------- CPU "
+   std::cout << rang::fg::green
+             << "----------------------------------- CPU "
                 "-----------------------------------"
              << rang::fg::reset << std::endl;
    std::cout << std::left << std::setw(20) << "vendor:";
@@ -121,7 +126,8 @@ void system_report() {
    std::cout << cpu.cacheSize_Bytes() << std::endl;
 
    hwinfo::RAM ram;
-   std::cout << rang::fg::green << "----------------------------------- RAM "
+   std::cout << rang::fg::green
+             << "----------------------------------- RAM "
                 "-----------------------------------"
              << rang::fg::reset << std::endl;
    std::cout << std::left << std::setw(20) << "vendor:";
@@ -136,7 +142,8 @@ void system_report() {
    std::cout << static_cast<double>(ram.totalSize_Bytes()) / 1024.0 / 1024.0
              << std::endl;
 
-   std::cout << rang::fg::green << "--------------------------------------------------------------"
+   std::cout << rang::fg::green
+             << "--------------------------------------------------------------"
                 "-------------"
              << rang::fg::reset << std::endl;
 }
