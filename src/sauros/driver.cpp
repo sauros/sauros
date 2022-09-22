@@ -1,5 +1,4 @@
 #include "driver.hpp"
-#include "front/parser.hpp"
 #include "rang.hpp"
 #include <filesystem>
 #include <iostream>
@@ -42,10 +41,9 @@ std::optional<std::string> input_buffer_c::submit(std::string &line) {
    // we can submit the statement
    if (_tracker == 0 && !_buffer.empty()) {
       std::string ret_buffer = _buffer;
+      std::cout << _buffer << std::endl;
       _buffer.clear();
       return {ret_buffer};
-   } else {
-      _buffer += ' ';
    }
 
    return {};
@@ -56,6 +54,34 @@ driver_if::driver_if(std::shared_ptr<sauros::environment_c> &env) : _env(env) {
 }
 
 driver_if::~driver_if() { delete _buffer; }
+
+void driver_if::execute(parser::segment_parser_c::segment_s segment) {
+
+   auto parser_result = _segment_parser.submit(segment);
+
+   if (!parser_result.has_value()) {
+      return;
+   }
+
+   if ((*parser_result).result == sauros::parser::result_e::ERROR) {
+      parser_error((*parser_result).error_info->message,
+                   (*parser_result).error_info->location);
+      return;
+   }
+
+   try {
+      auto result = _list_processor.process((*parser_result).cell, _env);
+      if (result.has_value()) {
+         cell_returned((*result));
+      }
+   } catch (sauros::processor_c::runtime_exception_c &e) {
+      except(e);
+   } catch (sauros::processor_c::assertion_exception_c &e) {
+      except(e);
+   } catch (sauros::environment_c::unknown_identifier_c &e) {
+      except(e);
+   }
+}
 
 void driver_if::execute(const char *source, uint64_t line_number,
                         std::string &line) {
@@ -82,6 +108,14 @@ void driver_if::execute(const char *source, uint64_t line_number,
    }
 }
 
+inline bool blank(std::string &s) {
+   if (s.empty() || std::all_of(s.begin(), s.end(),
+                                [](char c) { return std::isspace(c); })) {
+      return true;
+   }
+   return false;
+}
+
 int file_executor_c::run(const std::string &file) {
 
    _file = file;
@@ -95,12 +129,7 @@ int file_executor_c::run(const std::string &file) {
    uint64_t line_number{0};
    while (std::getline(_fs, line)) {
       line_number++;
-      auto buffer = _buffer->submit(line);
-      if (!buffer.has_value()) {
-         continue;
-      }
-
-      execute(file.c_str(), line_number, (*buffer));
+      execute(parser::segment_parser_c::segment_s{line, line_number});
    }
    return 0;
 }

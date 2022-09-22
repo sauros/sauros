@@ -7,21 +7,6 @@
 namespace sauros {
 namespace parser {
 
-enum class token_e {
-   L_BRACKET,
-   R_BRACKET,
-   SYMBOL,
-   INTEGER,
-   DOUBLE,
-   STRING,
-};
-
-struct token_s {
-   token_e token;
-   std::string data;
-   location_s location;
-};
-
 static std::regex is_number("[+-]?([0-9]*[.])?[0-9]+");
 
 static bool is_digit(const char c) {
@@ -35,6 +20,7 @@ tokenize(size_t line_number, const std::string line) {
 
    std::vector<token_s> tokens;
    for (size_t idx = 0; idx < line.size(); idx++) {
+
       auto current = line[idx];
 
       if (std::isspace(current)) {
@@ -272,6 +258,59 @@ product_s parse_line(const char *source_descrption, std::size_t line_number,
    resulting_product.error_info = nullptr;
    resulting_product.result = result_e::OKAY;
    return resulting_product;
+}
+
+std::optional<product_s>
+segment_parser_c::submit(segment_parser_c::segment_s segment) {
+
+   std::size_t comment_loc = segment.line.find_first_of(";");
+   if (comment_loc != std::string::npos) {
+      segment.line = segment.line.substr(0, comment_loc);
+   }
+
+   if (segment.line.empty()) {
+      return {};
+   }
+
+   product_s resulting_product;
+
+   auto [tokens, token_err] = tokenize(segment.line_number, segment.line);
+
+   if (token_err) {
+      resulting_product.error_info = token_err;
+      resulting_product.result = result_e::ERROR;
+      _tracker = 0;
+      return {resulting_product};
+   }
+
+   _tokens.insert(_tokens.end(), tokens.begin(), tokens.end());
+
+   for (auto &c : segment.line) {
+      if (c == '[') {
+         _tracker++;
+      } else if (c == ']') {
+         _tracker--;
+      }
+   }
+
+   if (_tracker == 0 && !_tokens.empty()) {
+
+      auto [cell, parse_err] = parse(_tokens);
+
+      if (parse_err) {
+         resulting_product.error_info = parse_err;
+         resulting_product.result = result_e::ERROR;
+         return {resulting_product};
+      }
+
+      resulting_product.cell = cell;
+      resulting_product.error_info = nullptr;
+      resulting_product.result = result_e::OKAY;
+
+      return {resulting_product};
+   }
+
+   return {};
 }
 
 } // namespace parser

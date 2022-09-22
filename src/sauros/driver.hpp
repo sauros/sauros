@@ -2,6 +2,7 @@
 #define SAUROS_DRIVER_HPP
 
 #include "environment.hpp"
+#include "front/parser.hpp"
 #include "processor/processor.hpp"
 #include <fstream>
 
@@ -23,6 +24,7 @@ class driver_if {
  protected:
    void execute(const char *source, const uint64_t line_number,
                 std::string &line);
+   void execute(parser::segment_parser_c::segment_s segment);
    virtual void cell_returned(cell_c &cell) = 0;
    virtual void except(sauros::processor_c::runtime_exception_c &e) = 0;
    virtual void except(sauros::processor_c::assertion_exception_c &e) = 0;
@@ -32,6 +34,7 @@ class driver_if {
    std::shared_ptr<sauros::environment_c> &_env;
    sauros::input_buffer_c *_buffer{nullptr};
    sauros::processor_c _list_processor;
+   parser::segment_parser_c _segment_parser;
 };
 
 //! \brief A file input object that reads an entire

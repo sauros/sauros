@@ -23,6 +23,43 @@ struct product_s {
    cell_c cell;  //! Resulting cell item from parsing
 };
 
+//! \brief The parser tokens
+enum class token_e {
+   L_BRACKET,
+   R_BRACKET,
+   SYMBOL,
+   INTEGER,
+   DOUBLE,
+   STRING,
+};
+
+//! \brief  A token/ data/ location pair
+struct token_s {
+   token_e token;
+   std::string data;
+   location_s location;
+};
+
+//! \brief A parser meant to parse segments of code
+//!        rather than 1 continuous valid line
+class segment_parser_c {
+ public:
+   //! \brief A code segment
+   struct segment_s {
+      std::string line;
+      std::size_t line_number;
+   };
+
+   //! \brief Submit a segment to be analyzed
+   //! \returns product_s if there is an error, or if
+   //!          parsing has completed
+   std::optional<product_s> submit(segment_s segment);
+
+ private:
+   std::vector<token_s> _tokens;
+   uint64_t _tracker{0};
+};
+
 //! \brief Parse a line
 extern product_s
 parse_line(const char *source_descrption, //! Description of the source of the
