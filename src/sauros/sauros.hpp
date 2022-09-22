@@ -6,6 +6,8 @@
 #include "types.hpp"
 #include "version.hpp"
 
+#include "modules.hpp"
+#include "modules/module_if.hpp"
 #include "driver.hpp"
 #include "front/parser.hpp"
 #include "processor/processor.hpp"

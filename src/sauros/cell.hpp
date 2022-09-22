@@ -52,7 +52,7 @@ class cell_c {
 
    //! \brief Create an empty cell
    //! \param type The type to set (Defaults to SYMBOL)
-   cell_c(cell_type_e type = cell_type_e::SYMBOL) {}
+   cell_c(cell_type_e type = cell_type_e::SYMBOL) : type(type) {}
 
    //! \brief Create a standard cell
    //! \param type The type to set

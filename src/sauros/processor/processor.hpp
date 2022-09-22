@@ -4,6 +4,7 @@
 #include "sauros/cell.hpp"
 #include "sauros/environment.hpp"
 #include "sauros/system/system.hpp"
+#include "sauros/modules.hpp"
 
 #include <exception>
 #include <functional>
@@ -88,8 +89,11 @@ class processor_c {
                        std::shared_ptr<environment_c> env,
                        bool show_space = true);
 
+   std::optional<cell_c> process_cell(cell_c &cell,
+                                      std::shared_ptr<environment_c> env);
  private:
    sauros::system_c _system;
+   sauros::modules_c _modules;
    std::set<std::string> _key_symbols;
    std::unordered_map<std::string, cell_c> _builtins;
    std::unordered_map<std::string, rll::shared_library *> _loaded_libs;
@@ -97,8 +101,6 @@ class processor_c {
    void populate_standard_builtins();
 
    std::optional<cell_c> process_list(std::vector<cell_c> &cells,
-                                      std::shared_ptr<environment_c> env);
-   std::optional<cell_c> process_cell(cell_c &cell,
                                       std::shared_ptr<environment_c> env);
 
    std::optional<cell_c> process_lambda(cell_c &cell,
