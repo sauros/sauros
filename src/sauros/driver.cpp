@@ -70,7 +70,7 @@ void driver_if::execute(parser::segment_parser_c::segment_s segment) {
    }
 
    try {
-      auto result = _list_processor.process((*parser_result).cell, _env);
+      auto result = _list_processor.process_cell((*parser_result).cell, _env);
       if (result.has_value()) {
          cell_returned((*result));
       }
@@ -95,7 +95,7 @@ void driver_if::execute(const char *source, uint64_t line_number,
    }
 
    try {
-      auto result = _list_processor.process(parser_result.cell, _env);
+      auto result = _list_processor.process_cell(parser_result.cell, _env);
       if (result.has_value()) {
          cell_returned((*result));
       }

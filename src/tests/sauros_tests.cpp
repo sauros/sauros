@@ -126,7 +126,7 @@ TEST(sauros_tests, piecemeal) {
       CHECK_FALSE(result.error_info);
 
       try {
-         auto cell_result = proc.process(result.cell, env);
+         auto cell_result = proc.process_cell(result.cell, env);
 
          CHECK_TRUE(cell_result.has_value());
 
