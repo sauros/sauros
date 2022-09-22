@@ -18,14 +18,19 @@ class environment_c {
 
       //! \brief Create the exception
       //! \param identifier The identifier that was unknown
-      unknown_identifier_c(std::string identifier) : _id(identifier) {}
+      unknown_identifier_c(std::string identifier, location_s location)
+          : _id(identifier), _location(location) {}
       const char *what() const throw() { return "Unknown identifier"; }
 
       //! \brief Retrieve the identifier that was requested
       std::string get_id() const { return _id; }
 
+      //! \brief Retrieve the location
+      location_s get_location() const { return _location; }
+
     private:
       std::string _id;
+      location_s _location;
    };
 
    //! \brief Construct an environment
@@ -52,7 +57,7 @@ class environment_c {
    //! pointer that the item can be safely retrieved from using `get` \note If
    //! the item is not reachable within the current, or parent scope(s)
    //!       then the exception `unknown_identifier_c` will be thrown
-   environment_c *find(const std::string &item);
+   environment_c *find(const std::string &item, location_s location);
 
    //! \brief Get an item
    //! \param item the item to get

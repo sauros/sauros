@@ -2,7 +2,9 @@
 #define SAUROS_DRIVER_HPP
 
 #include "environment.hpp"
+#include "front/parser.hpp"
 #include "processor/processor.hpp"
+#include <fstream>
 
 namespace sauros {
 
@@ -22,14 +24,17 @@ class driver_if {
  protected:
    void execute(const char *source, const uint64_t line_number,
                 std::string &line);
+   void execute(parser::segment_parser_c::segment_s segment);
    virtual void cell_returned(cell_c &cell) = 0;
    virtual void except(sauros::processor_c::runtime_exception_c &e) = 0;
    virtual void except(sauros::processor_c::assertion_exception_c &e) = 0;
    virtual void except(sauros::environment_c::unknown_identifier_c &e) = 0;
+   virtual void parser_error(std::string &e, location_s location) = 0;
 
    std::shared_ptr<sauros::environment_c> &_env;
    sauros::input_buffer_c *_buffer{nullptr};
    sauros::processor_c _list_processor;
+   parser::segment_parser_c _segment_parser;
 };
 
 //! \brief A file input object that reads an entire
@@ -55,6 +60,13 @@ class file_executor_c : private driver_if {
    except(sauros::processor_c::assertion_exception_c &e) override final;
    virtual void
    except(sauros::environment_c::unknown_identifier_c &e) override final;
+   virtual void parser_error(std::string &e,
+                             location_s location) override final;
+
+   std::fstream _fs;
+   std::string _file;
+
+   void display_error_from_file(location_s location);
 };
 
 //! \brief REPL
@@ -81,6 +93,8 @@ class repl_c : private driver_if {
    except(sauros::processor_c::assertion_exception_c &e) override final;
    virtual void
    except(sauros::environment_c::unknown_identifier_c &e) override final;
+   virtual void parser_error(std::string &e,
+                             location_s location) override final;
 };
 
 } // namespace sauros

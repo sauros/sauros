@@ -65,6 +65,7 @@ set(SAUROS_SOURCES
 set(HEADERS
    ${CMAKE_SOURCE_DIR}/sauros/front/parser.hpp
    ${CMAKE_SOURCE_DIR}/sauros/driver.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/rang.hpp
    ${CMAKE_SOURCE_DIR}/sauros/system/system.hpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor.hpp
    ${CMAKE_SOURCE_DIR}/sauros/environment.hpp
