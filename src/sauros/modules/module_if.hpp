@@ -6,9 +6,12 @@
 
 namespace sauros {
 
+//! \brief An interface for a module
 class module_if {
 public:
    virtual ~module_if() {}
+
+   //! \brief Retrieve the map of cells that are contained by the module
    std::unordered_map<std::string, cell_c> get_members() const {
       return _members_map;
    }

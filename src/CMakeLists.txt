@@ -53,11 +53,13 @@ include(${CMAKE_SOURCE_DIR}/cmake/SetEnv.cmake)
 
 set(SAUROS_MODULE_SOURCES
    ${CMAKE_SOURCE_DIR}/sauros/modules/io/io.cpp
+   ${CMAKE_SOURCE_DIR}/sauros/modules/fs/fs.cpp
    ${CMAKE_SOURCE_DIR}/sauros/modules/math/math.cpp
 )
 
 set(SAUROS_MODULE_HEADERS
    ${CMAKE_SOURCE_DIR}/sauros/modules/io/io.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/modules/fs/fs.hpp
    ${CMAKE_SOURCE_DIR}/sauros/modules/math/math.hpp
 )
 

@@ -41,7 +41,6 @@ std::optional<std::string> input_buffer_c::submit(std::string &line) {
    // we can submit the statement
    if (_tracker == 0 && !_buffer.empty()) {
       std::string ret_buffer = _buffer;
-      std::cout << _buffer << std::endl;
       _buffer.clear();
       return {ret_buffer};
    }

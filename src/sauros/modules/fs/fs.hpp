@@ -1,15 +1,15 @@
-#ifndef SAUROUS_MODULES_IO_HPP
-#define SAUROUS_MODULES_IO_HPP
+#ifndef SAUROUS_MODULES_FS_HPP
+#define SAUROUS_MODULES_FS_HPP
 
 #include "../module_if.hpp"
 
 namespace sauros {
 namespace modules {
 
-//! \brief IO module
-class io_c : public module_if {
+//! \brief FS module
+class fs_c : public module_if {
 public:
-   io_c();
+   fs_c();
 };
 
 } // namespace modules

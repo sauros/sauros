@@ -6,6 +6,7 @@
 namespace sauros {
 namespace modules {
 
+//! \brief Math module
 class math_c : public module_if {
 public:
    math_c();

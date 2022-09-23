@@ -258,6 +258,15 @@ math_c::math_c() {
           }, env);
    });
 
+   _members_map["abs"] = cell_c(
+       [this, single_arithmetic](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+
+          return single_arithmetic(cells, [](double n)->double{
+            return fabs(n);
+          }, env);
+   });
+
    _members_map["pow"] = cell_c(
        [this, load](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
