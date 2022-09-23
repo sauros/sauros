@@ -3,6 +3,12 @@
 
 #include "../module_if.hpp"
 
+/*
+   This is a very basic filesystem module - it needs to be updated 
+   if its expected to actually be used beyond the most basic
+   of activities
+*/
+
 namespace sauros {
 namespace modules {
 

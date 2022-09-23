@@ -170,9 +170,10 @@ fs_c::fs_c() {
          }
 
          auto source = load(cells[2], env);
-         if (item.type != cell_type_e::STRING) {
+         if (source.type == cell_type_e::LAMBDA ||
+               source.type == cell_type_e::LIST) {
             throw processor_c::runtime_exception_c(
-                  "fs::write source data must be a string",
+                  "fs::append source data must not be a list or lambda",
                   cells[2].location);
          }
 
@@ -202,9 +203,10 @@ fs_c::fs_c() {
          }
 
          auto source = load(cells[2], env);
-         if (item.type != cell_type_e::STRING) {
+         if (source.type == cell_type_e::LAMBDA ||
+               source.type == cell_type_e::LIST) {
             throw processor_c::runtime_exception_c(
-                  "fs::append source data must be a string",
+                  "fs::append source data must not be a list or lambda",
                   cells[2].location);
          }
 
