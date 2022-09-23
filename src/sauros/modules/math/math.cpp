@@ -52,40 +52,9 @@ math_c::math_c() {
       return result;
    };
 
-   _members_map["pi"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
-
-         return {sauros::cell_c(sauros::cell_type_e::DOUBLE, "3.14159265359")};
-   });
-
-   _members_map["e"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
-
-         if (cells.size() != 1) {
-             throw processor_c::runtime_exception_c(
-                 "math::e expects 0 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
-         }
-
-         return {sauros::cell_c(sauros::cell_type_e::DOUBLE, "2.71828182845")};
-   });
-
-   _members_map["phi"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
-
-         if (cells.size() != 1) {
-             throw processor_c::runtime_exception_c(
-                 "math::phi expects 0 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
-         }
-
-         return {sauros::cell_c(sauros::cell_type_e::DOUBLE, "1.61803398875")};
-   });
+   _members_map["pi"] = cell_c(cell_type_e::DOUBLE, "3.14159265359");
+   _members_map["phi"] = cell_c(cell_type_e::DOUBLE, "1.61803398875");
+   _members_map["e"] = cell_c(cell_type_e::DOUBLE, "2.71828182845");
 
    _members_map["log"] = cell_c(
        [this, single_arithmetic](std::vector<cell_c> &cells,
