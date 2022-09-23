@@ -3,8 +3,8 @@
 
 #include "sauros/cell.hpp"
 #include "sauros/environment.hpp"
-#include "sauros/system/system.hpp"
 #include "sauros/modules.hpp"
+#include "sauros/system/system.hpp"
 
 #include <exception>
 #include <functional>
@@ -88,6 +88,7 @@ class processor_c {
    void cell_to_string(std::string &out, cell_c &cell,
                        std::shared_ptr<environment_c> env,
                        bool show_space = true);
+
  private:
    sauros::system_c _system;
    sauros::modules_c _modules;

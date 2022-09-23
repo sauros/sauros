@@ -8,7 +8,7 @@ namespace modules {
 
 //! \brief IO module
 class io_c : public module_if {
-public:
+ public:
    io_c();
 };
 

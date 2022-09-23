@@ -141,7 +141,6 @@ void processor_c::populate_standard_builtins() {
           return {sauros::CELL_TRUE};
        });
 
-
    _builtins["use"] = cell_c(
        [this](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
@@ -160,9 +159,8 @@ void processor_c::populate_standard_builtins() {
              }
 
              if (!_modules.contains((*i).data)) {
-                throw sauros::processor_c::runtime_exception_c(
-                    "unknown module",
-                    (*i).location);
+                throw sauros::processor_c::runtime_exception_c("unknown module",
+                                                               (*i).location);
              }
 
              _modules.populate_environment((*i).data, env);

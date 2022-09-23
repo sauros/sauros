@@ -8,7 +8,7 @@ namespace sauros {
 
 //! \brief An interface for a module
 class module_if {
-public:
+ public:
    virtual ~module_if() {}
 
    //! \brief Retrieve the map of cells that are contained by the module
@@ -16,10 +16,10 @@ public:
       return _members_map;
    }
 
-protected:
+ protected:
    std::unordered_map<std::string, cell_c> _members_map;
 };
 
-}
+} // namespace sauros
 
 #endif

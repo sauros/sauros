@@ -8,7 +8,7 @@ namespace modules {
 
 //! \brief Math module
 class math_c : public module_if {
-public:
+ public:
    math_c();
 };
 

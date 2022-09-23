@@ -149,7 +149,8 @@ void file_executor_c::except(sauros::processor_c::assertion_exception_c &e) {
 }
 
 void file_executor_c::except(sauros::environment_c::unknown_identifier_c &e) {
-   std::cout << rang::fg::red << e.what() << rang::fg::reset << ": " << e.get_id() << std::endl;
+   std::cout << rang::fg::red << e.what() << rang::fg::reset << ": "
+             << e.get_id() << std::endl;
    display_error_from_file(e.get_location());
    std::exit(1);
 }
@@ -293,8 +294,9 @@ void repl_c::except(sauros::processor_c::assertion_exception_c &e) {
 }
 
 void repl_c::except(sauros::environment_c::unknown_identifier_c &e) {
-   
-   std::cout << rang::fg::red << e.what() << rang::fg::reset << ": " << e.get_id() << std::endl;
+
+   std::cout << rang::fg::red << e.what() << rang::fg::reset << ": "
+             << e.get_id() << std::endl;
 }
 
 void repl_c::parser_error(std::string &e, location_s location) {
