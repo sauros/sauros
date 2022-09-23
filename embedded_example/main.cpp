@@ -1,11 +1,11 @@
-#include <sauros/sauros.hpp>
 #include <filesystem>
 #include <iostream>
+#include <sauros/sauros.hpp>
 
 int main(int argc, char **argv) {
 
    std::shared_ptr<sauros::environment_c> env =
-      std::make_shared<sauros::environment_c>();
+       std::make_shared<sauros::environment_c>();
 
    sauros::file_executor_c executor(env);
 

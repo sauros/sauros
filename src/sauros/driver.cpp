@@ -41,7 +41,6 @@ std::optional<std::string> input_buffer_c::submit(std::string &line) {
    // we can submit the statement
    if (_tracker == 0 && !_buffer.empty()) {
       std::string ret_buffer = _buffer;
-      std::cout << _buffer << std::endl;
       _buffer.clear();
       return {ret_buffer};
    }
@@ -70,7 +69,7 @@ void driver_if::execute(parser::segment_parser_c::segment_s segment) {
    }
 
    try {
-      auto result = _list_processor.process((*parser_result).cell, _env);
+      auto result = _list_processor.process_cell((*parser_result).cell, _env);
       if (result.has_value()) {
          cell_returned((*result));
       }
@@ -95,7 +94,7 @@ void driver_if::execute(const char *source, uint64_t line_number,
    }
 
    try {
-      auto result = _list_processor.process(parser_result.cell, _env);
+      auto result = _list_processor.process_cell(parser_result.cell, _env);
       if (result.has_value()) {
          cell_returned((*result));
       }
@@ -150,7 +149,8 @@ void file_executor_c::except(sauros::processor_c::assertion_exception_c &e) {
 }
 
 void file_executor_c::except(sauros::environment_c::unknown_identifier_c &e) {
-   std::cout << rang::fg::red << e.what() << rang::fg::reset << std::endl;
+   std::cout << rang::fg::red << e.what() << rang::fg::reset << ": "
+             << e.get_id() << std::endl;
    display_error_from_file(e.get_location());
    std::exit(1);
 }
@@ -294,7 +294,9 @@ void repl_c::except(sauros::processor_c::assertion_exception_c &e) {
 }
 
 void repl_c::except(sauros::environment_c::unknown_identifier_c &e) {
-   std::cout << rang::fg::red << e.what() << rang::fg::reset << std::endl;
+
+   std::cout << rang::fg::red << e.what() << rang::fg::reset << ": "
+             << e.get_id() << std::endl;
 }
 
 void repl_c::parser_error(std::string &e, location_s location) {

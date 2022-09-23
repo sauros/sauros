@@ -3,6 +3,7 @@
 
 #include "sauros/cell.hpp"
 #include "sauros/environment.hpp"
+#include "sauros/modules.hpp"
 #include "sauros/system/system.hpp"
 
 #include <exception>
@@ -77,8 +78,8 @@ class processor_c {
    //! \param global_env The environment to use
    //! \returns Optional cell. If a cell is returned, no errors arose
    //! \note Upon an error occuring `runtime_exception_c` will be thrown
-   std::optional<cell_c> process(cell_c &cell,
-                                 std::shared_ptr<environment_c> global_env);
+   std::optional<cell_c> process_cell(cell_c &cell,
+                                      std::shared_ptr<environment_c> env);
 
    //! \brief Convert a cell to a string - Something that can be printed to the
    //! screen \param out[out] The string to populate \param cell[in] The cell to
@@ -90,6 +91,7 @@ class processor_c {
 
  private:
    sauros::system_c _system;
+   sauros::modules_c _modules;
    std::set<std::string> _key_symbols;
    std::unordered_map<std::string, cell_c> _builtins;
    std::unordered_map<std::string, rll::shared_library *> _loaded_libs;
@@ -97,8 +99,6 @@ class processor_c {
    void populate_standard_builtins();
 
    std::optional<cell_c> process_list(std::vector<cell_c> &cells,
-                                      std::shared_ptr<environment_c> env);
-   std::optional<cell_c> process_cell(cell_c &cell,
                                       std::shared_ptr<environment_c> env);
 
    std::optional<cell_c> process_lambda(cell_c &cell,

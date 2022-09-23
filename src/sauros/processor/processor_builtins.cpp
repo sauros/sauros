@@ -75,6 +75,7 @@ void processor_c::populate_standard_builtins() {
    _key_symbols.insert("type");
    _key_symbols.insert("import");
    _key_symbols.insert("use");
+   _key_symbols.insert("extern");
    _key_symbols.insert("not");
    _key_symbols.insert("or");
    _key_symbols.insert("and");
@@ -118,7 +119,7 @@ void processor_c::populate_standard_builtins() {
           return {sauros::CELL_TRUE};
        });
 
-   _builtins["use"] = cell_c(
+   _builtins["extern"] = cell_c(
        [this](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           if (cells.size() < 2) {
@@ -136,6 +137,33 @@ void processor_c::populate_standard_builtins() {
              }
 
              load_library((*i).data, (*i).location, env);
+          }
+          return {sauros::CELL_TRUE};
+       });
+
+   _builtins["use"] = cell_c(
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+          if (cells.size() < 2) {
+             throw runtime_exception_c(
+                 "use command expects at least 1 parameters, but " +
+                     std::to_string(cells.size() - 1) + " were given",
+                 cells[0].location);
+          }
+
+          for (auto i = cells.begin() + 1; i < cells.end(); i++) {
+             if ((*i).type != sauros::cell_type_e::STRING) {
+                throw sauros::processor_c::runtime_exception_c(
+                    "use command expects parameters to be raw strings",
+                    (*i).location);
+             }
+
+             if (!_modules.contains((*i).data)) {
+                throw sauros::processor_c::runtime_exception_c("unknown module",
+                                                               (*i).location);
+             }
+
+             _modules.populate_environment((*i).data, env);
           }
           return {sauros::CELL_TRUE};
        });
@@ -454,7 +482,6 @@ void processor_c::populate_standard_builtins() {
           auto value = load(cells[2], env);
 
           if (value.type == cell_type_e::SYMBOL) {
-             std::cout << value.data << std::endl;
              throw runtime_exception_c("Expected list or datum value (var)",
                                        cells[2].location);
           }

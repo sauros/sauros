@@ -4,11 +4,11 @@
 ; Prefix of the library that will be used to 
 ; artificially scope functions in the library 
 ;     (https://github.com/bosley/sauros/wiki/Tutorial#naming-conventions)
-[var prefix "io"]
+[var prefix "example"]
 
 ; Name of the library file that needs to be 
 ; linked to
-[var target_name "sauros.io.lib"]
+[var target_name "sauros.example.lib"]
 
 ;  List of functions that should be loadable
 ;  from the shared object that is the external

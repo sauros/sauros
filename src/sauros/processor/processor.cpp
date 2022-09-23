@@ -50,15 +50,6 @@ void processor_c::cell_to_string(std::string &out, cell_c &cell,
 
 processor_c::processor_c() { populate_standard_builtins(); }
 
-std::optional<cell_c> processor_c::process(cell_c &cell,
-                                           std::shared_ptr<environment_c> env) {
-   if (cell.list.empty()) {
-      return {};
-   }
-
-   return process_list(cell.list, env);
-}
-
 std::optional<cell_c>
 processor_c::process_list(std::vector<cell_c> &cells,
                           std::shared_ptr<environment_c> env) {
