@@ -1,0 +1,17 @@
+[var x [compose [+ 3 [* 9 2]]]]
+
+[assert "compose_and_decompise.sau > decompose basic" [== [decompose x] 21]]
+
+[var fn [compose [lambda [n] [
+   [+ [* n 2] 10]
+]]]]
+
+
+; Lambdas need to be explicitly decompised into another
+; cell before they can be called due to the nature of it being a
+; process of definition
+[var decomposed_lambda [decompose  fn]]
+
+[assert "compose_and_decompise.sau > decompose lambda evaluated" [== [decomposed_lambda 5] 20]]
+
+[assert "compose_and_decompise.sau > decompose direct" [== 66 [decompose "[var x [+ 33 33]]"]]]

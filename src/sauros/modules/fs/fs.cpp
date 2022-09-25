@@ -9,17 +9,6 @@ namespace sauros {
 namespace modules {
 
 fs_c::fs_c() {
-
-   auto load = [&](cell_c &cell, std::shared_ptr<environment_c> env) -> cell_c {
-      processor_c processor;
-      auto target = processor.process_cell(cell, env);
-      if (!target.has_value()) {
-         throw processor_c::runtime_exception_c("Unable to process value",
-                                                cell.location);
-      }
-      return (*target);
-   };
-
    _members_map["cwd"] = cell_c(
        [this](std::vector<cell_c> &cells,
               std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
@@ -49,7 +38,7 @@ fs_c::fs_c() {
        });
 
    _members_map["chdir"] =
-       cell_c([this, load](
+       cell_c([this](
                   std::vector<cell_c> &cells,
                   std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           if (cells.size() != 2) {
@@ -71,7 +60,7 @@ fs_c::fs_c() {
        });
 
    _members_map["is_file"] =
-       cell_c([this, load](
+       cell_c([this](
                   std::vector<cell_c> &cells,
                   std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           if (cells.size() != 2) {
@@ -94,7 +83,7 @@ fs_c::fs_c() {
        });
 
    _members_map["is_dir"] =
-       cell_c([this, load](
+       cell_c([this](
                   std::vector<cell_c> &cells,
                   std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           if (cells.size() != 2) {
@@ -117,7 +106,7 @@ fs_c::fs_c() {
        });
 
    _members_map["read"] =
-       cell_c([this, load](
+       cell_c([this](
                   std::vector<cell_c> &cells,
                   std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           if (cells.size() != 2) {
@@ -153,7 +142,7 @@ fs_c::fs_c() {
        });
 
    _members_map["write"] =
-       cell_c([this, load](
+       cell_c([this](
                   std::vector<cell_c> &cells,
                   std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           if (cells.size() != 3) {
@@ -188,7 +177,7 @@ fs_c::fs_c() {
        });
 
    _members_map["app"] =
-       cell_c([this, load](
+       cell_c([this](
                   std::vector<cell_c> &cells,
                   std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           if (cells.size() != 3) {

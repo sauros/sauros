@@ -98,6 +98,9 @@ class processor_c {
 
    void populate_standard_builtins();
 
+   void quote_cell(std::string &out, cell_c &cell,
+                       std::shared_ptr<environment_c> env);
+
    std::optional<cell_c> process_list(std::vector<cell_c> &cells,
                                       std::shared_ptr<environment_c> env);
 

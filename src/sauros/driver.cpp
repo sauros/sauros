@@ -5,6 +5,82 @@
 
 namespace sauros {
 
+void display_error_from_file(std::fstream &fs, std::string file, location_s location)
+{
+   std::cout << rang::fg::magenta << file << rang::fg::reset << " : ("
+             << rang::fg::blue << location.line << rang::fg::reset << ","
+             << rang::fg::blue << location.col << rang::fg::reset << ")\n";
+
+   struct line_data_pair_s {
+      uint64_t number;
+      std::string data;
+   };
+
+   // Bring the file back to the beginning
+   fs.seekg(0, std::ios::beg);
+
+   // A window of source
+   std::vector<line_data_pair_s> window;
+
+   // Get to the line
+   std::string line_data;
+   uint64_t line_number{0};
+
+   // Determine the upper and lower bound for a source code window
+   int64_t upper_bound = location.line + 4;
+   int64_t lower_bound = (int64_t)location.line - 5;
+   if (lower_bound < 0) {
+      lower_bound = 0;
+   }
+
+   // Build a window of source code to display
+   while (std::getline(fs, line_data)) {
+
+      line_number++;
+      if ((line_number >= lower_bound && lower_bound < location.line) ||
+          location.line == line_number ||
+          line_number > location.line && line_number < upper_bound) {
+         window.push_back({.number = line_number, .data = line_data});
+      }
+
+      if (line_number >= upper_bound) {
+         break;
+      }
+   }
+
+   // Determine the alignment
+   size_t width = 2;
+   {
+      auto s = std::to_string(upper_bound);
+      if (s.length() + 1 > width) {
+         width = s.length() + 1;
+      }
+   }
+
+   // Make an arrow to show where the error is
+   std::string pointer;
+   for (size_t i = 0; i < location.col; i++) {
+      pointer += "~";
+   }
+   pointer += "^";
+
+   // Draw the window
+   for (auto line_data : window) {
+      if (line_data.number == location.line) {
+         std::cout << rang::fg::yellow << std::right << std::setw(width)
+                   << line_data.number << rang::fg::reset << " | "
+                   << line_data.data << std::endl;
+         std::cout << rang::fg::cyan << std::right << std::setw(width) << ">>"
+                   << rang::fg::reset << " | " << rang::fg::red << pointer
+                   << rang::fg::reset << std::endl;
+      } else {
+         std::cout << rang::fg::green << std::right << std::setw(width)
+                   << line_data.number << rang::fg::reset << " | "
+                   << line_data.data << std::endl;
+      }
+   }
+}
+
 class input_buffer_c {
  public:
    std::optional<std::string> submit(std::string &data);
@@ -133,108 +209,32 @@ int file_executor_c::run(const std::string &file) {
    return 0;
 }
 
-void file_executor_c::cell_returned(cell_c &cell) { /* Not needed */
+void file_executor_c::cell_returned(std::optional<cell_c> cell) { /* Not needed */
 }
 
 void file_executor_c::except(sauros::processor_c::runtime_exception_c &e) {
    std::cout << rang::fg::red << e.what() << rang::fg::reset << std::endl;
-   display_error_from_file(e.get_location());
+   display_error_from_file(_fs, _file, e.get_location());
    std::exit(1);
 }
 
 void file_executor_c::except(sauros::processor_c::assertion_exception_c &e) {
    std::cout << rang::fg::red << e.what() << rang::fg::reset << std::endl;
-   display_error_from_file(e.get_location());
+   display_error_from_file(_fs, _file, e.get_location());
    std::exit(1);
 }
 
 void file_executor_c::except(sauros::environment_c::unknown_identifier_c &e) {
    std::cout << rang::fg::red << e.what() << rang::fg::reset << ": "
              << e.get_id() << std::endl;
-   display_error_from_file(e.get_location());
+   display_error_from_file(_fs, _file, e.get_location());
    std::exit(1);
 }
 
 void file_executor_c::parser_error(std::string &e, location_s location) {
    std::cout << rang::fg::red << e << rang::fg::reset << std::endl;
-   display_error_from_file(location);
+   display_error_from_file(_fs, _file, location);
    std::exit(1);
-}
-
-void file_executor_c::display_error_from_file(location_s location) {
-
-   std::cout << rang::fg::magenta << _file << rang::fg::reset << " : ("
-             << rang::fg::blue << location.line << rang::fg::reset << ","
-             << rang::fg::blue << location.col << rang::fg::reset << ")\n";
-
-   struct line_data_pair_s {
-      uint64_t number;
-      std::string data;
-   };
-
-   // Bring the file back to the beginning
-   _fs.seekg(0, std::ios::beg);
-
-   // A window of source
-   std::vector<line_data_pair_s> window;
-
-   // Get to the line
-   std::string line_data;
-   uint64_t line_number{0};
-
-   // Determine the upper and lower bound for a source code window
-   int64_t upper_bound = location.line + 4;
-   int64_t lower_bound = (int64_t)location.line - 5;
-   if (lower_bound < 0) {
-      lower_bound = 0;
-   }
-
-   // Build a window of source code to display
-   while (std::getline(_fs, line_data)) {
-
-      line_number++;
-      if ((line_number >= lower_bound && lower_bound < location.line) ||
-          location.line == line_number ||
-          line_number > location.line && line_number < upper_bound) {
-         window.push_back({.number = line_number, .data = line_data});
-      }
-
-      if (line_number >= upper_bound) {
-         break;
-      }
-   }
-
-   // Determine the alignment
-   size_t width = 2;
-   {
-      auto s = std::to_string(upper_bound);
-      if (s.length() + 1 > width) {
-         width = s.length() + 1;
-      }
-   }
-
-   // Make an arrow to show where the error is
-   std::string pointer;
-   for (size_t i = 0; i < location.col; i++) {
-      pointer += "~";
-   }
-   pointer += "^";
-
-   // Draw the window
-   for (auto line_data : window) {
-      if (line_data.number == location.line) {
-         std::cout << rang::fg::yellow << std::right << std::setw(width)
-                   << line_data.number << rang::fg::reset << " | "
-                   << line_data.data << std::endl;
-         std::cout << rang::fg::cyan << std::right << std::setw(width) << ">>"
-                   << rang::fg::reset << " | " << rang::fg::red << pointer
-                   << rang::fg::reset << std::endl;
-      } else {
-         std::cout << rang::fg::green << std::right << std::setw(width)
-                   << line_data.number << rang::fg::reset << " | "
-                   << line_data.data << std::endl;
-      }
-   }
 }
 
 void repl_c::start() {
@@ -279,10 +279,13 @@ void repl_c::start() {
 
 void repl_c::stop() { _do = false; }
 
-void repl_c::cell_returned(cell_c &cell) {
-   std::string s_cell;
-   _list_processor.cell_to_string(s_cell, cell, _env, true);
-   std::cout << s_cell << std::endl;
+void repl_c::cell_returned(std::optional<cell_c> cell) {
+
+   if (cell.has_value()) {
+      std::string s_cell;
+      _list_processor.cell_to_string(s_cell, *cell, _env, true);
+      std::cout << s_cell << std::endl;
+   }
 }
 
 void repl_c::except(sauros::processor_c::runtime_exception_c &e) {
@@ -302,5 +305,45 @@ void repl_c::except(sauros::environment_c::unknown_identifier_c &e) {
 void repl_c::parser_error(std::string &e, location_s location) {
    std::cout << rang::fg::red << e << rang::fg::reset << std::endl;
 }
+
+void eval_c::cell_returned(std::optional<cell_c> cell) {
+   _cb(cell);
+}
+
+void eval_c::except(sauros::processor_c::runtime_exception_c &e) {
+   std::cout << rang::fg::yellow << "[decomposed item] : " << rang::fg::red << e.what() << rang::fg::reset << std::endl;
+   std::exit(1);
+}
+
+void eval_c::except(sauros::processor_c::assertion_exception_c &e) {
+   std::cout << rang::fg::yellow << "[decomposed item] : " << rang::fg::red << e.what() << rang::fg::reset << std::endl;
+   std::exit(1);
+}
+
+void eval_c::except(sauros::environment_c::unknown_identifier_c &e) {
+   std::cout << rang::fg::yellow << "[decomposed item] : " << rang::fg::red << e.what() << rang::fg::reset << ": "
+             << e.get_id() << std::endl;
+   std::exit(1);
+}
+
+void eval_c::parser_error(std::string &e, location_s location) {
+   std::cout  << rang::fg::yellow << "[decomposed item] : " << rang::fg::red << e << rang::fg::reset << std::endl;
+   std::exit(1);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 } // namespace sauros

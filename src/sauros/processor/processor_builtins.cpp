@@ -83,6 +83,8 @@ void processor_c::populate_standard_builtins() {
    _key_symbols.insert("break");
    _key_symbols.insert("at");
    _key_symbols.insert("clear");
+   _key_symbols.insert("compose");
+   _key_symbols.insert("decompose");
 
    auto load = [&](cell_c &cell, std::shared_ptr<environment_c> env) -> cell_c {
       // std::cout << "TYPE: " << cell_type_to_string(cell.type) << " CELL: " <<
@@ -639,6 +641,49 @@ void processor_c::populate_standard_builtins() {
           list.type = cell_type_e::LIST;
           list.data = "<list>";
           return {list};
+       });
+
+   _builtins["compose"] =
+       cell_c([this](
+                  std::vector<cell_c> &cells,
+                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+
+          if (cells.size() != 2) {
+             throw runtime_exception_c(
+                 "compose command expects 1 parameters, but " +
+                     std::to_string(cells.size() - 1) + " were given",
+                 cells[0].location);
+          }
+
+          std::string value;
+          for(auto c = cells.begin() + 1; c < cells.end(); c++) {
+            quote_cell(value, (*c), env);
+          }
+
+          return cell_c(cell_type_e::STRING, value);
+       });
+
+   _builtins["decompose"] =
+       cell_c([this, load](
+                  std::vector<cell_c> &cells,
+                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+          
+          if (cells.size() != 2) {
+             throw runtime_exception_c(
+                 "decompose command expects 1 parameters, but " +
+                     std::to_string(cells.size() - 1) + " were given",
+                 cells[0].location);
+          }
+
+          auto target = load(cells[1], env);
+
+          std::optional<cell_c> result;
+          eval_c evaluator(env, [&result](std::optional<cell_c> cell) {
+               result = cell;
+          });
+
+          evaluator.eval(cells[1].location.line, target.data);
+          return result;
        });
 
    _builtins["len"] =

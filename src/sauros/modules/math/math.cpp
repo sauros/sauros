@@ -10,19 +10,8 @@ namespace sauros {
 namespace modules {
 
 math_c::math_c() {
-
-   auto load = [&](cell_c &cell, std::shared_ptr<environment_c> env) -> cell_c {
-      processor_c processor;
-      auto target = processor.process_cell(cell, env);
-      if (!target.has_value()) {
-         throw processor_c::runtime_exception_c("Unable to process value",
-                                                cell.location);
-      }
-      return (*target);
-   };
-
    auto single_arithmetic =
-       [load](std::vector<cell_c> &cells, std::function<double(double)> fn,
+       [this](std::vector<cell_c> &cells, std::function<double(double)> fn,
               std::shared_ptr<environment_c> env) -> cell_c {
       if (cells.size() < 2) {
          throw processor_c::runtime_exception_c(
@@ -31,7 +20,7 @@ math_c::math_c() {
              cells[0].location);
       }
 
-      auto op = [load, fn](cell_c &cell,
+      auto op = [this, fn](cell_c &cell,
                            std::shared_ptr<environment_c> env) -> double {
          auto item = load(cell, env);
          if (item.type != cell_type_e::DOUBLE &&
@@ -220,7 +209,7 @@ math_c::math_c() {
               cells, [](double n) -> double { return fabs(n); }, env);
        });
 
-   _members_map["pow"] = cell_c([this, load](std::vector<cell_c> &cells,
+   _members_map["pow"] = cell_c([this](std::vector<cell_c> &cells,
                                              std::shared_ptr<environment_c> env)
                                     -> std::optional<cell_c> {
       if (cells.size() != 3) {
@@ -230,7 +219,7 @@ math_c::math_c() {
              cells[0].location);
       }
 
-      auto op = [load](cell_c &lhs_, cell_c &rhs_,
+      auto op = [this](cell_c &lhs_, cell_c &rhs_,
                        std::shared_ptr<environment_c> env) -> double {
          auto lhs = load(lhs_, env);
          if (lhs.type != cell_type_e::DOUBLE &&
