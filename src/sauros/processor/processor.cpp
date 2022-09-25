@@ -48,6 +48,60 @@ void processor_c::cell_to_string(std::string &out, cell_c &cell,
    }
 }
 
+void processor_c::quote_cell(std::string &out, cell_c &cell,
+                                 std::shared_ptr<environment_c> env) {
+   switch (cell.type) {
+   case cell_type_e::DOUBLE:
+      [[fallthrough]];
+   case cell_type_e::INTEGER:
+      [[fallthrough]];
+   case cell_type_e::SYMBOL: {
+      out += cell.data;
+      out += " ";
+      break;
+   }
+   case cell_type_e::STRING:
+      out += "\"" + cell.data + "\" ";
+      break;
+   case cell_type_e::LIST: {
+
+      out += std::string("[ ");
+
+      for (auto &cell : cell.list) {
+         quote_cell(out, cell, env);
+      }
+      out += std::string("] ");
+      break;
+   }
+   case cell_type_e::LAMBDA: {
+
+      auto &cells = cell.list;
+
+      auto lambda_name = cells[0].data;
+
+      out += lambda_name + "[ ";
+
+      auto target_lambda =
+         env->find(cells[0].data, cells[0].location)->get(cells[0].data);
+
+      for (auto param = target_lambda.list[0].list.begin() + 1; 
+               param != target_lambda.list[0].list.end(); 
+               ++param) {
+          out += (*param).data + " ";
+      }
+
+      out += "] ";
+
+      out += std::string("[");
+
+      for (auto &cell : target_lambda.list[1].list) {
+         quote_cell(out, cell, env);
+      }
+      out += std::string("] ");
+   }
+   }
+}
+
 processor_c::processor_c() { populate_standard_builtins(); }
 
 std::optional<cell_c>

@@ -2,6 +2,7 @@
 #include "environment.hpp"
 #include "modules/fs/fs.hpp"
 #include "modules/io/io.hpp"
+#include "modules/sys/sys.hpp"
 #include "modules/math/math.hpp"
 
 namespace sauros {
@@ -10,6 +11,7 @@ modules_c::modules_c() {
    _modules["io"] = new modules::io_c();
    _modules["fs"] = new modules::fs_c();
    _modules["math"] = new modules::math_c();
+   _modules["sys"] = new modules::sys_c();
 }
 
 modules_c::~modules_c() {

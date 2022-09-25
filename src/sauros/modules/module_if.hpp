@@ -18,6 +18,8 @@ class module_if {
 
  protected:
    std::unordered_map<std::string, cell_c> _members_map;
+
+   cell_c load(cell_c &cell, std::shared_ptr<environment_c> env);
 };
 
 } // namespace sauros
