@@ -1,6 +1,7 @@
 #include "processor.hpp"
 
 #include <iostream>
+#include <sstream>
 
 namespace sauros {
 
@@ -43,6 +44,10 @@ void processor_c::cell_to_string(std::string &out, cell_c &cell,
    }
    case cell_type_e::LAMBDA: {
       out += "<lambda>";
+      break;
+   }
+   case cell_type_e::OBJECT: {
+      out += "<object>";
       break;
    }
    }
@@ -98,6 +103,11 @@ void processor_c::quote_cell(std::string &out, cell_c &cell,
          quote_cell(out, cell, env);
       }
       out += std::string("] ");
+      break;
+   }
+   case cell_type_e::OBJECT: {
+      out = "<OBJECT> :: NOT YET DONE";
+      break;
    }
    }
 }
@@ -149,8 +159,20 @@ processor_c::process_list(std::vector<cell_c> &cells,
       break;
 
    case cell_type_e::LAMBDA:
-      // Unused
       break;
+
+   case cell_type_e::OBJECT: {
+
+      // TODO:
+      //    Considering makeing a map of cells for each defined object that
+      //    containes a proc cell that loads the initially defined object cell
+      //    and clones it into the environment under a new name. Then, we can
+      //    use the nifty accessor.list.code to drill into that new object's
+      //    contained environment and members
+      //
+
+      break;
+   }
 
    default:
       break;
@@ -164,6 +186,21 @@ processor_c::process_cell(cell_c &cell, std::shared_ptr<environment_c> env) {
 
    switch (cell.type) {
    case cell_type_e::SYMBOL: {
+
+      // Check if its a dot accessor
+      //
+      if (cell.data.find('.') != std::string::npos) {
+         std::string accessor;
+         std::vector<std::string> accessor_list;
+         std::stringstream source(cell.data);
+         while(std::getline(source, accessor, '.')) {
+            accessor_list.push_back(accessor);
+         }
+         // Each item up-to and not including the last item should be an object
+         // the last member should be something within the object that we are 
+         // trying to access
+         return access_object_member(accessor_list);
+      }
 
       // Check the built ins to see if its a process to exec
       //
@@ -186,6 +223,8 @@ processor_c::process_cell(cell_c &cell, std::shared_ptr<environment_c> env) {
    case cell_type_e::STRING:
       [[fallthrough]];
    case cell_type_e::INTEGER:
+      [[fallthrough]];
+   case cell_type_e::OBJECT:
       return cell;
 
    case cell_type_e::LAMBDA: {
@@ -242,6 +281,19 @@ processor_c::process_lambda(cell_c &cell, std::vector<cell_c> &cells,
        environment_c(target_lambda.list[0].list, exps, env));
 
    return process_cell(lambda_cell, lambda_env);
+}
+
+
+std::optional<cell_c>
+processor_c::access_object_member(std::vector<std::string> &accessors) {
+
+   std::cout << "Access object member > ";
+   for(auto &el : accessors) {
+      std::cout << el << "->";
+   }
+   std::cout << std::endl;
+
+   return {};
 }
 
 } // namespace sauros

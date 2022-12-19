@@ -85,6 +85,7 @@ void processor_c::populate_standard_builtins() {
    _key_symbols.insert("clear");
    _key_symbols.insert("compose");
    _key_symbols.insert("decompose");
+   _key_symbols.insert("object");
 
    auto load = [&](cell_c &cell, std::shared_ptr<environment_c> env) -> cell_c {
       // std::cout << "TYPE: " << cell_type_to_string(cell.type) << " CELL: " <<
@@ -463,6 +464,12 @@ void processor_c::populate_standard_builtins() {
 
           auto &variable_name = cells[1].data;
 
+          if (variable_name.find('.') != std::string::npos) {
+             throw runtime_exception_c("Attempting to directly define a variable accessor " +
+                                           variable_name,
+                                       cells[1].location);
+          }
+
           if (_key_symbols.contains(variable_name)) {
              throw runtime_exception_c("Attempting to define a key symbol: " +
                                            variable_name,
@@ -597,6 +604,11 @@ void processor_c::populate_standard_builtins() {
 
           auto &variable_name = cells[1].data;
 
+          if (variable_name.find('.') != std::string::npos) {
+             std::cout << "processor_builtins::set - Attempting to set an object member - NOT YET COMPLETE\n";
+             std::exit(1); 
+          }
+
           // If this isn't found it will throw :)
           auto containing_env = env->find(variable_name, cells[1].location);
           auto value = load(cells[2], env);
@@ -684,6 +696,39 @@ void processor_c::populate_standard_builtins() {
 
           evaluator.eval(cells[1].location.line, target.data);
           return result;
+       });
+
+
+   _builtins["object"] =
+       cell_c([this, load](
+                  std::vector<cell_c> &cells,
+                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+          if (cells.size()  != 3) {
+             throw runtime_exception_c("object command expectes 3 parameters, but " + 
+                                       std::to_string(cells.size() - 1) + " were given",
+                                       cells[0].location);
+          }
+
+          auto &variable_name = cells[1].data;
+
+          if (_key_symbols.contains(variable_name)) {
+             throw runtime_exception_c("Attempting to define a key symbol: " +
+                                           variable_name,
+                                       cells[1].location);
+          }
+
+          // TODO:
+          //
+          //   Create a new cell of type OBJECT and create an ENV for it. 
+          //
+          //   run process_cell on the last cell of the given command 
+          //   with the new environment that we made
+          // 
+          //   return the object that we created
+
+
+
+          return {};
        });
 
    _builtins["len"] =

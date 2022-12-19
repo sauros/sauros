@@ -108,6 +108,8 @@ class processor_c {
                                         std::vector<cell_c> &cells,
                                         std::shared_ptr<environment_c> env);
 
+   std::optional<cell_c> access_object_member(std::vector<std::string> &accessors);
+
    cell_c perform_arithmetic(std::string op, std::vector<cell_c> &cells,
                              std::function<double(double, double)> fn,
                              std::shared_ptr<environment_c> env,
