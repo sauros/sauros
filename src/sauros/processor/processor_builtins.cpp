@@ -727,7 +727,7 @@ void processor_c::populate_standard_builtins() {
                                           std::shared_ptr<environment_c> env)
                                  -> std::optional<cell_c> {
       if (cells.size() != 3) {
-         throw runtime_exception_c("eq command expects 3 parameters, but " +
+         throw runtime_exception_c("seq command expects 3 parameters, but " +
                                        std::to_string(cells.size() - 1) +
                                        " were given",
                                    cells[0].location);
@@ -744,7 +744,7 @@ void processor_c::populate_standard_builtins() {
                                            std::shared_ptr<environment_c> env)
                                   -> std::optional<cell_c> {
       if (cells.size() != 3) {
-         throw runtime_exception_c("eq command expects 3 parameters, but " +
+         throw runtime_exception_c("sneq command expects 3 parameters, but " +
                                        std::to_string(cells.size() - 1) +
                                        " were given",
                                    cells[0].location);
