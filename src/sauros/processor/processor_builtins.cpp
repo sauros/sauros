@@ -709,6 +709,8 @@ void processor_c::populate_standard_builtins() {
                                        cells[0].location);
           }
 
+          std::cout << "Creating an object!" << std::endl;
+
           auto &variable_name = cells[1].data;
 
           if (_key_symbols.contains(variable_name)) {
@@ -726,9 +728,14 @@ void processor_c::populate_standard_builtins() {
           // 
           //   return the object that we created
 
+          auto object_cell = cell_c(cell_type_e::OBJECT);
+          object_cell.object_env = std::make_shared<sauros::environment_c>();
 
+          // Result of loading object body is 
+          load(cells[2], object_cell.object_env);
 
-          return {};
+          env->set(variable_name, object_cell);
+          return {CELL_TRUE};
        });
 
    _builtins["len"] =

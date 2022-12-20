@@ -87,7 +87,7 @@ class cell_c {
    proc_f proc;
    std::vector<cell_c> list;
    bool stop_processing{false};
-   std::shared_ptr<environment_c> object_members{nullptr};
+   std::shared_ptr<environment_c> object_env{nullptr};
 };
 
 static const cell_c CELL_TRUE =

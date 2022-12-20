@@ -54,7 +54,7 @@ void processor_c::cell_to_string(std::string &out, cell_c &cell,
 }
 
 void processor_c::quote_cell(std::string &out, cell_c &cell,
-                                 std::shared_ptr<environment_c> env) {
+                             std::shared_ptr<environment_c> env) {
    switch (cell.type) {
    case cell_type_e::DOUBLE:
       [[fallthrough]];
@@ -87,12 +87,11 @@ void processor_c::quote_cell(std::string &out, cell_c &cell,
       out += lambda_name + "[ ";
 
       auto target_lambda =
-         env->find(cells[0].data, cells[0].location)->get(cells[0].data);
+          env->find(cells[0].data, cells[0].location)->get(cells[0].data);
 
-      for (auto param = target_lambda.list[0].list.begin() + 1; 
-               param != target_lambda.list[0].list.end(); 
-               ++param) {
-          out += (*param).data + " ";
+      for (auto param = target_lambda.list[0].list.begin() + 1;
+           param != target_lambda.list[0].list.end(); ++param) {
+         out += (*param).data + " ";
       }
 
       out += "] ";
@@ -135,6 +134,7 @@ processor_c::process_list(std::vector<cell_c> &cells,
 
       // Check if its a lambda first
       if ((*cell).type == cell_type_e::LAMBDA) {
+         std::cout << "About to process that lambda: " << (*cell).data << std::endl;
          return process_lambda((*cell), cells, env);
       }
 
@@ -170,6 +170,7 @@ processor_c::process_list(std::vector<cell_c> &cells,
       //    use the nifty accessor.list.code to drill into that new object's
       //    contained environment and members
       //
+      std::cout << "process_list::OBJECT" << std::endl;
 
       break;
    }
@@ -193,13 +194,13 @@ processor_c::process_cell(cell_c &cell, std::shared_ptr<environment_c> env) {
          std::string accessor;
          std::vector<std::string> accessor_list;
          std::stringstream source(cell.data);
-         while(std::getline(source, accessor, '.')) {
+         while (std::getline(source, accessor, '.')) {
             accessor_list.push_back(accessor);
          }
          // Each item up-to and not including the last item should be an object
-         // the last member should be something within the object that we are 
+         // the last member should be something within the object that we are
          // trying to access
-         return access_object_member(accessor_list);
+         return access_object_member(cell, env, accessor_list);
       }
 
       // Check the built ins to see if its a process to exec
@@ -223,9 +224,10 @@ processor_c::process_cell(cell_c &cell, std::shared_ptr<environment_c> env) {
    case cell_type_e::STRING:
       [[fallthrough]];
    case cell_type_e::INTEGER:
-      [[fallthrough]];
-   case cell_type_e::OBJECT:
       return cell;
+   case cell_type_e::OBJECT:
+      std::cout << "GOT THAT OBJYP" << std::endl;
+      break;
 
    case cell_type_e::LAMBDA: {
       return process_list(cell.list, env);
@@ -244,6 +246,8 @@ processor_c::process_lambda(cell_c &cell, std::vector<cell_c> &cells,
    // everything after is a parameter
    // create an environment, pass the data in as the variable
    // that they will be expected as, then call
+
+   std::cout << "CELLS 0 DATA: " << cells[0].data << std::endl;
 
    auto target_lambda =
        env->find(cells[0].data, cells[0].location)->get(cells[0].data);
@@ -280,20 +284,47 @@ processor_c::process_lambda(cell_c &cell, std::vector<cell_c> &cells,
    auto lambda_env = std::make_shared<environment_c>(
        environment_c(target_lambda.list[0].list, exps, env));
 
+
    return process_cell(lambda_cell, lambda_env);
 }
 
-
 std::optional<cell_c>
-processor_c::access_object_member(std::vector<std::string> &accessors) {
+processor_c::access_object_member(cell_c &cell,
+                                  std::shared_ptr<environment_c> &env,
+                                  std::vector<std::string> &accessors) {
 
    std::cout << "Access object member > ";
-   for(auto &el : accessors) {
+   for (auto &el : accessors) {
       std::cout << el << "->";
    }
    std::cout << std::endl;
 
-   return {};
+   if (accessors.size() <= 1) {
+      throw runtime_exception_c("Malformed accessor", cell.location);
+   }
+
+   cell_c result;
+   std::shared_ptr<environment_c> moving_env = env;
+   for (std::size_t i = 0; i < accessors.size(); i++) {
+
+      // Get the item from the accessor
+      auto containing_env = moving_env->find(accessors[i], cell.location);
+      result = containing_env->get(accessors[i]);
+
+      // Check if we need to move the environment "in" to the next object
+      if (result.type == cell_type_e::OBJECT) {
+         moving_env = result.object_env;
+      }
+
+      std::cout << "Accessor : " << accessors[i] << std::endl;
+   }
+
+   std::cout << "Result type: " << cell_type_to_string(result.type)
+             << std::endl;
+
+   std::cout << "Result data: " << result.data << std::endl;
+
+   return {result};
 }
 
 } // namespace sauros
