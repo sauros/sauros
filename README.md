@@ -15,6 +15,20 @@ Check out the [wiki](https://github.com/bosley/sauros/wiki) to see what has been
 The goal of Sauros is to have an easy to use lisp-like scripting language with updated terminiology and features. 
 There is a distant hope of having sauros also be compiled, but that will held off until a VM and feature lock is established in a base implementation. 
 
+## Helping out
+
+If you want to hop on Sauros development check out open issues or send me a message!
+
+## Submitting Bugs
+
+When submitting a bug please include the output from `sauros --system`. This will provide potentially helpful information about your system and the build of sauros that you were using when the bug popped up. In addition to this please list the following:
+
+```
+  Description of the issue:
+
+  Code snippit that reproduces the issue:
+```
+
 
 <a target="_blank" href="https://icons8.com/icon/103610/lizard">Lizard icon by Icons8</a>
 
