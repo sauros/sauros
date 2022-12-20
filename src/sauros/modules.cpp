@@ -4,6 +4,7 @@
 #include "modules/io/io.hpp"
 #include "modules/math/math.hpp"
 #include "modules/sys/sys.hpp"
+#include "modules/random/random.hpp"
 
 namespace sauros {
 
@@ -12,6 +13,8 @@ modules_c::modules_c() {
    _modules["fs"] = new modules::fs_c();
    _modules["math"] = new modules::math_c();
    _modules["sys"] = new modules::sys_c();
+   _modules["sys"] = new modules::sys_c();
+   _modules["random"] = new modules::random_c();
 }
 
 modules_c::~modules_c() {

@@ -122,8 +122,10 @@ tokenize(size_t line_number, const std::string line) {
          idx++;
       }
 
+      // Manually check for "true false and nil" - These are meant to be 
+      // substitutions and not variables. This might be able to be done
+      // in a cleaner manner though
       tokens.push_back({token_e::SYMBOL, value, {line_number, start}});
-
       idx--;
    }
    return std::make_tuple(tokens, nullptr);

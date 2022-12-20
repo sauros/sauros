@@ -86,6 +86,10 @@ void processor_c::populate_standard_builtins() {
    _key_symbols.insert("compose");
    _key_symbols.insert("decompose");
    _key_symbols.insert("box");
+   _key_symbols.insert("true");
+   _key_symbols.insert("false");
+   _key_symbols.insert("is_nil");
+   _key_symbols.insert("nil");
 
    auto load = [&](cell_c &cell, std::shared_ptr<environment_c> env) -> cell_c {
       // std::cout << "TYPE: " << cell_type_to_string(cell.type) << " CELL: " <<
@@ -750,6 +754,39 @@ void processor_c::populate_standard_builtins() {
           env->set(variable_name, object_cell);
           return {CELL_TRUE};
        });
+
+   _builtins["true"] = cell_c(
+      [this](std::vector<cell_c> &cells,
+            std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+         return {sauros::CELL_TRUE};
+      });
+
+   _builtins["false"] = cell_c(
+      [this](std::vector<cell_c> &cells,
+            std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+         return {sauros::CELL_FALSE};
+      });
+
+   _builtins["nil"] = cell_c(
+      [this](std::vector<cell_c> &cells,
+            std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+         return {sauros::CELL_NIL};
+      });
+
+   _builtins["is_nil"] = cell_c(
+      [this, load](std::vector<cell_c> &cells,
+            std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+
+         if (cells.size() != 2) {
+            throw runtime_exception_c(
+               "is_null expects only one parameter to evaluate",
+               cells[0].location);
+         }
+         
+         return (load(cells[1], env).data == sauros::CELL_NIL.data) ? 
+            sauros::CELL_TRUE : sauros::CELL_FALSE;
+      });
+
 
    _builtins["len"] =
        cell_c([this, load](

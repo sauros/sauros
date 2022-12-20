@@ -57,6 +57,7 @@ set(SAUROS_MODULE_SOURCES
    ${CMAKE_SOURCE_DIR}/sauros/modules/fs/fs.cpp
    ${CMAKE_SOURCE_DIR}/sauros/modules/sys/sys.cpp
    ${CMAKE_SOURCE_DIR}/sauros/modules/math/math.cpp
+   ${CMAKE_SOURCE_DIR}/sauros/modules/random/random.cpp
 )
 
 set(SAUROS_MODULE_HEADERS
