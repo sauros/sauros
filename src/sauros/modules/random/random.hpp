@@ -2,6 +2,7 @@
 #define SAUROUS_MODULES_RANDOM_HPP
 
 #include "../module_if.hpp"
+#include <tuple>
 
 namespace sauros {
 namespace modules {
