@@ -134,7 +134,6 @@ processor_c::process_list(std::vector<cell_c> &cells,
 
       // Check if its a lambda first
       if ((*cell).type == cell_type_e::LAMBDA) {
-         std::cout << "About to process that lambda: " << (*cell).data << std::endl;
          return process_lambda((*cell), cells, env);
       }
 
@@ -242,25 +241,6 @@ processor_c::process_cell(cell_c &cell, std::shared_ptr<environment_c> env) {
 std::optional<cell_c>
 processor_c::process_lambda(cell_c &cell, std::vector<cell_c> &cells,
                             std::shared_ptr<environment_c> env) {
-   // Load cells[0]
-   // everything after is a parameter
-   // create an environment, pass the data in as the variable
-   // that they will be expected as, then call
-
-   std::cout << "CELLS 0 DATA: " << cells[0].data << std::endl;
-
-   auto target_lambda =
-       env->find(cells[0].data, cells[0].location)->get(cells[0].data);
-
-   if (target_lambda.list[0].list.size() != cells.size() - 1) {
-      throw runtime_exception_c(
-          "Parameters mismatch for lambda `" + cells[0].data +
-              "` :: Expected " +
-              std::to_string(target_lambda.list[0].list.size()) +
-              " parameters, got " + std::to_string(cells.size() - 1),
-          cells[0].location);
-   }
-
    std::vector<cell_c> exps;
    for (auto param = cells.begin() + 1; param != cells.end(); ++param) {
 
@@ -278,11 +258,11 @@ processor_c::process_lambda(cell_c &cell, std::vector<cell_c> &cells,
    cell_c lambda_cell;
    lambda_cell.data = cells[0].data;
    lambda_cell.type = cell.type;
-   lambda_cell.list = target_lambda.list[1].list;
+   lambda_cell.list = cell.list[1].list;
 
    // Create the lambda env
    auto lambda_env = std::make_shared<environment_c>(
-       environment_c(target_lambda.list[0].list, exps, env));
+       environment_c(cell.list[0].list, exps, env));
 
 
    return process_cell(lambda_cell, lambda_env);
@@ -292,13 +272,6 @@ std::optional<cell_c>
 processor_c::access_object_member(cell_c &cell,
                                   std::shared_ptr<environment_c> &env,
                                   std::vector<std::string> &accessors) {
-
-   std::cout << "Access object member > ";
-   for (auto &el : accessors) {
-      std::cout << el << "->";
-   }
-   std::cout << std::endl;
-
    if (accessors.size() <= 1) {
       throw runtime_exception_c("Malformed accessor", cell.location);
    }
@@ -315,14 +288,7 @@ processor_c::access_object_member(cell_c &cell,
       if (result.type == cell_type_e::OBJECT) {
          moving_env = result.object_env;
       }
-
-      std::cout << "Accessor : " << accessors[i] << std::endl;
    }
-
-   std::cout << "Result type: " << cell_type_to_string(result.type)
-             << std::endl;
-
-   std::cout << "Result data: " << result.data << std::endl;
 
    return {result};
 }

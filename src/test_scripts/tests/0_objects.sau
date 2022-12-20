@@ -1,0 +1,8 @@
+[object my_object [block
+  [var sum [lambda [a b c] [+ a b c]]]
+  [var number 42]
+]]
+
+[var obj my_object]
+[assert "objects.sau > object access method" [== 6 [obj.sum 1 2 3]]]
+[assert "objects.sau > object access member" [== 43 obj.number]]
