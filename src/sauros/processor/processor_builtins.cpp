@@ -85,6 +85,7 @@ void processor_c::populate_standard_builtins() {
    _key_symbols.insert("clear");
    _key_symbols.insert("compose");
    _key_symbols.insert("decompose");
+   _key_symbols.insert("box");
 
    auto load = [&](cell_c &cell, std::shared_ptr<environment_c> env) -> cell_c {
       // std::cout << "TYPE: " << cell_type_to_string(cell.type) << " CELL: " <<
@@ -463,6 +464,13 @@ void processor_c::populate_standard_builtins() {
 
           auto &variable_name = cells[1].data;
 
+          if (variable_name.find('.') != std::string::npos) {
+             throw runtime_exception_c(
+                 "Attempting to directly define a variable accessor " +
+                     variable_name,
+                 cells[1].location);
+          }
+
           if (_key_symbols.contains(variable_name)) {
              throw runtime_exception_c("Attempting to define a key symbol: " +
                                            variable_name,
@@ -597,17 +605,49 @@ void processor_c::populate_standard_builtins() {
 
           auto &variable_name = cells[1].data;
 
-          // If this isn't found it will throw :)
-          auto containing_env = env->find(variable_name, cells[1].location);
-          auto value = load(cells[2], env);
+          if (variable_name.find('.') != std::string::npos) {
 
-          if (value.type == cell_type_e::SYMBOL) {
-             throw runtime_exception_c("Expected list or datum value (set)",
-                                       cells[2].location);
+             auto accessors = retrieve_accessors(variable_name);
+
+             cell_c result;
+             std::shared_ptr<environment_c> target_env = env;
+             for (std::size_t i = 0; i < accessors.size(); i++) {
+
+                // Get the item from the accessor
+                auto containing_env =
+                    target_env->find(accessors[i], cells[1].location);
+                result = containing_env->get(accessors[i]);
+
+                // Check if we need to move the environment "in" to the next
+                // object
+                if (result.type == cell_type_e::BOX) {
+                   target_env = result.box_env;
+                }
+             }
+
+             auto value = load(cells[2], env);
+
+             if (value.type == cell_type_e::SYMBOL) {
+                throw runtime_exception_c("Expected list or datum value (set)",
+                                          cells[2].location);
+             }
+
+             target_env->set(accessors.back(), value);
+             return {target_env->get(accessors.back())};
+
+          } else {
+             // If this isn't found it will throw :)
+             auto containing_env = env->find(variable_name, cells[1].location);
+             auto value = load(cells[2], env);
+
+             if (value.type == cell_type_e::SYMBOL) {
+                throw runtime_exception_c("Expected list or datum value (set)",
+                                          cells[2].location);
+             }
+
+             containing_env->set(variable_name, value);
+             return {containing_env->get(variable_name)};
           }
-
-          containing_env->set(variable_name, value);
-          return {containing_env->get(variable_name)};
        });
 
    // List and block are extremely similar, and realistically `list` coult be
@@ -643,11 +683,9 @@ void processor_c::populate_standard_builtins() {
           return {list};
        });
 
-   _builtins["compose"] =
-       cell_c([this](
-                  std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
-
+   _builtins["compose"] = cell_c(
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           if (cells.size() != 2) {
              throw runtime_exception_c(
                  "compose command expects 1 parameters, but " +
@@ -656,8 +694,8 @@ void processor_c::populate_standard_builtins() {
           }
 
           std::string value;
-          for(auto c = cells.begin() + 1; c < cells.end(); c++) {
-            quote_cell(value, (*c), env);
+          for (auto c = cells.begin() + 1; c < cells.end(); c++) {
+             quote_cell(value, (*c), env);
           }
 
           return cell_c(cell_type_e::STRING, value);
@@ -667,7 +705,6 @@ void processor_c::populate_standard_builtins() {
        cell_c([this, load](
                   std::vector<cell_c> &cells,
                   std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
-          
           if (cells.size() != 2) {
              throw runtime_exception_c(
                  "decompose command expects 1 parameters, but " +
@@ -678,12 +715,40 @@ void processor_c::populate_standard_builtins() {
           auto target = load(cells[1], env);
 
           std::optional<cell_c> result;
-          eval_c evaluator(env, [&result](std::optional<cell_c> cell) {
-               result = cell;
-          });
+          eval_c evaluator(
+              env, [&result](std::optional<cell_c> cell) { result = cell; });
 
           evaluator.eval(cells[1].location.line, target.data);
           return result;
+       });
+
+   _builtins["box"] =
+       cell_c([this, load](
+                  std::vector<cell_c> &cells,
+                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+          if (cells.size() != 3) {
+             throw runtime_exception_c(
+                 "object command expectes 3 parameters, but " +
+                     std::to_string(cells.size() - 1) + " were given",
+                 cells[0].location);
+          }
+
+          auto &variable_name = cells[1].data;
+
+          if (_key_symbols.contains(variable_name)) {
+             throw runtime_exception_c("Attempting to define a key symbol: " +
+                                           variable_name,
+                                       cells[1].location);
+          }
+
+          auto object_cell = cell_c(cell_type_e::BOX);
+          object_cell.box_env = std::make_shared<sauros::environment_c>(env);
+
+          // Result of loading object body is
+          load(cells[2], object_cell.box_env);
+
+          env->set(variable_name, object_cell);
+          return {CELL_TRUE};
        });
 
    _builtins["len"] =

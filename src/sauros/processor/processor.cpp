@@ -1,6 +1,7 @@
 #include "processor.hpp"
 
 #include <iostream>
+#include <sstream>
 
 namespace sauros {
 
@@ -45,11 +46,15 @@ void processor_c::cell_to_string(std::string &out, cell_c &cell,
       out += "<lambda>";
       break;
    }
+   case cell_type_e::BOX: {
+      out += "<box>";
+      break;
+   }
    }
 }
 
 void processor_c::quote_cell(std::string &out, cell_c &cell,
-                                 std::shared_ptr<environment_c> env) {
+                             std::shared_ptr<environment_c> env) {
    switch (cell.type) {
    case cell_type_e::DOUBLE:
       [[fallthrough]];
@@ -82,12 +87,11 @@ void processor_c::quote_cell(std::string &out, cell_c &cell,
       out += lambda_name + "[ ";
 
       auto target_lambda =
-         env->find(cells[0].data, cells[0].location)->get(cells[0].data);
+          env->find(cells[0].data, cells[0].location)->get(cells[0].data);
 
-      for (auto param = target_lambda.list[0].list.begin() + 1; 
-               param != target_lambda.list[0].list.end(); 
-               ++param) {
-          out += (*param).data + " ";
+      for (auto param = target_lambda.list[0].list.begin() + 1;
+           param != target_lambda.list[0].list.end(); ++param) {
+         out += (*param).data + " ";
       }
 
       out += "] ";
@@ -98,6 +102,10 @@ void processor_c::quote_cell(std::string &out, cell_c &cell,
          quote_cell(out, cell, env);
       }
       out += std::string("] ");
+      break;
+   }
+   case cell_type_e::BOX: {
+      break;
    }
    }
 }
@@ -149,14 +157,25 @@ processor_c::process_list(std::vector<cell_c> &cells,
       break;
 
    case cell_type_e::LAMBDA:
-      // Unused
+      [[fallthrough]];
+   case cell_type_e::BOX:
       break;
 
    default:
       break;
    }
-
    throw runtime_exception_c("Unknown cell type", cells[0].location);
+}
+
+std::vector<std::string>
+processor_c::retrieve_accessors(const std::string &value) {
+   std::string accessor;
+   std::vector<std::string> accessor_list;
+   std::stringstream source(value);
+   while (std::getline(source, accessor, '.')) {
+      accessor_list.push_back(accessor);
+   }
+   return accessor_list;
 }
 
 std::optional<cell_c>
@@ -164,6 +183,15 @@ processor_c::process_cell(cell_c &cell, std::shared_ptr<environment_c> env) {
 
    switch (cell.type) {
    case cell_type_e::SYMBOL: {
+
+      // Check if its a dot accessor
+      //
+      if (cell.data.find('.') != std::string::npos) {
+         // Each item up-to and not including the last item should be n box
+         // the last member should be something within the box that we are
+         // trying to access
+         return access_box_member(cell, env);
+      }
 
       // Check the built ins to see if its a process to exec
       //
@@ -180,16 +208,16 @@ processor_c::process_cell(cell_c &cell, std::shared_ptr<environment_c> env) {
 
    case cell_type_e::LIST:
       return process_list(cell.list, env);
-
    case cell_type_e::DOUBLE:
       [[fallthrough]];
    case cell_type_e::STRING:
       [[fallthrough]];
    case cell_type_e::INTEGER:
       return cell;
-
    case cell_type_e::LAMBDA: {
       return process_list(cell.list, env);
+   case cell_type_e::BOX:
+      break;
    }
 
    default:
@@ -201,23 +229,6 @@ processor_c::process_cell(cell_c &cell, std::shared_ptr<environment_c> env) {
 std::optional<cell_c>
 processor_c::process_lambda(cell_c &cell, std::vector<cell_c> &cells,
                             std::shared_ptr<environment_c> env) {
-   // Load cells[0]
-   // everything after is a parameter
-   // create an environment, pass the data in as the variable
-   // that they will be expected as, then call
-
-   auto target_lambda =
-       env->find(cells[0].data, cells[0].location)->get(cells[0].data);
-
-   if (target_lambda.list[0].list.size() != cells.size() - 1) {
-      throw runtime_exception_c(
-          "Parameters mismatch for lambda `" + cells[0].data +
-              "` :: Expected " +
-              std::to_string(target_lambda.list[0].list.size()) +
-              " parameters, got " + std::to_string(cells.size() - 1),
-          cells[0].location);
-   }
-
    std::vector<cell_c> exps;
    for (auto param = cells.begin() + 1; param != cells.end(); ++param) {
 
@@ -235,13 +246,40 @@ processor_c::process_lambda(cell_c &cell, std::vector<cell_c> &cells,
    cell_c lambda_cell;
    lambda_cell.data = cells[0].data;
    lambda_cell.type = cell.type;
-   lambda_cell.list = target_lambda.list[1].list;
+   lambda_cell.list = cell.list[1].list;
 
    // Create the lambda env
    auto lambda_env = std::make_shared<environment_c>(
-       environment_c(target_lambda.list[0].list, exps, env));
+       environment_c(cell.list[0].list, exps, env));
 
    return process_cell(lambda_cell, lambda_env);
+}
+
+std::optional<cell_c>
+processor_c::access_box_member(cell_c &cell,
+                               std::shared_ptr<environment_c> &env) {
+
+   auto accessors = retrieve_accessors(cell.data);
+
+   if (accessors.size() <= 1) {
+      throw runtime_exception_c("Malformed accessor", cell.location);
+   }
+
+   cell_c result;
+   std::shared_ptr<environment_c> moving_env = env;
+   for (std::size_t i = 0; i < accessors.size(); i++) {
+
+      // Get the item from the accessor
+      auto containing_env = moving_env->find(accessors[i], cell.location);
+      result = containing_env->get(accessors[i]);
+
+      // Check if we need to move the environment "in" to the next box
+      if (result.type == cell_type_e::BOX) {
+         moving_env = result.box_env;
+      }
+   }
+
+   return {result};
 }
 
 } // namespace sauros

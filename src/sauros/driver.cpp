@@ -5,8 +5,8 @@
 
 namespace sauros {
 
-void display_error_from_file(std::fstream &fs, std::string file, location_s location)
-{
+void display_error_from_file(std::fstream &fs, std::string file,
+                             location_s location) {
    std::cout << rang::fg::magenta << file << rang::fg::reset << " : ("
              << rang::fg::blue << location.line << rang::fg::reset << ","
              << rang::fg::blue << location.col << rang::fg::reset << ")\n";
@@ -209,7 +209,8 @@ int file_executor_c::run(const std::string &file) {
    return 0;
 }
 
-void file_executor_c::cell_returned(std::optional<cell_c> cell) { /* Not needed */
+void file_executor_c::cell_returned(
+    std::optional<cell_c> cell) { /* Not needed */
 }
 
 void file_executor_c::except(sauros::processor_c::runtime_exception_c &e) {
@@ -306,44 +307,30 @@ void repl_c::parser_error(std::string &e, location_s location) {
    std::cout << rang::fg::red << e << rang::fg::reset << std::endl;
 }
 
-void eval_c::cell_returned(std::optional<cell_c> cell) {
-   _cb(cell);
-}
+void eval_c::cell_returned(std::optional<cell_c> cell) { _cb(cell); }
 
 void eval_c::except(sauros::processor_c::runtime_exception_c &e) {
-   std::cout << rang::fg::yellow << "[decomposed item] : " << rang::fg::red << e.what() << rang::fg::reset << std::endl;
+   std::cout << rang::fg::yellow << "[decomposed item] : " << rang::fg::red
+             << e.what() << rang::fg::reset << std::endl;
    std::exit(1);
 }
 
 void eval_c::except(sauros::processor_c::assertion_exception_c &e) {
-   std::cout << rang::fg::yellow << "[decomposed item] : " << rang::fg::red << e.what() << rang::fg::reset << std::endl;
+   std::cout << rang::fg::yellow << "[decomposed item] : " << rang::fg::red
+             << e.what() << rang::fg::reset << std::endl;
    std::exit(1);
 }
 
 void eval_c::except(sauros::environment_c::unknown_identifier_c &e) {
-   std::cout << rang::fg::yellow << "[decomposed item] : " << rang::fg::red << e.what() << rang::fg::reset << ": "
-             << e.get_id() << std::endl;
+   std::cout << rang::fg::yellow << "[decomposed item] : " << rang::fg::red
+             << e.what() << rang::fg::reset << ": " << e.get_id() << std::endl;
    std::exit(1);
 }
 
 void eval_c::parser_error(std::string &e, location_s location) {
-   std::cout  << rang::fg::yellow << "[decomposed item] : " << rang::fg::red << e << rang::fg::reset << std::endl;
+   std::cout << rang::fg::yellow << "[decomposed item] : " << rang::fg::red << e
+             << rang::fg::reset << std::endl;
    std::exit(1);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 } // namespace sauros
