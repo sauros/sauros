@@ -23,6 +23,11 @@ namespace {
       std::mt19937 mt(rd());
       std::uniform_int_distribution<std::size_t> dist(0, source.size()-1);
       std::string result;
+
+      if (source.empty()) {
+         return {};
+      }
+
       for (auto i = 0; i < len; i++) {
          result += source.at(dist(mt));
       }

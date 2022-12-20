@@ -1,3 +1,6 @@
+;
+;  Generates a random number that the user tries to guess
+;
 
 ; Use the built-in random module
 [use "random"]
