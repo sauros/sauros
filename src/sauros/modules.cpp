@@ -3,8 +3,8 @@
 #include "modules/fs/fs.hpp"
 #include "modules/io/io.hpp"
 #include "modules/math/math.hpp"
-#include "modules/sys/sys.hpp"
 #include "modules/random/random.hpp"
+#include "modules/sys/sys.hpp"
 
 namespace sauros {
 

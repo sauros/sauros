@@ -756,37 +756,37 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins["true"] = cell_c(
-      [this](std::vector<cell_c> &cells,
-            std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
-         return {sauros::CELL_TRUE};
-      });
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+          return {sauros::CELL_TRUE};
+       });
 
    _builtins["false"] = cell_c(
-      [this](std::vector<cell_c> &cells,
-            std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
-         return {sauros::CELL_FALSE};
-      });
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+          return {sauros::CELL_FALSE};
+       });
 
    _builtins["nil"] = cell_c(
-      [this](std::vector<cell_c> &cells,
-            std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
-         return {sauros::CELL_NIL};
-      });
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+          return {sauros::CELL_NIL};
+       });
 
-   _builtins["is_nil"] = cell_c(
-      [this, load](std::vector<cell_c> &cells,
-            std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+   _builtins["is_nil"] =
+       cell_c([this, load](
+                  std::vector<cell_c> &cells,
+                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+          if (cells.size() != 2) {
+             throw runtime_exception_c(
+                 "is_null expects only one parameter to evaluate",
+                 cells[0].location);
+          }
 
-         if (cells.size() != 2) {
-            throw runtime_exception_c(
-               "is_null expects only one parameter to evaluate",
-               cells[0].location);
-         }
-         
-         return (load(cells[1], env).data == sauros::CELL_NIL.data) ? 
-            sauros::CELL_TRUE : sauros::CELL_FALSE;
-      });
-
+          return (load(cells[1], env).data == sauros::CELL_NIL.data)
+                     ? sauros::CELL_TRUE
+                     : sauros::CELL_FALSE;
+       });
 
    _builtins["len"] =
        cell_c([this, load](
