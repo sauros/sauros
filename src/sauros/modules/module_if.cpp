@@ -13,4 +13,4 @@ cell_c module_if::load(cell_c &cell, std::shared_ptr<environment_c> env) {
    return (*target);
 }
 
-}
+} // namespace sauros

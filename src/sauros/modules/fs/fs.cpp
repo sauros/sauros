@@ -37,10 +37,9 @@ fs_c::fs_c() {
           return {result};
        });
 
-   _members_map["chdir"] =
-       cell_c([this](
-                  std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+   _members_map["chdir"] = cell_c(
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
                  "fs::chdir operation expects exactly 1 parameter",
@@ -59,10 +58,9 @@ fs_c::fs_c() {
           return {CELL_TRUE};
        });
 
-   _members_map["is_file"] =
-       cell_c([this](
-                  std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+   _members_map["is_file"] = cell_c(
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
                  "fs::is_file operation expects exactly 1 parameter",
@@ -82,10 +80,9 @@ fs_c::fs_c() {
           return {CELL_FALSE};
        });
 
-   _members_map["is_dir"] =
-       cell_c([this](
-                  std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+   _members_map["is_dir"] = cell_c(
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
                  "fs::is_dir operation expects exactly 1 parameter",
@@ -105,10 +102,9 @@ fs_c::fs_c() {
           return {CELL_FALSE};
        });
 
-   _members_map["read"] =
-       cell_c([this](
-                  std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+   _members_map["read"] = cell_c(
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
                  "fs::read_file operation expects exactly 1 parameter",
@@ -141,10 +137,9 @@ fs_c::fs_c() {
           return result;
        });
 
-   _members_map["write"] =
-       cell_c([this](
-                  std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+   _members_map["write"] = cell_c(
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           if (cells.size() != 3) {
              throw processor_c::runtime_exception_c(
                  "fs::write operation expects exactly 2 parameter",
@@ -176,10 +171,9 @@ fs_c::fs_c() {
           return {CELL_TRUE};
        });
 
-   _members_map["app"] =
-       cell_c([this](
-                  std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+   _members_map["app"] = cell_c(
+       [this](std::vector<cell_c> &cells,
+              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
           if (cells.size() != 3) {
              throw processor_c::runtime_exception_c(
                  "fs::append operation expects exactly 2 parameter",

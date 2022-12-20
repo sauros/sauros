@@ -11,15 +11,7 @@
 namespace sauros {
 
 //! \brief Types of cells
-enum class cell_type_e {
-   SYMBOL,
-   LIST,
-   LAMBDA,
-   STRING,
-   INTEGER,
-   DOUBLE,
-   BOX
-};
+enum class cell_type_e { SYMBOL, LIST, LAMBDA, STRING, INTEGER, DOUBLE, BOX };
 
 //! \brief Retrieve the type as a string
 static const char *cell_type_to_string(const cell_type_e type) {

@@ -210,7 +210,7 @@ math_c::math_c() {
        });
 
    _members_map["pow"] = cell_c([this](std::vector<cell_c> &cells,
-                                             std::shared_ptr<environment_c> env)
+                                       std::shared_ptr<environment_c> env)
                                     -> std::optional<cell_c> {
       if (cells.size() != 3) {
          throw processor_c::runtime_exception_c(

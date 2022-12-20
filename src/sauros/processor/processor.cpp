@@ -167,7 +167,8 @@ processor_c::process_list(std::vector<cell_c> &cells,
    throw runtime_exception_c("Unknown cell type", cells[0].location);
 }
 
-std::vector<std::string> processor_c::retrieve_accessors(const std::string &value) {
+std::vector<std::string>
+processor_c::retrieve_accessors(const std::string &value) {
    std::string accessor;
    std::vector<std::string> accessor_list;
    std::stringstream source(value);
@@ -251,13 +252,12 @@ processor_c::process_lambda(cell_c &cell, std::vector<cell_c> &cells,
    auto lambda_env = std::make_shared<environment_c>(
        environment_c(cell.list[0].list, exps, env));
 
-
    return process_cell(lambda_cell, lambda_env);
 }
 
 std::optional<cell_c>
 processor_c::access_box_member(cell_c &cell,
-                                  std::shared_ptr<environment_c> &env) {
+                               std::shared_ptr<environment_c> &env) {
 
    auto accessors = retrieve_accessors(cell.data);
 

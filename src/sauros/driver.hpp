@@ -103,12 +103,11 @@ class eval_c : private driver_if {
    //! \brief Create the repl object
    //! \param env The environment to use
    //! \param cb The callback to issue when the cell is returned
-   eval_c(std::shared_ptr<sauros::environment_c> &env, 
-         std::function<void(std::optional<cell_c> cell)> cb) : driver_if(env), _cb(cb) {}
+   eval_c(std::shared_ptr<sauros::environment_c> &env,
+          std::function<void(std::optional<cell_c> cell)> cb)
+       : driver_if(env), _cb(cb) {}
 
-   void eval(uint64_t line, std::string data) {
-      execute("eval", line, data);
-   }
+   void eval(uint64_t line, std::string data) { execute("eval", line, data); }
 
  private:
    std::function<void(std::optional<cell_c> cell)> _cb;
