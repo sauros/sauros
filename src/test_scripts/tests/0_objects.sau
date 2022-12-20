@@ -5,4 +5,15 @@
 
 [var obj my_object]
 [assert "objects.sau > object access method" [== 6 [obj.sum 1 2 3]]]
-[assert "objects.sau > object access member" [== 43 obj.number]]
+[assert "objects.sau > object access member" [== 42 obj.number]]
+
+[set obj.number 333]
+[assert "objects.sau > object access updated member" [== 333 obj.number]]
+
+
+[set obj.sum [lambda [] [90]]]
+[assert "objects.sau > object access updated method" [== 90 [obj.sum]]]
+
+
+[set obj.sum 333]
+[assert "objects.sau > object access member that used to be a method " [== 333 obj.sum]]

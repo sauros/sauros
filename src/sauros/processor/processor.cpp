@@ -158,27 +158,24 @@ processor_c::process_list(std::vector<cell_c> &cells,
       break;
 
    case cell_type_e::LAMBDA:
+      [[fallthrough]];
+   case cell_type_e::OBJECT:
       break;
-
-   case cell_type_e::OBJECT: {
-
-      // TODO:
-      //    Considering makeing a map of cells for each defined object that
-      //    containes a proc cell that loads the initially defined object cell
-      //    and clones it into the environment under a new name. Then, we can
-      //    use the nifty accessor.list.code to drill into that new object's
-      //    contained environment and members
-      //
-      std::cout << "process_list::OBJECT" << std::endl;
-
-      break;
-   }
 
    default:
       break;
    }
-
    throw runtime_exception_c("Unknown cell type", cells[0].location);
+}
+
+std::vector<std::string> processor_c::retrieve_accessors(const std::string &value) {
+   std::string accessor;
+   std::vector<std::string> accessor_list;
+   std::stringstream source(value);
+   while (std::getline(source, accessor, '.')) {
+      accessor_list.push_back(accessor);
+   }
+   return accessor_list;
 }
 
 std::optional<cell_c>
@@ -190,16 +187,10 @@ processor_c::process_cell(cell_c &cell, std::shared_ptr<environment_c> env) {
       // Check if its a dot accessor
       //
       if (cell.data.find('.') != std::string::npos) {
-         std::string accessor;
-         std::vector<std::string> accessor_list;
-         std::stringstream source(cell.data);
-         while (std::getline(source, accessor, '.')) {
-            accessor_list.push_back(accessor);
-         }
          // Each item up-to and not including the last item should be an object
          // the last member should be something within the object that we are
          // trying to access
-         return access_object_member(cell, env, accessor_list);
+         return access_object_member(cell, env);
       }
 
       // Check the built ins to see if its a process to exec
@@ -217,19 +208,16 @@ processor_c::process_cell(cell_c &cell, std::shared_ptr<environment_c> env) {
 
    case cell_type_e::LIST:
       return process_list(cell.list, env);
-
    case cell_type_e::DOUBLE:
       [[fallthrough]];
    case cell_type_e::STRING:
       [[fallthrough]];
    case cell_type_e::INTEGER:
       return cell;
-   case cell_type_e::OBJECT:
-      std::cout << "GOT THAT OBJYP" << std::endl;
-      break;
-
    case cell_type_e::LAMBDA: {
       return process_list(cell.list, env);
+   case cell_type_e::OBJECT:
+      break;
    }
 
    default:
@@ -270,8 +258,10 @@ processor_c::process_lambda(cell_c &cell, std::vector<cell_c> &cells,
 
 std::optional<cell_c>
 processor_c::access_object_member(cell_c &cell,
-                                  std::shared_ptr<environment_c> &env,
-                                  std::vector<std::string> &accessors) {
+                                  std::shared_ptr<environment_c> &env) {
+
+   auto accessors = retrieve_accessors(cell.data);
+
    if (accessors.size() <= 1) {
       throw runtime_exception_c("Malformed accessor", cell.location);
    }

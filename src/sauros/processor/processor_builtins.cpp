@@ -604,22 +604,55 @@ void processor_c::populate_standard_builtins() {
 
           auto &variable_name = cells[1].data;
 
+
+   
+   
+
           if (variable_name.find('.') != std::string::npos) {
-             std::cout << "processor_builtins::set - Attempting to set an object member - NOT YET COMPLETE\n";
-             std::exit(1); 
+            
+
+            auto accessors = retrieve_accessors(variable_name);
+
+            
+            cell_c result;
+            std::shared_ptr<environment_c> target_env = env;
+            for (std::size_t i = 0; i < accessors.size(); i++) {
+
+               // Get the item from the accessor
+               auto containing_env = target_env->find(accessors[i], cells[1].location);
+               result = containing_env->get(accessors[i]);
+
+               // Check if we need to move the environment "in" to the next object
+               if (result.type == cell_type_e::OBJECT) {
+                  target_env = result.object_env;
+               }
+            }
+            
+            auto value = load(cells[2], env);
+
+            if (value.type == cell_type_e::SYMBOL) {
+               throw runtime_exception_c("Expected list or datum value (set)",
+                                          cells[2].location);
+            }
+
+            target_env->set(accessors.back(), value);
+            return {target_env->get(accessors.back())};
+
+
+
+          } else {
+            // If this isn't found it will throw :)
+            auto containing_env = env->find(variable_name, cells[1].location);
+            auto value = load(cells[2], env);
+
+            if (value.type == cell_type_e::SYMBOL) {
+               throw runtime_exception_c("Expected list or datum value (set)",
+                                          cells[2].location);
+            }
+
+            containing_env->set(variable_name, value);
+            return {containing_env->get(variable_name)};
           }
-
-          // If this isn't found it will throw :)
-          auto containing_env = env->find(variable_name, cells[1].location);
-          auto value = load(cells[2], env);
-
-          if (value.type == cell_type_e::SYMBOL) {
-             throw runtime_exception_c("Expected list or datum value (set)",
-                                       cells[2].location);
-          }
-
-          containing_env->set(variable_name, value);
-          return {containing_env->get(variable_name)};
        });
 
    // List and block are extremely similar, and realistically `list` coult be
@@ -709,8 +742,6 @@ void processor_c::populate_standard_builtins() {
                                        cells[0].location);
           }
 
-          std::cout << "Creating an object!" << std::endl;
-
           auto &variable_name = cells[1].data;
 
           if (_key_symbols.contains(variable_name)) {
@@ -718,15 +749,6 @@ void processor_c::populate_standard_builtins() {
                                            variable_name,
                                        cells[1].location);
           }
-
-          // TODO:
-          //
-          //   Create a new cell of type OBJECT and create an ENV for it. 
-          //
-          //   run process_cell on the last cell of the given command 
-          //   with the new environment that we made
-          // 
-          //   return the object that we created
 
           auto object_cell = cell_c(cell_type_e::OBJECT);
           object_cell.object_env = std::make_shared<sauros::environment_c>();

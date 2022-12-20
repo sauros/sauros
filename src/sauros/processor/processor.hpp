@@ -98,6 +98,8 @@ class processor_c {
 
    void populate_standard_builtins();
 
+   std::vector<std::string> retrieve_accessors(const std::string &value);
+
    void quote_cell(std::string &out, cell_c &cell,
                        std::shared_ptr<environment_c> env);
 
@@ -109,8 +111,7 @@ class processor_c {
                                         std::shared_ptr<environment_c> env);
 
    std::optional<cell_c> access_object_member(cell_c &cell,
-                                              std::shared_ptr<environment_c> &env,
-                                              std::vector<std::string> &accessors);
+                                              std::shared_ptr<environment_c> &env);
 
    cell_c perform_arithmetic(std::string op, std::vector<cell_c> &cells,
                              std::function<double(double, double)> fn,
