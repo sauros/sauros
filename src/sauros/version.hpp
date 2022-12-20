@@ -6,9 +6,9 @@
 #endif
 
 #define LIBSAUROS_MAJOR_VERSION (0)
-#define LIBSAUROS_MINOR_VERSION (1)
+#define LIBSAUROS_MINOR_VERSION (0)
 #define LIBSAUROS_PATCH_VERSION (0)
-#define LIBSAUROS_VERSION "0.1.0"
+#define LIBSAUROS_VERSION "0.0.0"
 
 static const char *get_build_hash() { return COMPILED_GIT_HASH; }
 
