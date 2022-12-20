@@ -123,7 +123,6 @@ tokenize(size_t line_number, const std::string line) {
       }
 
       tokens.push_back({token_e::SYMBOL, value, {line_number, start}});
-
       idx--;
    }
    return std::make_tuple(tokens, nullptr);
