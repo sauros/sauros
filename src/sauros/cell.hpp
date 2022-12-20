@@ -18,7 +18,7 @@ enum class cell_type_e {
    STRING,
    INTEGER,
    DOUBLE,
-   OBJECT
+   BOX
 };
 
 //! \brief Retrieve the type as a string
@@ -36,8 +36,8 @@ static const char *cell_type_to_string(const cell_type_e type) {
       return "integer";
    case cell_type_e::DOUBLE:
       return "double";
-   case cell_type_e::OBJECT:
-      return "object";
+   case cell_type_e::BOX:
+      return "box";
    }
    return "unknown";
 }
@@ -87,7 +87,7 @@ class cell_c {
    proc_f proc;
    std::vector<cell_c> list;
    bool stop_processing{false};
-   std::shared_ptr<environment_c> object_env{nullptr};
+   std::shared_ptr<environment_c> box_env{nullptr};
 };
 
 static const cell_c CELL_TRUE =

@@ -85,7 +85,7 @@ void processor_c::populate_standard_builtins() {
    _key_symbols.insert("clear");
    _key_symbols.insert("compose");
    _key_symbols.insert("decompose");
-   _key_symbols.insert("object");
+   _key_symbols.insert("box");
 
    auto load = [&](cell_c &cell, std::shared_ptr<environment_c> env) -> cell_c {
       // std::cout << "TYPE: " << cell_type_to_string(cell.type) << " CELL: " <<
@@ -623,8 +623,8 @@ void processor_c::populate_standard_builtins() {
                result = containing_env->get(accessors[i]);
 
                // Check if we need to move the environment "in" to the next object
-               if (result.type == cell_type_e::OBJECT) {
-                  target_env = result.object_env;
+               if (result.type == cell_type_e::BOX) {
+                  target_env = result.box_env;
                }
             }
             
@@ -732,7 +732,7 @@ void processor_c::populate_standard_builtins() {
        });
 
 
-   _builtins["object"] =
+   _builtins["box"] =
        cell_c([this, load](
                   std::vector<cell_c> &cells,
                   std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
@@ -750,11 +750,11 @@ void processor_c::populate_standard_builtins() {
                                        cells[1].location);
           }
 
-          auto object_cell = cell_c(cell_type_e::OBJECT);
-          object_cell.object_env = std::make_shared<sauros::environment_c>();
+          auto object_cell = cell_c(cell_type_e::BOX);
+          object_cell.box_env = std::make_shared<sauros::environment_c>(env);
 
           // Result of loading object body is 
-          load(cells[2], object_cell.object_env);
+          load(cells[2], object_cell.box_env);
 
           env->set(variable_name, object_cell);
           return {CELL_TRUE};

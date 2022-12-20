@@ -46,8 +46,8 @@ void processor_c::cell_to_string(std::string &out, cell_c &cell,
       out += "<lambda>";
       break;
    }
-   case cell_type_e::OBJECT: {
-      out += "<object>";
+   case cell_type_e::BOX: {
+      out += "<box>";
       break;
    }
    }
@@ -104,8 +104,7 @@ void processor_c::quote_cell(std::string &out, cell_c &cell,
       out += std::string("] ");
       break;
    }
-   case cell_type_e::OBJECT: {
-      out = "<OBJECT> :: NOT YET DONE";
+   case cell_type_e::BOX: {
       break;
    }
    }
@@ -159,7 +158,7 @@ processor_c::process_list(std::vector<cell_c> &cells,
 
    case cell_type_e::LAMBDA:
       [[fallthrough]];
-   case cell_type_e::OBJECT:
+   case cell_type_e::BOX:
       break;
 
    default:
@@ -187,10 +186,10 @@ processor_c::process_cell(cell_c &cell, std::shared_ptr<environment_c> env) {
       // Check if its a dot accessor
       //
       if (cell.data.find('.') != std::string::npos) {
-         // Each item up-to and not including the last item should be an object
-         // the last member should be something within the object that we are
+         // Each item up-to and not including the last item should be n box
+         // the last member should be something within the box that we are
          // trying to access
-         return access_object_member(cell, env);
+         return access_box_member(cell, env);
       }
 
       // Check the built ins to see if its a process to exec
@@ -216,7 +215,7 @@ processor_c::process_cell(cell_c &cell, std::shared_ptr<environment_c> env) {
       return cell;
    case cell_type_e::LAMBDA: {
       return process_list(cell.list, env);
-   case cell_type_e::OBJECT:
+   case cell_type_e::BOX:
       break;
    }
 
@@ -257,7 +256,7 @@ processor_c::process_lambda(cell_c &cell, std::vector<cell_c> &cells,
 }
 
 std::optional<cell_c>
-processor_c::access_object_member(cell_c &cell,
+processor_c::access_box_member(cell_c &cell,
                                   std::shared_ptr<environment_c> &env) {
 
    auto accessors = retrieve_accessors(cell.data);
@@ -274,9 +273,9 @@ processor_c::access_object_member(cell_c &cell,
       auto containing_env = moving_env->find(accessors[i], cell.location);
       result = containing_env->get(accessors[i]);
 
-      // Check if we need to move the environment "in" to the next object
-      if (result.type == cell_type_e::OBJECT) {
-         moving_env = result.object_env;
+      // Check if we need to move the environment "in" to the next box
+      if (result.type == cell_type_e::BOX) {
+         moving_env = result.box_env;
       }
    }
 

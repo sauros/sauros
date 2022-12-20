@@ -26,7 +26,7 @@
         "patterns": [
            {
            "name": "keyword.control.sau",
-           "match": "\\b(compose|decompose|exit|clear|at|var|front|back|push|pop|list|set|block|len|put|putln|if|assert|loop|type|import|break)\\b"
+           "match": "\\b(box|compose|decompose|exit|clear|at|var|front|back|push|pop|list|set|block|len|put|putln|if|assert|loop|type|import|break)\\b"
            },
            {
            "name": "keyword.operator.sau",

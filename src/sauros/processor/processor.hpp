@@ -110,7 +110,7 @@ class processor_c {
                                         std::vector<cell_c> &cells,
                                         std::shared_ptr<environment_c> env);
 
-   std::optional<cell_c> access_object_member(cell_c &cell,
+   std::optional<cell_c> access_box_member(cell_c &cell,
                                               std::shared_ptr<environment_c> &env);
 
    cell_c perform_arithmetic(std::string op, std::vector<cell_c> &cells,
