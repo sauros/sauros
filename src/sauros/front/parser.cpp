@@ -192,14 +192,18 @@ parse(std::vector<token_s> &tokens, cell_c *current_list = nullptr) {
          return std::make_tuple(cell_c(), get_no_list_error(current_token));
       }
 
-      // Check the encoding map for builtins to see if we need to 
-      if (BUILTIN_STRING_TO_ENCODING.find(current_token.data) != BUILTIN_STRING_TO_ENCODING.end()) {
-         cell_c builtin_translation_cell(cell_type_e::ENCODED_SYMBOL, current_token.data, current_token.location);
-         builtin_translation_cell.builtin_encoding = BUILTIN_STRING_TO_ENCODING[current_token.data];
+      // Check the encoding map for builtins to see if we need to
+      if (BUILTIN_STRING_TO_ENCODING.find(current_token.data) !=
+          BUILTIN_STRING_TO_ENCODING.end()) {
+         cell_c builtin_translation_cell(cell_type_e::ENCODED_SYMBOL,
+                                         current_token.data,
+                                         current_token.location);
+         builtin_translation_cell.builtin_encoding =
+             BUILTIN_STRING_TO_ENCODING[current_token.data];
          current_list->list.push_back(builtin_translation_cell);
       } else {
          current_list->list.push_back(cell_c(
-            cell_type_e::SYMBOL, current_token.data, current_token.location));
+             cell_type_e::SYMBOL, current_token.data, current_token.location));
       }
       return parse(tokens, current_list);
    }

@@ -12,9 +12,7 @@ class module_if {
    virtual ~module_if() {}
 
    //! \brief Retrieve the map of cells that are contained by the module
-   cell_map_t get_members() const {
-      return _members_map;
-   }
+   cell_map_t get_members() const { return _members_map; }
 
  protected:
    cell_map_t _members_map;

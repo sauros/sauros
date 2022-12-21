@@ -3,8 +3,8 @@
 
 #include "cell.hpp"
 #include "modules/module_if.hpp"
-#include <vector>
 #include "third_party/parallel_hashmap/phmap.h"
+#include <vector>
 
 namespace sauros {
 

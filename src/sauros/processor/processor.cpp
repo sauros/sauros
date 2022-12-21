@@ -206,13 +206,12 @@ processor_c::process_cell(cell_c &cell, std::shared_ptr<environment_c> env) {
    }
 
    case cell_type_e::ENCODED_SYMBOL: {
-      if (cell.builtin_encoding == BUILTIN_DEFAULT_VAL || 
+      if (cell.builtin_encoding == BUILTIN_DEFAULT_VAL ||
           cell.builtin_encoding >= BUILTIN_ENTRY_COUNT) {
-            throw runtime_exception_c(
-               "Invalid encoded symbol for : " + cell.data,
-               cell.location);
-            return {};
-          }
+         throw runtime_exception_c("Invalid encoded symbol for : " + cell.data,
+                                   cell.location);
+         return {};
+      }
 
       // Direct access - no more mapping
       return _builtins[cell.builtin_encoding];

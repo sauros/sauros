@@ -1,18 +1,27 @@
 #ifndef SAUROS_CELL_HPP
 #define SAUROS_CELL_HPP
 
+#include "builtin_encodings.hpp"
 #include "types.hpp"
 #include <functional>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
-#include "builtin_encodings.hpp"
 
 namespace sauros {
 
 //! \brief Types of cells
-enum class cell_type_e { SYMBOL, LIST, LAMBDA, STRING, INTEGER, DOUBLE, BOX, ENCODED_SYMBOL };
+enum class cell_type_e {
+   SYMBOL,
+   LIST,
+   LAMBDA,
+   STRING,
+   INTEGER,
+   DOUBLE,
+   BOX,
+   ENCODED_SYMBOL
+};
 
 //! \brief Retrieve the type as a string
 static const char *cell_type_to_string(const cell_type_e type) {

@@ -1,20 +1,20 @@
 #ifndef SAUROS_PROCESSOR_HPP
 #define SAUROS_PROCESSOR_HPP
 
+#include "sauros/builtin_encodings.hpp"
 #include "sauros/cell.hpp"
 #include "sauros/environment.hpp"
 #include "sauros/modules.hpp"
 #include "sauros/system/system.hpp"
-#include "sauros/builtin_encodings.hpp"
 
+#include "sauros/cell_map.hpp"
+#include <array>
 #include <exception>
 #include <functional>
 #include <optional>
 #include <set>
 #include <unordered_map>
 #include <vector>
-#include "sauros/cell_map.hpp"
-#include <array>
 
 // Forward declaration for RLL library loader
 namespace rll {
@@ -97,7 +97,8 @@ class processor_c {
    sauros::modules_c _modules;
    std::set<std::string> _key_symbols;
    std::array<cell_c, BUILTIN_ENTRY_COUNT> _builtins;
-   phmap::parallel_node_hash_map<std::string, rll::shared_library *> _loaded_libs;
+   phmap::parallel_node_hash_map<std::string, rll::shared_library *>
+       _loaded_libs;
 
    void populate_standard_builtins();
 
