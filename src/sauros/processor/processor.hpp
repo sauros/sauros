@@ -95,7 +95,6 @@ class processor_c {
  private:
    sauros::system_c _system;
    sauros::modules_c _modules;
-   std::set<std::string> _key_symbols;
    std::array<cell_c, BUILTIN_ENTRY_COUNT> _builtins;
    phmap::parallel_node_hash_map<std::string, rll::shared_library *>
        _loaded_libs;

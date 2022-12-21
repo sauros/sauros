@@ -41,63 +41,6 @@ static inline bool eval_truthy(cell_c &cell, location_s &location) {
 
 void processor_c::populate_standard_builtins() {
 
-   // Populate symbols that users are not allowed to redefine
-   // - They wouldn't BE redefined as they exist in _builtins and not
-   //   within the environment, but since they take precedence over
-   //   the environment it will cause confusion if they call a redefinition
-   //   and ours is executed.
-   //
-   //       May remove this in the future
-   //
-   //
-   _key_symbols.insert("front");
-   _key_symbols.insert("back");
-   _key_symbols.insert("push");
-   _key_symbols.insert("pop");
-   _key_symbols.insert("list");
-   _key_symbols.insert("set");
-   _key_symbols.insert("lambda");
-   _key_symbols.insert("block");
-   _key_symbols.insert("len");
-   _key_symbols.insert("put");
-   _key_symbols.insert("putln");
-   _key_symbols.insert("if");
-   _key_symbols.insert("==");
-   _key_symbols.insert("!=");
-   _key_symbols.insert("<=");
-   _key_symbols.insert(">=");
-   _key_symbols.insert("<");
-   _key_symbols.insert(">");
-   _key_symbols.insert("seq");
-   _key_symbols.insert("sneq");
-   _key_symbols.insert("assert");
-   _key_symbols.insert("loop");
-   _key_symbols.insert("type");
-   _key_symbols.insert("import");
-   _key_symbols.insert("use");
-   _key_symbols.insert("extern");
-   _key_symbols.insert("not");
-   _key_symbols.insert("or");
-   _key_symbols.insert("and");
-   _key_symbols.insert("xor");
-   _key_symbols.insert("break");
-   _key_symbols.insert("at");
-   _key_symbols.insert("clear");
-   _key_symbols.insert("compose");
-   _key_symbols.insert("decompose");
-   _key_symbols.insert("box");
-   _key_symbols.insert("true");
-   _key_symbols.insert("false");
-   _key_symbols.insert("is_nil");
-   _key_symbols.insert("nil");
-   _key_symbols.insert("var");
-   _key_symbols.insert("+");
-   _key_symbols.insert("-");
-   _key_symbols.insert("/");
-   _key_symbols.insert("*");
-   _key_symbols.insert("%");
-   _key_symbols.insert("exit");
-
    auto load = [&](cell_c &cell, std::shared_ptr<environment_c> env) -> cell_c {
       // std::cout << "TYPE: " << cell_type_to_string(cell.type) << " CELL: " <<
       // cell.data << std::endl;
@@ -757,7 +700,7 @@ void processor_c::populate_standard_builtins() {
 
           auto &variable_name = cells[1].data;
 
-          if (_key_symbols.contains(variable_name)) {
+          if (cells[1].builtin_encoding != BUILTIN_DEFAULT_VAL) {
              throw runtime_exception_c("Attempting to define a key symbol: " +
                                            variable_name,
                                        cells[1].location);

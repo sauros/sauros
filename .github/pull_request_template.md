@@ -13,3 +13,4 @@ Please be sure that the code follows the style as follows:
 - Classes end in `_c` (unless its an interface, then end in `_if`)
 - Structs end in `_s`
 - Enumerations end in `_e`
+- Type names that are redifined via `using` end in `_t` (always use `using` - not `typedef`)
