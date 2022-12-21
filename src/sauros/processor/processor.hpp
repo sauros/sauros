@@ -87,7 +87,7 @@ class processor_c {
    //! \brief Convert a cell to a string - Something that can be printed to the
    //! screen \param out[out] The string to populate \param cell[in] The cell to
    //! string \param env The environment to pull cell information from \param
-   //! show_space Defaults to true, inserts spaces between ite1ms
+   //! show_space Defaults to true, inserts spaces between items
    void cell_to_string(std::string &out, cell_c &cell,
                        std::shared_ptr<environment_c> env,
                        bool show_space = true);
