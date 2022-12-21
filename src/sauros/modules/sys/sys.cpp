@@ -14,7 +14,7 @@ sys_c::sys_c() {
 
    _members_map["cls"] = cell_c(
        [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+              std::shared_ptr<environment_c> env) -> cell_c {
 #if defined(__unix__) || defined(__unix) || defined(__linux__)
           int _ = system("clear");
 #else
@@ -25,7 +25,7 @@ sys_c::sys_c() {
 
    _members_map["cmd"] = cell_c([this](std::vector<cell_c> &cells,
                                        std::shared_ptr<environment_c> env)
-                                    -> std::optional<cell_c> {
+                                    -> cell_c {
       if (cells.size() == 1) {
          throw processor_c::runtime_exception_c(
              "system command expects at least one parameter",
@@ -58,7 +58,7 @@ sys_c::sys_c() {
 
    _members_map["sleep"] = cell_c(
        [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+              std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
                  "sleep function expects 1 parameter, but " +

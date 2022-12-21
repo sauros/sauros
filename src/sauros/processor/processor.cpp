@@ -23,9 +23,7 @@ void processor_c::cell_to_string(std::string &out, cell_c &cell,
       [[fallthrough]];
    case cell_type_e::SYMBOL: {
       auto data = process_cell(cell, env);
-      if (data.has_value()) {
-         cell_to_string(out, *data, env);
-      }
+      cell_to_string(out, data, env);
       break;
    }
    case cell_type_e::LIST: {
@@ -116,7 +114,7 @@ void processor_c::quote_cell(std::string &out, cell_c &cell,
 
 processor_c::processor_c() { populate_standard_builtins(); }
 
-std::optional<cell_c>
+cell_c
 processor_c::process_list(std::vector<cell_c> &cells,
                           std::shared_ptr<environment_c> env) {
    if (cells.empty()) {
@@ -131,24 +129,19 @@ processor_c::process_list(std::vector<cell_c> &cells,
    case cell_type_e::SYMBOL: {
 
       auto cell = process_cell(suspect_cell, env);
-
-      if (!cell.has_value()) {
-         throw runtime_exception_c("Unknown symbol: " + suspect_cell.data,
-                                   suspect_cell.location);
-      }
-
       // Check if its a lambda first
-      if ((*cell).type == cell_type_e::LAMBDA) {
-         return process_lambda((*cell), cells, env);
+      if (cell.type == cell_type_e::LAMBDA) {
+         return process_lambda(cell, cells, env);
       }
 
       // If its not then it might be a proc
-      if ((*cell).proc) {
-         return (*cell).proc(cells, env);
+      if (cell.proc) {
+
+         return cell.proc(cells, env);
       }
 
       // Otherwise return whatever we got
-      return {*cell};
+      return cell;
    }
 
    case cell_type_e::LIST:
@@ -183,7 +176,7 @@ processor_c::retrieve_accessors(const std::string &value) {
    return accessor_list;
 }
 
-std::optional<cell_c>
+cell_c
 processor_c::process_cell(cell_c &cell, std::shared_ptr<environment_c> env) {
 
    switch (cell.type) {
@@ -237,20 +230,13 @@ processor_c::process_cell(cell_c &cell, std::shared_ptr<environment_c> env) {
    return {};
 }
 
-std::optional<cell_c>
-processor_c::process_lambda(cell_c &cell, std::vector<cell_c> &cells,
+cell_c processor_c::process_lambda(cell_c &cell, std::vector<cell_c> &cells,
                             std::shared_ptr<environment_c> env) {
    std::vector<cell_c> exps;
    for (auto param = cells.begin() + 1; param != cells.end(); ++param) {
 
       auto evaluated = process_cell((*param), env);
-      if (!evaluated.has_value()) {
-         throw runtime_exception_c(
-             "Nothing returned evaluating parameter for lambda",
-             cells[0].location);
-      }
-
-      exps.push_back(std::move((*evaluated)));
+      exps.push_back(std::move(evaluated));
    }
 
    // Create the lambda cell
@@ -266,7 +252,7 @@ processor_c::process_lambda(cell_c &cell, std::vector<cell_c> &cells,
    return process_cell(lambda_cell, lambda_env);
 }
 
-std::optional<cell_c>
+cell_c
 processor_c::access_box_member(cell_c &cell,
                                std::shared_ptr<environment_c> &env) {
 

@@ -128,10 +128,8 @@ TEST(sauros_tests, piecemeal) {
       try {
          auto cell_result = proc.process_cell(result.cell, env);
 
-         CHECK_TRUE(cell_result.has_value());
-
          std::string stringed_result;
-         proc.cell_to_string(stringed_result, (*cell_result), env, false);
+         proc.cell_to_string(stringed_result, cell_result, env, false);
 
          CHECK_EQUAL(tc.expected_output, stringed_result);
       } catch (sauros::processor_c::runtime_exception_c &e) {

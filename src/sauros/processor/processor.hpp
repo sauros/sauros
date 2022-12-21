@@ -80,7 +80,7 @@ class processor_c {
    //! \param global_env The environment to use
    //! \returns Optional cell. If a cell is returned, no errors arose
    //! \note Upon an error occuring `runtime_exception_c` will be thrown
-   std::optional<cell_c> process_cell(cell_c &cell,
+   cell_c process_cell(cell_c &cell,
                                       std::shared_ptr<environment_c> env);
 
    //! \brief Convert a cell to a string - Something that can be printed to the
@@ -105,14 +105,14 @@ class processor_c {
    void quote_cell(std::string &out, cell_c &cell,
                    std::shared_ptr<environment_c> env);
 
-   std::optional<cell_c> process_list(std::vector<cell_c> &cells,
+   cell_c process_list(std::vector<cell_c> &cells,
                                       std::shared_ptr<environment_c> env);
 
-   std::optional<cell_c> process_lambda(cell_c &cell,
+   cell_c process_lambda(cell_c &cell,
                                         std::vector<cell_c> &cells,
                                         std::shared_ptr<environment_c> env);
 
-   std::optional<cell_c> access_box_member(cell_c &cell,
+   cell_c access_box_member(cell_c &cell,
                                            std::shared_ptr<environment_c> &env);
 
    cell_c perform_arithmetic(std::string op, std::vector<cell_c> &cells,

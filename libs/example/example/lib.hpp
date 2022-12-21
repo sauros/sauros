@@ -15,7 +15,7 @@ extern "C" {
    Get user input string
 */
 API_EXPORT
-extern std::optional<sauros::cell_c>
+extern sauros::cell_c
 get_str(std::vector<sauros::cell_c> &cells,
         std::shared_ptr<sauros::environment_c> env);
 
@@ -23,7 +23,7 @@ get_str(std::vector<sauros::cell_c> &cells,
    Get user input integer
 */
 API_EXPORT
-extern std::optional<sauros::cell_c>
+extern sauros::cell_c
 get_int(std::vector<sauros::cell_c> &cells,
         std::shared_ptr<sauros::environment_c> env);
 
@@ -31,7 +31,7 @@ get_int(std::vector<sauros::cell_c> &cells,
    Get user input double
 */
 API_EXPORT
-extern std::optional<sauros::cell_c>
+extern sauros::cell_c
 get_double(std::vector<sauros::cell_c> &cells,
            std::shared_ptr<sauros::environment_c> env);
 }

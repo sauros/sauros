@@ -22,7 +22,7 @@ void setup_env() {
    env->set("@version",
             sauros::cell_c([=](std::vector<sauros::cell_c> &cells,
                                std::shared_ptr<sauros::environment_c> env)
-                               -> std::optional<sauros::cell_c> {
+                               -> sauros::cell_c {
                if (cells.size() != 1) {
                   throw sauros::processor_c::runtime_exception_c(
                       "`@version` expects no arguments, but " +
@@ -30,18 +30,18 @@ void setup_env() {
                       cells[0].location);
                }
 
-               return {sauros::cell_c(sauros::cell_type_e::STRING,
+               return sauros::cell_c(sauros::cell_type_e::STRING,
                                       std::string(LIBSAUROS_VERSION),
-                                      cells[0].location)};
+                                      cells[0].location);
             }));
 
    env->set("@build",
             sauros::cell_c([=](std::vector<sauros::cell_c> &cells,
                                std::shared_ptr<sauros::environment_c> env)
-                               -> std::optional<sauros::cell_c> {
-               return {sauros::cell_c(sauros::cell_type_e::STRING,
+                               -> sauros::cell_c {
+               return sauros::cell_c(sauros::cell_type_e::STRING,
                                       std::string(get_build_hash()),
-                                      cells[0].location)};
+                                      cells[0].location);
             }));
 }
 

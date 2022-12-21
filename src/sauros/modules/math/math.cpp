@@ -52,7 +52,7 @@ math_c::math_c() {
    _members_map["log"] =
        cell_c([this, single_arithmetic](
                   std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+                  std::shared_ptr<environment_c> env) -> cell_c {
           return single_arithmetic(
               cells, [](double n) -> double { return log(n); }, env);
        });
@@ -60,7 +60,7 @@ math_c::math_c() {
    _members_map["log2"] =
        cell_c([this, single_arithmetic](
                   std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+                  std::shared_ptr<environment_c> env) -> cell_c {
           return single_arithmetic(
               cells, [](double n) -> double { return log2(n); }, env);
        });
@@ -68,7 +68,7 @@ math_c::math_c() {
    _members_map["log10"] =
        cell_c([this, single_arithmetic](
                   std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+                  std::shared_ptr<environment_c> env) -> cell_c {
           return single_arithmetic(
               cells, [](double n) -> double { return log10(n); }, env);
        });
@@ -76,7 +76,7 @@ math_c::math_c() {
    _members_map["sin"] =
        cell_c([this, single_arithmetic](
                   std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+                  std::shared_ptr<environment_c> env) -> cell_c {
           return single_arithmetic(
               cells, [](double n) -> double { return sin(n); }, env);
        });
@@ -84,7 +84,7 @@ math_c::math_c() {
    _members_map["cos"] =
        cell_c([this, single_arithmetic](
                   std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+                  std::shared_ptr<environment_c> env) -> cell_c {
           return single_arithmetic(
               cells, [](double n) -> double { return cos(n); }, env);
        });
@@ -92,7 +92,7 @@ math_c::math_c() {
    _members_map["tan"] =
        cell_c([this, single_arithmetic](
                   std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+                  std::shared_ptr<environment_c> env) -> cell_c {
           return single_arithmetic(
               cells, [](double n) -> double { return tan(n); }, env);
        });
@@ -100,7 +100,7 @@ math_c::math_c() {
    _members_map["asin"] =
        cell_c([this, single_arithmetic](
                   std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+                  std::shared_ptr<environment_c> env) -> cell_c {
           return single_arithmetic(
               cells, [](double n) -> double { return asin(n); }, env);
        });
@@ -108,7 +108,7 @@ math_c::math_c() {
    _members_map["acos"] =
        cell_c([this, single_arithmetic](
                   std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+                  std::shared_ptr<environment_c> env) -> cell_c {
           return single_arithmetic(
               cells, [](double n) -> double { return acos(n); }, env);
        });
@@ -116,7 +116,7 @@ math_c::math_c() {
    _members_map["atan"] =
        cell_c([this, single_arithmetic](
                   std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+                  std::shared_ptr<environment_c> env) -> cell_c {
           return single_arithmetic(
               cells, [](double n) -> double { return atan(n); }, env);
        });
@@ -124,7 +124,7 @@ math_c::math_c() {
    _members_map["sinh"] =
        cell_c([this, single_arithmetic](
                   std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+                  std::shared_ptr<environment_c> env) -> cell_c {
           return single_arithmetic(
               cells, [](double n) -> double { return sinh(n); }, env);
        });
@@ -132,7 +132,7 @@ math_c::math_c() {
    _members_map["cosh"] =
        cell_c([this, single_arithmetic](
                   std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+                  std::shared_ptr<environment_c> env) -> cell_c {
           return single_arithmetic(
               cells, [](double n) -> double { return cosh(n); }, env);
        });
@@ -140,7 +140,7 @@ math_c::math_c() {
    _members_map["tanh"] =
        cell_c([this, single_arithmetic](
                   std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+                  std::shared_ptr<environment_c> env) -> cell_c {
           return single_arithmetic(
               cells, [](double n) -> double { return tanh(n); }, env);
        });
@@ -148,7 +148,7 @@ math_c::math_c() {
    _members_map["asinh"] =
        cell_c([this, single_arithmetic](
                   std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+                  std::shared_ptr<environment_c> env) -> cell_c {
           return single_arithmetic(
               cells, [](double n) -> double { return asinh(n); }, env);
        });
@@ -156,7 +156,7 @@ math_c::math_c() {
    _members_map["acosh"] =
        cell_c([this, single_arithmetic](
                   std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+                  std::shared_ptr<environment_c> env) -> cell_c {
           return single_arithmetic(
               cells, [](double n) -> double { return acosh(n); }, env);
        });
@@ -164,7 +164,7 @@ math_c::math_c() {
    _members_map["atanh"] =
        cell_c([this, single_arithmetic](
                   std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+                  std::shared_ptr<environment_c> env) -> cell_c {
           return single_arithmetic(
               cells, [](double n) -> double { return atanh(n); }, env);
        });
@@ -172,7 +172,7 @@ math_c::math_c() {
    _members_map["exp"] =
        cell_c([this, single_arithmetic](
                   std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+                  std::shared_ptr<environment_c> env) -> cell_c {
           return single_arithmetic(
               cells, [](double n) -> double { return exp(n); }, env);
        });
@@ -180,7 +180,7 @@ math_c::math_c() {
    _members_map["sqrt"] =
        cell_c([this, single_arithmetic](
                   std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+                  std::shared_ptr<environment_c> env) -> cell_c {
           return single_arithmetic(
               cells, [](double n) -> double { return sqrt(n); }, env);
        });
@@ -188,7 +188,7 @@ math_c::math_c() {
    _members_map["ceil"] =
        cell_c([this, single_arithmetic](
                   std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+                  std::shared_ptr<environment_c> env) -> cell_c {
           return single_arithmetic(
               cells, [](double n) -> double { return ceil(n); }, env);
        });
@@ -196,7 +196,7 @@ math_c::math_c() {
    _members_map["floor"] =
        cell_c([this, single_arithmetic](
                   std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+                  std::shared_ptr<environment_c> env) -> cell_c {
           return single_arithmetic(
               cells, [](double n) -> double { return floor(n); }, env);
        });
@@ -204,14 +204,14 @@ math_c::math_c() {
    _members_map["abs"] =
        cell_c([this, single_arithmetic](
                   std::vector<cell_c> &cells,
-                  std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+                  std::shared_ptr<environment_c> env) -> cell_c {
           return single_arithmetic(
               cells, [](double n) -> double { return fabs(n); }, env);
        });
 
    _members_map["pow"] = cell_c([this](std::vector<cell_c> &cells,
                                        std::shared_ptr<environment_c> env)
-                                    -> std::optional<cell_c> {
+                                    -> cell_c {
       if (cells.size() != 3) {
          throw processor_c::runtime_exception_c(
              "given math function expects 3 parameter, but " +
