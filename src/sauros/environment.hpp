@@ -77,7 +77,7 @@ class environment_c {
 
  private:
    std::shared_ptr<environment_c> _parent{nullptr};
-   phmap::parallel_node_hash_map<std::string, cell_c> _env;
+   phmap::flat_hash_map<std::string, cell_c> _env;
 };
 
 } // namespace sauros

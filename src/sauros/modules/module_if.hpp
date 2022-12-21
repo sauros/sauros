@@ -12,12 +12,12 @@ class module_if {
    virtual ~module_if() {}
 
    //! \brief Retrieve the map of cells that are contained by the module
-   phmap::parallel_node_hash_map<std::string, cell_c> get_members() const {
+   phmap::flat_hash_map<std::string, cell_c> get_members() const {
       return _members_map;
    }
 
  protected:
-   phmap::parallel_node_hash_map<std::string, cell_c> _members_map;
+   phmap::flat_hash_map<std::string, cell_c> _members_map;
 
    cell_c load(cell_c &cell, std::shared_ptr<environment_c> env);
 };

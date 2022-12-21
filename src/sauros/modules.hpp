@@ -30,7 +30,7 @@ class modules_c {
                              std::shared_ptr<environment_c> &env);
 
  private:
-   phmap::parallel_node_hash_map<std::string, module_if *> _modules;
+   phmap::flat_hash_map<std::string, module_if *> _modules;
 };
 
 } // namespace sauros
