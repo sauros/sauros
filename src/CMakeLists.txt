@@ -127,6 +127,7 @@ target_include_directories(sauros
     PUBLIC 
         ${PROJECT_SOURCE_DIR}
         ${PROJECT_SOURCE_DIR}/third_party/hwinfo/include
+        ${PROJECT_SOURCE_DIR}/third_party/parallel_hashmap
 )
 
 target_link_libraries(sauros 
