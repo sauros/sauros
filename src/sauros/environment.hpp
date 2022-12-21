@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "cell_map.hpp"
+
 namespace sauros {
 
 //! \brief An environment that contains variables / functions / etcs
@@ -76,7 +78,7 @@ class environment_c {
 
  private:
    std::shared_ptr<environment_c> _parent{nullptr};
-   std::unordered_map<std::string, cell_c> _env;
+   cell_map_t _env;
 };
 
 } // namespace sauros

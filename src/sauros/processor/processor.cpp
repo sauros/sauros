@@ -19,6 +19,8 @@ void processor_c::cell_to_string(std::string &out, cell_c &cell,
          out += " ";
       }
       break;
+   case cell_type_e::ENCODED_SYMBOL:
+      [[fallthrough]];
    case cell_type_e::SYMBOL: {
       auto data = process_cell(cell, env);
       if (data.has_value()) {
@@ -59,6 +61,8 @@ void processor_c::quote_cell(std::string &out, cell_c &cell,
    case cell_type_e::DOUBLE:
       [[fallthrough]];
    case cell_type_e::INTEGER:
+      [[fallthrough]];
+   case cell_type_e::ENCODED_SYMBOL:
       [[fallthrough]];
    case cell_type_e::SYMBOL: {
       out += cell.data;
@@ -122,6 +126,8 @@ processor_c::process_list(std::vector<cell_c> &cells,
    auto suspect_cell = cells[0];
 
    switch (suspect_cell.type) {
+   case cell_type_e::ENCODED_SYMBOL:
+      [[fallthrough]];
    case cell_type_e::SYMBOL: {
 
       auto cell = process_cell(suspect_cell, env);
@@ -155,7 +161,6 @@ processor_c::process_list(std::vector<cell_c> &cells,
    case cell_type_e::INTEGER:
       return process_cell(suspect_cell, env);
       break;
-
    case cell_type_e::LAMBDA:
       [[fallthrough]];
    case cell_type_e::BOX:
@@ -193,17 +198,23 @@ processor_c::process_cell(cell_c &cell, std::shared_ptr<environment_c> env) {
          return access_box_member(cell, env);
       }
 
-      // Check the built ins to see if its a process to exec
-      //
-      if (_builtins.find(cell.data) != _builtins.end()) {
-         return _builtins[cell.data];
-      }
-
       // If not built in maybe it is in the environment
       //
       auto env_with_data = env->find(cell.data, cell.location);
       auto r = env_with_data->get(cell.data);
       return {r};
+   }
+
+   case cell_type_e::ENCODED_SYMBOL: {
+      if (cell.builtin_encoding == BUILTIN_DEFAULT_VAL ||
+          cell.builtin_encoding >= BUILTIN_ENTRY_COUNT) {
+         throw runtime_exception_c("Invalid encoded symbol for : " + cell.data,
+                                   cell.location);
+         return {};
+      }
+
+      // Direct access - no more mapping
+      return _builtins[cell.builtin_encoding];
    }
 
    case cell_type_e::LIST:

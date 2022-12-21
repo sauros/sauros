@@ -1,9 +1,9 @@
-#ifndef SAUROS_AAAAMODULES_HPP
-#define SAUROS_AAAAMODULES_HPP
+#ifndef SAUROS_MODULES_HPP
+#define SAUROS_MODULES_HPP
 
 #include "cell.hpp"
 #include "modules/module_if.hpp"
-#include <unordered_map>
+#include "third_party/parallel_hashmap/phmap.h"
 #include <vector>
 
 namespace sauros {
@@ -30,7 +30,7 @@ class modules_c {
                              std::shared_ptr<environment_c> &env);
 
  private:
-   std::unordered_map<std::string, module_if *> _modules;
+   phmap::parallel_node_hash_map<std::string, module_if *> _modules;
 };
 
 } // namespace sauros
