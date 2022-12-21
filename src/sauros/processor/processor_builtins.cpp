@@ -139,7 +139,7 @@ void processor_c::populate_standard_builtins() {
           for (auto i = cells.begin() + 1; i < cells.end(); i++) {
              if ((*i).type != sauros::cell_type_e::STRING) {
                 throw sauros::processor_c::runtime_exception_c(
-                    "use command expects parameters to be raw strings",
+                    "extern command expects parameters to be raw strings",
                     (*i).location);
              }
 
