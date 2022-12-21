@@ -489,8 +489,9 @@ void processor_c::populate_standard_builtins() {
           }
 
           if (cells.size() == 2) {
-             env->set(variable_name, cell_c(cell_type_e::LIST, "<list>"));
-             return {env->get(variable_name)};
+             auto cell = cell_c(cell_type_e::LIST, "<list>");
+             env->set(variable_name, cell);
+             return {cell};
           }
 
           if (cells.size() != 3) {
@@ -508,7 +509,7 @@ void processor_c::populate_standard_builtins() {
           }
 
           env->set(variable_name, value);
-          return {env->get(variable_name)};
+          return {value};
        });
 
    _builtins[BUILTIN_PUT] =
@@ -644,7 +645,7 @@ void processor_c::populate_standard_builtins() {
              }
 
              target_env->set(accessors.back(), value);
-             return {target_env->get(accessors.back())};
+             return {value};
 
           } else {
              // If this isn't found it will throw :)
@@ -657,7 +658,7 @@ void processor_c::populate_standard_builtins() {
              }
 
              containing_env->set(variable_name, value);
-             return {containing_env->get(variable_name)};
+             return {value};
           }
        });
 
