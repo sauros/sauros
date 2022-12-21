@@ -4,7 +4,8 @@
 #include "sauros/cell.hpp"
 #include <unordered_map>
 #include <vector>
-#include "third_party/parallel_hashmap/phmap.h"
+
+#include "cell_map.hpp"
 
 namespace sauros {
 
@@ -77,7 +78,7 @@ class environment_c {
 
  private:
    std::shared_ptr<environment_c> _parent{nullptr};
-   phmap::flat_hash_map<std::string, cell_c> _env;
+   cell_map_t _env;
 };
 
 } // namespace sauros

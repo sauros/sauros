@@ -51,23 +51,6 @@ mandelbrot
       3 - 1.54s user 0.01s system 98% cpu 1.565 total
       4 - 2.27s user 0.02s system 99% cpu 2.303 total
 
-[Flat parallel hashmap (environment_c only)]
-
-primality
-   100,000 Primes
-      0 - 10.39s user 0.03s system 99% cpu 10.472 total
-      1 - 9.84s user 0.03s system 99% cpu 9.964 total
-      2 - 10.23s user 0.02s system 99% cpu 10.358 total
-      3 - 11.80s user 0.05s system 98% cpu 12.043 total
-      4 - 10.89s user 0.02s system 99% cpu 10.974 total
-
-mandelbrot
-      0 - 1.62s user 0.01s system 98% cpu 1.653 total
-      1 - 2.80s user 0.06s system 96% cpu 2.965 total
-      2 - 1.91s user 0.01s system 98% cpu 1.938 total
-      3 - 1.88s user 0.01s system 98% cpu 1.912 total
-      4 - 2.02s user 0.01s system 98% cpu 2.049 total
-
 [Flat parallel hashmap (all maps)]
 
 primality

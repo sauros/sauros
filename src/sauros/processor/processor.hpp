@@ -5,6 +5,7 @@
 #include "sauros/environment.hpp"
 #include "sauros/modules.hpp"
 #include "sauros/system/system.hpp"
+#include "sauros/builtin_encodings.hpp"
 
 #include <exception>
 #include <functional>
@@ -12,6 +13,8 @@
 #include <set>
 #include <unordered_map>
 #include <vector>
+#include "sauros/cell_map.hpp"
+#include <array>
 
 // Forward declaration for RLL library loader
 namespace rll {
@@ -84,7 +87,7 @@ class processor_c {
    //! \brief Convert a cell to a string - Something that can be printed to the
    //! screen \param out[out] The string to populate \param cell[in] The cell to
    //! string \param env The environment to pull cell information from \param
-   //! show_space Defaults to true, inserts spaces between items
+   //! show_space Defaults to true, inserts spaces between ite1ms
    void cell_to_string(std::string &out, cell_c &cell,
                        std::shared_ptr<environment_c> env,
                        bool show_space = true);
@@ -93,8 +96,8 @@ class processor_c {
    sauros::system_c _system;
    sauros::modules_c _modules;
    std::set<std::string> _key_symbols;
-   std::unordered_map<std::string, cell_c> _builtins;
-   std::unordered_map<std::string, rll::shared_library *> _loaded_libs;
+   std::array<cell_c, BUILTIN_ENTRY_COUNT> _builtins;
+   phmap::parallel_node_hash_map<std::string, rll::shared_library *> _loaded_libs;
 
    void populate_standard_builtins();
 

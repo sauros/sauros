@@ -66,6 +66,7 @@ set(SAUROS_MODULE_HEADERS
    ${CMAKE_SOURCE_DIR}/sauros/modules/fs/fs.hpp
    ${CMAKE_SOURCE_DIR}/sauros/modules/sys/sys.hpp
    ${CMAKE_SOURCE_DIR}/sauros/modules/math/math.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/modules/random/random.hpp
 )
 
 set(SAUROS_SOURCES
@@ -81,6 +82,19 @@ set(SAUROS_SOURCES
    ${SAUROS_MODULE_SOURCES}
 )
 
+set(PARALLEL_HASHMAP_HEADERS
+   ${CMAKE_SOURCE_DIR}/third_party/parallel_hashmap/btree.h
+   ${CMAKE_SOURCE_DIR}/third_party/parallel_hashmap/meminfo.h
+   ${CMAKE_SOURCE_DIR}/third_party/parallel_hashmap/phmap_base.h
+   ${CMAKE_SOURCE_DIR}/third_party/parallel_hashmap/phmap_bits.h
+   ${CMAKE_SOURCE_DIR}/third_party/parallel_hashmap/phmap_config.h
+   ${CMAKE_SOURCE_DIR}/third_party/parallel_hashmap/phmap_dump.h
+   ${CMAKE_SOURCE_DIR}/third_party/parallel_hashmap/phmap_fwd_decl.h
+   ${CMAKE_SOURCE_DIR}/third_party/parallel_hashmap/phmap_utils.h
+   ${CMAKE_SOURCE_DIR}/third_party/parallel_hashmap/phmap.h
+
+)
+
 set(HEADERS
    ${CMAKE_SOURCE_DIR}/sauros/modules.hpp
    ${CMAKE_SOURCE_DIR}/sauros/front/parser.hpp
@@ -90,11 +104,13 @@ set(HEADERS
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor.hpp
    ${CMAKE_SOURCE_DIR}/sauros/environment.hpp
    ${CMAKE_SOURCE_DIR}/sauros/cell.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/cell_map.hpp
    ${CMAKE_SOURCE_DIR}/sauros/types.hpp
    ${CMAKE_SOURCE_DIR}/sauros/version.hpp
    ${CMAKE_SOURCE_DIR}/sauros/sauros.hpp
    ${CMAKE_SOURCE_DIR}/sauros/RLL/RLL.h
    ${SAUROS_MODULE_HEADERS}
+   ${PARALLEL_HASHMAP_HEADERS}
 )
 
 set(SOURCES
