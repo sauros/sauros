@@ -1,20 +1,20 @@
 #include "../driver.hpp"
 #include "processor.hpp"
 
-#include <iostream>
 #include <filesystem>
+#include <iostream>
 
 namespace sauros {
 
 namespace {
 
-static inline bool eval_truthy(cell_c &cell, location_s &location) {
-   switch (cell.type) {
+static inline bool eval_truthy(cell_ptr cell, location_s &location) {
+   switch (cell->type) {
    case cell_type_e::STRING:
-      return (!cell.data.empty());
+      return (!cell->data.empty());
       break;
    case cell_type_e::LIST:
-      return (!cell.list.empty());
+      return (!cell->list.empty());
       break;
    case cell_type_e::LAMBDA:
       return true;
@@ -23,7 +23,7 @@ static inline bool eval_truthy(cell_c &cell, location_s &location) {
       [[fallthrough]];
    case cell_type_e::INTEGER: {
       try {
-         auto v = std::stod(cell.data);
+         auto v = std::stod(cell->data);
          return (v > 0.0);
       } catch (const std::invalid_argument &) {
          throw processor_c::runtime_exception_c(
@@ -41,396 +41,384 @@ static inline bool eval_truthy(cell_c &cell, location_s &location) {
 } // namespace
 
 void processor_c::populate_standard_builtins() {
-   _builtins[BUILTIN_IMPORT] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_IMPORT] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() < 2) {
              throw runtime_exception_c(
                  "import command expects at least 1 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
           file_executor_c loader(env);
           for (auto i = cells.begin() + 1; i < cells.end(); i++) {
-             if ((*i).type != sauros::cell_type_e::STRING) {
+             if ((*i)->type != sauros::cell_type_e::STRING) {
                 throw sauros::processor_c::runtime_exception_c(
                     "Import objects are expected to be raw strings",
-                    (*i).location);
+                    (*i)->location);
              }
-             if (0 != loader.run((*i).data)) {
-               bool success{false};
-               auto sys_dir = _system.get_sauros_directory();
-               if (sys_dir.has_value()) {
-                  std::filesystem::path p = (*sys_dir);
-                  p /= (*i).data;
-                  success = (0 == loader.run(p));
-               }
-               
-               if (!success) {
-                  throw sauros::processor_c::runtime_exception_c(
-                     "Unable to load import: " + (*i).data, (*i).location);
-               }
+             if (0 != loader.run((*i)->data)) {
+                bool success{false};
+                auto sys_dir = _system.get_sauros_directory();
+                if (sys_dir.has_value()) {
+                   std::filesystem::path p = (*sys_dir);
+                   p /= (*i)->data;
+                   success = (0 == loader.run(p));
+                }
+
+                if (!success) {
+                   throw sauros::processor_c::runtime_exception_c(
+                       "Unable to load import: " + (*i)->data, (*i)->location);
+                }
              }
           }
-          return CELL_TRUE;
+          return std::make_shared<cell_c>(CELL_TRUE);
        });
 
-   _builtins[BUILTIN_EXTERN] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_EXTERN] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() < 2) {
              throw runtime_exception_c(
                  "use command expects at least 1 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
           for (auto i = cells.begin() + 1; i < cells.end(); i++) {
-             if ((*i).type != sauros::cell_type_e::STRING) {
+             if ((*i)->type != sauros::cell_type_e::STRING) {
                 throw sauros::processor_c::runtime_exception_c(
                     "extern command expects parameters to be raw strings",
-                    (*i).location);
+                    (*i)->location);
              }
 
-             load_library((*i).data, (*i).location, env);
+             load_library((*i)->data, (*i)->location, env);
           }
-          return {sauros::CELL_TRUE};
+          return std::make_shared<cell_c>(CELL_TRUE);
        });
 
-   _builtins[BUILTIN_USE] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_USE] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() < 2) {
              throw runtime_exception_c(
                  "use command expects at least 1 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
           for (auto i = cells.begin() + 1; i < cells.end(); i++) {
-             if ((*i).type != sauros::cell_type_e::STRING) {
+             if ((*i)->type != sauros::cell_type_e::STRING) {
                 throw sauros::processor_c::runtime_exception_c(
                     "use command expects parameters to be raw strings",
-                    (*i).location);
+                    (*i)->location);
              }
 
-             if (!_modules.contains((*i).data)) {
+             if (!_modules.contains((*i)->data)) {
                 throw sauros::processor_c::runtime_exception_c("unknown module",
-                                                               (*i).location);
+                                                               (*i)->location);
              }
 
-             _modules.populate_environment((*i).data, env);
+             _modules.populate_environment((*i)->data, env);
           }
-          return {sauros::CELL_TRUE};
+          return std::make_shared<cell_c>(CELL_TRUE);
        });
 
-   _builtins[BUILTIN_EXIT] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_EXIT] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 2) {
              throw runtime_exception_c(
                  "exit command expects 1 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
-          std::exit(std::stoull(process_cell(cells[1], env).data));
+          std::exit(std::stoull(process_cell(cells[1], env)->data));
        });
 
-   _builtins[BUILTIN_BREAK] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_BREAK] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 1) {
              throw runtime_exception_c(
                  "break command expects 0 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
-          auto return_value = CELL_NIL;
-          return_value.stop_processing = true;
-          return {return_value};
+          auto return_value = std::make_shared<cell_c>(CELL_NIL);
+          return_value->stop_processing = true;
+          return return_value;
        });
 
-   _builtins[BUILTIN_TYPE] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_TYPE] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 2) {
              throw runtime_exception_c(
                  "type command expects 1 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
           auto target = process_cell(cells[1], env);
 
-          return {cell_c(cell_type_e::STRING, cell_type_to_string(target.type),
-                         cells[1].location)};
+          return {std::make_shared<cell_c>(cell_type_e::STRING,
+                                           cell_type_to_string(target->type),
+                                           cells[1]->location)};
        });
 
-   _builtins[BUILTIN_FRONT] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_FRONT] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 2) {
              throw runtime_exception_c(
                  "front command expects 1 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
           auto target = process_cell(cells[1], env);
 
-          if (!(target.type == cell_type_e::LIST)) {
+          if (!(target->type == cell_type_e::LIST)) {
              throw runtime_exception_c("Expected list parameter for front",
-                                       cells[1].location);
+                                       cells[1]->location);
           }
 
-          if (target.list.empty()) {
-             return {CELL_NIL};
+          if (target->list.empty()) {
+             return std::make_shared<cell_c>(CELL_NIL);
           }
 
-          return {target.list[0]};
+          return {target->list[0]};
        });
 
-   _builtins[BUILTIN_BACK] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_BACK] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 2) {
              throw runtime_exception_c(
                  "back command expects 1 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
           auto target = process_cell(cells[1], env);
 
-          if (!(target.type == cell_type_e::LIST)) {
+          if (!(target->type == cell_type_e::LIST)) {
              throw runtime_exception_c("Expected list parameter for back",
-                                       cells[1].location);
+                                       cells[1]->location);
           }
 
-          if (target.list.empty()) {
-             return {CELL_NIL};
+          if (target->list.empty()) {
+             return std::make_shared<cell_c>(CELL_NIL);
           }
 
-          return {*(target.list.end() - 1)};
+          return {*(target->list.end() - 1)};
        });
 
-   _builtins[BUILTIN_AT] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_AT] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 3) {
              throw runtime_exception_c("at command expects 2 parameters, but " +
                                            std::to_string(cells.size() - 1) +
                                            " were given",
-                                       cells[0].location);
+                                       cells[0]->location);
           }
 
           auto index = process_cell(cells[1], env);
-          if (index.type != cell_type_e::INTEGER) {
+          if (index->type != cell_type_e::INTEGER) {
              throw runtime_exception_c(
-                 "at command index must me an integer type", cells[0].location);
+                 "at command index must me an integer type",
+                 cells[0]->location);
           }
 
-          uint64_t idx = std::stoull(index.data);
+          uint64_t idx = std::stoull(index->data);
 
-          if (cells[2].type != cell_type_e::SYMBOL) {
+          if (cells[2]->type != cell_type_e::SYMBOL) {
              throw runtime_exception_c(
                  "Second parameter of at must be a variable",
-                 cells[2].location);
+                 cells[2]->location);
           }
 
-          auto &variable_name = cells[2].data;
+          auto &variable_name = cells[2]->data;
 
           // If this isn't found it will throw :)
-          auto containing_env = env->find(variable_name, cells[1].location);
-          cell_c &target = containing_env->get(variable_name);
+          auto containing_env = env->find(variable_name, cells[1]->location);
+          cell_ptr target = containing_env->get(variable_name);
 
-          if (target.list.size() <= idx) {
-             return {CELL_NIL};
+          if (target->list.size() <= idx) {
+             return std::make_shared<cell_c>(CELL_NIL);
           }
-          return {target.list[idx]};
+          return {target->list[idx]};
        });
 
-   _builtins[BUILTIN_CLEAR] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_CLEAR] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 2) {
              throw runtime_exception_c(
                  "clear command expects 1 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
-          if (cells[1].type != cell_type_e::SYMBOL) {
+          if (cells[1]->type != cell_type_e::SYMBOL) {
              throw runtime_exception_c(
                  "First parameter of clear must be a variable",
-                 cells[1].location);
+                 cells[1]->location);
           }
 
-          auto &variable_name = cells[1].data;
+          auto &variable_name = cells[1]->data;
 
           // If this isn't found it will throw :)
-          auto containing_env = env->find(variable_name, cells[1].location);
-          cell_c &target = containing_env->get(variable_name);
-          target.list.clear();
-          return {CELL_TRUE};
+          auto containing_env = env->find(variable_name, cells[1]->location);
+          cell_ptr target = containing_env->get(variable_name);
+          target->list.clear();
+          return std::make_shared<cell_c>(CELL_TRUE);
        });
 
-   _builtins[BUILTIN_POP] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_POP] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 2) {
              throw runtime_exception_c(
                  "pop command expects 1 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
-          if (cells[1].type != cell_type_e::SYMBOL) {
+          if (cells[1]->type != cell_type_e::SYMBOL) {
              throw runtime_exception_c(
                  "First parameter of pop must be a variable",
-                 cells[1].location);
+                 cells[1]->location);
           }
 
-          auto &variable_name = cells[1].data;
+          auto &variable_name = cells[1]->data;
 
           // If this isn't found it will throw :)
-          auto containing_env = env->find(variable_name, cells[1].location);
-          cell_c &target = containing_env->get(variable_name);
-          if (!target.list.empty()) {
-             target.list.pop_back();
+          auto containing_env = env->find(variable_name, cells[1]->location);
+          cell_ptr target = containing_env->get(variable_name);
+          if (!target->list.empty()) {
+             target->list.pop_back();
           }
-          return {CELL_TRUE};
+          return std::make_shared<cell_c>(CELL_TRUE);
        });
 
-   _builtins[BUILTIN_PUSH] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_PUSH] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 3) {
              throw runtime_exception_c(
                  "push command expects 2 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
-          if (cells[1].type != cell_type_e::SYMBOL) {
+          if (cells[1]->type != cell_type_e::SYMBOL) {
              throw runtime_exception_c(
                  "First parameter of push must be a variable",
-                 cells[1].location);
+                 cells[1]->location);
           }
 
-          auto &variable_name = cells[1].data;
+          auto &variable_name = cells[1]->data;
 
           // If this isn't found it will throw :)
-          auto containing_env = env->find(variable_name, cells[1].location);
+          auto containing_env = env->find(variable_name, cells[1]->location);
           auto value = process_cell(cells[2], env);
 
-          if (value.type == cell_type_e::SYMBOL) {
+          if (value->type == cell_type_e::SYMBOL) {
              throw runtime_exception_c("Expected list or datum value (push)",
-                                       cells[2].location);
+                                       cells[2]->location);
           }
 
-          cell_c &target = containing_env->get(variable_name);
-          target.list.push_back(value);
-          return {CELL_TRUE};
+          cell_ptr target = containing_env->get(variable_name);
+          target->list.push_back(value);
+          return std::make_shared<cell_c>(CELL_TRUE);
        });
 
-   _builtins[BUILTIN_NOT] = cell_c([this](std::vector<cell_c> &cells,
-                                          std::shared_ptr<environment_c> env)
-                                       -> cell_c {
+   _builtins[BUILTIN_NOT] = std::make_shared<
+       cell_c>([this](cells_t &cells,
+                      std::shared_ptr<environment_c> env) -> cell_ptr {
       if (cells.size() != 2) {
          throw runtime_exception_c("not command expects 1 parameters, but " +
                                        std::to_string(cells.size() - 1) +
                                        " were given",
-                                   cells[0].location);
+                                   cells[0]->location);
       }
 
       auto target = process_cell(cells[1], env);
 
-      if (target.type != cell_type_e::INTEGER &&
-          target.type != cell_type_e::DOUBLE) {
+      if (target->type != cell_type_e::INTEGER &&
+          target->type != cell_type_e::DOUBLE) {
          throw runtime_exception_c(
              "not command expects parameter to evaluate to a numerical type",
-             cells[1].location);
+             cells[1]->location);
       }
 
-      if (std::stod(target.data) > 0.0) {
-         return {CELL_FALSE};
+      if (std::stod(target->data) > 0.0) {
+         return std::make_shared<cell_c>(CELL_FALSE);
       } else {
-         return {CELL_TRUE};
+         return std::make_shared<cell_c>(CELL_TRUE);
       }
    });
 
-   _builtins[BUILTIN_ASSERT] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_ASSERT] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() < 3) {
              throw runtime_exception_c(
                  "assert command expects at least 3 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
-          if (cells[1].type != cell_type_e::STRING) {
+          if (cells[1]->type != cell_type_e::STRING) {
              throw runtime_exception_c("assertion label bust be a raw string",
-                                       cells[1].location);
+                                       cells[1]->location);
           }
 
           for (auto c = cells.begin() + 2; c != cells.end(); c++) {
 
              auto result = process_cell((*c), env);
 
-             if (static_cast<int>(result.type) <
+             if (static_cast<int>(result->type) <
                  static_cast<int>(cell_type_e::STRING)) {
                 throw runtime_exception_c(
                     "assertion condition did not evaluate to a direectly "
                     "comparable type (string, int, double)",
-                    (*c).location);
+                    (*c)->location);
              }
 
-             if (cell_type_e::STRING == result.type && result.data.empty()) {
+             if (cell_type_e::STRING == result->type && result->data.empty()) {
                 throw assertion_exception_c(
-                    "assertion failure: " + cells[1].data, (*c).location);
-             } else if (cell_type_e::INTEGER == result.type &&
-                        std::stoull(result.data) < 1) {
+                    "assertion failure: " + cells[1]->data, (*c)->location);
+             } else if (cell_type_e::INTEGER == result->type &&
+                        std::stoull(result->data) < 1) {
                 throw assertion_exception_c(
-                    "assertion failure: " + cells[1].data, (*c).location);
-             } else if (cell_type_e::DOUBLE == result.type &&
-                        std::stod(result.data) <= 0.0) {
+                    "assertion failure: " + cells[1]->data, (*c)->location);
+             } else if (cell_type_e::DOUBLE == result->type &&
+                        std::stod(result->data) <= 0.0) {
                 throw assertion_exception_c(
-                    "assertion failure: " + cells[1].data, (*c).location);
+                    "assertion failure: " + cells[1]->data, (*c)->location);
              }
           }
-          return {CELL_TRUE};
+          return std::make_shared<cell_c>(CELL_TRUE);
        });
 
-   _builtins[BUILTIN_VAR] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_VAR] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() < 2) {
              throw runtime_exception_c("Nothing given to var command",
-                                       cells[0].location);
+                                       cells[0]->location);
           }
 
-          auto &variable_name = cells[1].data;
+          auto &variable_name = cells[1]->data;
 
           if (variable_name.find('.') != std::string::npos) {
              throw runtime_exception_c(
                  "Attempting to directly define a variable accessor " +
                      variable_name,
-                 cells[1].location);
+                 cells[1]->location);
           }
 
-          if (cells[1].builtin_encoding != BUILTIN_DEFAULT_VAL) {
+          if (cells[1]->builtin_encoding != BUILTIN_DEFAULT_VAL) {
              throw runtime_exception_c("Attempting to define a key symbol: " +
                                            variable_name,
-                                       cells[1].location);
+                                       cells[1]->location);
           }
 
           if (cells.size() == 2) {
-             auto cell = cell_c(cell_type_e::LIST, "<list>");
+             auto cell = std::make_shared<cell_c>(cell_type_e::LIST, "<list>");
              env->set(variable_name, cell);
              return {cell};
           }
@@ -439,23 +427,22 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "var command expects 2 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
           auto value = process_cell(cells[2], env);
 
-          if (value.type == cell_type_e::SYMBOL) {
+          if (value->type == cell_type_e::SYMBOL) {
              throw runtime_exception_c("Expected list or datum value (var)",
-                                       cells[2].location);
+                                       cells[2]->location);
           }
 
           env->set(variable_name, value);
           return {value};
        });
 
-   _builtins[BUILTIN_PUT] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_PUT] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           for (auto i = cells.begin() + 1; i != cells.end(); ++i) {
 
              auto item = process_cell((*i), env);
@@ -465,12 +452,11 @@ void processor_c::populate_standard_builtins() {
              std::cout << stringed;
           }
 
-          return CELL_TRUE;
+          return std::make_shared<cell_c>(CELL_TRUE);
        });
 
-   _builtins[BUILTIN_PUTLN] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_PUTLN] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           for (auto i = cells.begin() + 1; i != cells.end(); ++i) {
 
              auto item = process_cell((*i), env);
@@ -481,34 +467,32 @@ void processor_c::populate_standard_builtins() {
           }
           std::cout << std::endl;
 
-          return CELL_TRUE;
+          return std::make_shared<cell_c>(CELL_TRUE);
        });
 
-   _builtins[BUILTIN_LAMBDA] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_LAMBDA] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           // First item following lambda must be a list of parameters
-          std::vector<cell_c> body(cells.begin() + 1, cells.end());
-          cell_c lambda(body);
-          lambda.type = cell_type_e::LAMBDA;
-          lambda.data = cells[1].data;
+          cells_t body(cells.begin() + 1, cells.end());
+          cell_ptr lambda = std::make_shared<cell_c>(body);
+          lambda->type = cell_type_e::LAMBDA;
+          lambda->data = cells[1]->data;
           return {lambda};
        });
 
-   _builtins[BUILTIN_LOOP] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_LOOP] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 3 && cells.size() != 4) {
              throw runtime_exception_c(
                  "loop command expects 3 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
           auto &conditional_cell = cells[1];
 
-          cell_c *body{nullptr};
-          cell_c *post{nullptr};
+          cell_ptr *body{nullptr};
+          cell_ptr *post{nullptr};
 
           if (cells.size() == 3) {
              body = &cells[2];
@@ -525,13 +509,13 @@ void processor_c::populate_standard_builtins() {
              auto conditional_result =
                  process_cell(conditional_cell, loop_environment);
 
-             if (!eval_truthy(conditional_result, cells[0].location)) {
+             if (!eval_truthy(conditional_result, cells[0]->location)) {
                 break;
              }
 
              // Execute the body
              auto r = process_cell(*body, loop_environment);
-             if (r.stop_processing) {
+             if (r->stop_processing) {
                 break;
              }
 
@@ -540,46 +524,45 @@ void processor_c::populate_standard_builtins() {
              }
           }
 
-          return {CELL_NIL};
+          return std::make_shared<cell_c>(CELL_NIL);
        });
 
-   _builtins[BUILTIN_SET] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_SET] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 3) {
              throw runtime_exception_c(
                  "set command expects 2 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
-          auto &variable_name = cells[1].data;
+          auto &variable_name = cells[1]->data;
 
           if (variable_name.find('.') != std::string::npos) {
 
              auto accessors = retrieve_accessors(variable_name);
 
-             cell_c result;
+             cell_ptr result;
              std::shared_ptr<environment_c> target_env = env;
              for (std::size_t i = 0; i < accessors.size(); i++) {
 
                 // Get the item from the accessor
                 auto containing_env =
-                    target_env->find(accessors[i], cells[1].location);
+                    target_env->find(accessors[i], cells[1]->location);
                 result = containing_env->get(accessors[i]);
 
                 // Check if we need to move the environment "in" to the next
                 // object
-                if (result.type == cell_type_e::BOX) {
-                   target_env = result.box_env;
+                if (result->type == cell_type_e::BOX) {
+                   target_env = result->box_env;
                 }
              }
 
              auto value = process_cell(cells[2], env);
 
-             if (value.type == cell_type_e::SYMBOL) {
+             if (value->type == cell_type_e::SYMBOL) {
                 throw runtime_exception_c("Expected list or datum value (set)",
-                                          cells[2].location);
+                                          cells[2]->location);
              }
 
              target_env->set(accessors.back(), value);
@@ -587,12 +570,12 @@ void processor_c::populate_standard_builtins() {
 
           } else {
              // If this isn't found it will throw :)
-             auto containing_env = env->find(variable_name, cells[1].location);
+             auto containing_env = env->find(variable_name, cells[1]->location);
              auto value = process_cell(cells[2], env);
 
-             if (value.type == cell_type_e::SYMBOL) {
+             if (value->type == cell_type_e::SYMBOL) {
                 throw runtime_exception_c("Expected list or datum value (set)",
-                                          cells[2].location);
+                                          cells[2]->location);
              }
 
              containing_env->set(variable_name, value);
@@ -603,12 +586,11 @@ void processor_c::populate_standard_builtins() {
    // List and block are extremely similar, and realistically `list` coult be
    // used instead of `block` but its "less efficient" as it does the work to
    // construct what would be a temporary cell, while `block` does not.
-   _builtins[BUILTIN_BLOCK] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_BLOCK] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           for (size_t i = 1; i < cells.size() - 1; i++) {
              auto r = process_cell(cells[i], env);
-             if (r.stop_processing) {
+             if (r->stop_processing) {
                 // We want to pass the stop flag up
                 return r;
              }
@@ -617,29 +599,27 @@ void processor_c::populate_standard_builtins() {
           return process_cell(cells[cells.size() - 1], env);
        });
 
-   _builtins[BUILTIN_LIST] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
-          std::vector<cell_c> body;
+   _builtins[BUILTIN_LIST] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          cells_t body;
 
           for (auto i = cells.begin() + 1; i != cells.end(); ++i) {
              body.push_back(process_cell(*i, env));
           }
 
-          cell_c list(body);
-          list.type = cell_type_e::LIST;
-          list.data = "<list>";
+          cell_ptr list = std::make_shared<cell_c>(body);
+          list->type = cell_type_e::LIST;
+          list->data = "<list>";
           return {list};
        });
 
-   _builtins[BUILTIN_COMPOSE] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_COMPOSE] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 2) {
              throw runtime_exception_c(
                  "compose command expects 1 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
           std::string value;
@@ -647,231 +627,212 @@ void processor_c::populate_standard_builtins() {
              quote_cell(value, (*c), env);
           }
 
-          return cell_c(cell_type_e::STRING, value);
+          return std::make_shared<cell_c>(cell_type_e::STRING, value);
        });
 
-   _builtins[BUILTIN_DECOMPOSE] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_DECOMPOSE] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 2) {
              throw runtime_exception_c(
                  "decompose command expects 1 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
           auto target = process_cell(cells[1], env);
 
-          cell_c result;
-          eval_c evaluator(env, [&result](cell_c cell) { result = cell; });
+          cell_ptr result;
+          eval_c evaluator(env, [&result](cell_ptr cell) { result = cell; });
 
-          evaluator.eval(cells[1].location.line, target.data);
+          evaluator.eval(cells[1]->location.line, target->data);
           return result;
        });
 
-   _builtins[BUILTIN_BOX] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_BOX] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 3) {
              throw runtime_exception_c(
                  "object command expectes 3 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
-          auto &variable_name = cells[1].data;
+          auto &variable_name = cells[1]->data;
 
-          if (cells[1].builtin_encoding != BUILTIN_DEFAULT_VAL) {
+          if (cells[1]->builtin_encoding != BUILTIN_DEFAULT_VAL) {
              throw runtime_exception_c("Attempting to define a key symbol: " +
                                            variable_name,
-                                       cells[1].location);
+                                       cells[1]->location);
           }
 
-          auto object_cell = cell_c(cell_type_e::BOX);
-          object_cell.box_env = std::make_shared<sauros::environment_c>(env);
+          auto object_cell = std::make_shared<cell_c>(cell_type_e::BOX);
+          object_cell->box_env = std::make_shared<sauros::environment_c>(env);
 
           // Result of loading object body is
-          process_cell(cells[2], object_cell.box_env);
+          process_cell(cells[2], object_cell->box_env);
 
           env->set(variable_name, object_cell);
-          return {CELL_TRUE};
+          return std::make_shared<cell_c>(CELL_TRUE);
        });
 
-   _builtins[BUILTIN_TRUE] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
-          return {sauros::CELL_TRUE};
+   _builtins[BUILTIN_TRUE] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          return std::make_shared<cell_c>(CELL_TRUE);
        });
 
-   _builtins[BUILTIN_FALSE] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
-          return {sauros::CELL_FALSE};
+   _builtins[BUILTIN_FALSE] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          return std::make_shared<cell_c>(CELL_FALSE);
        });
 
-   _builtins[BUILTIN_NIL] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
-          return {sauros::CELL_NIL};
+   _builtins[BUILTIN_NIL] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          return std::make_shared<cell_c>(CELL_NIL);
        });
 
-   _builtins[BUILTIN_IS_NIL] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_IS_NIL] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 2) {
              throw runtime_exception_c(
                  "is_null expects only one parameter to evaluate",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
-          return (process_cell(cells[1], env).data == sauros::CELL_NIL.data)
-                     ? sauros::CELL_TRUE
-                     : sauros::CELL_FALSE;
+          return (process_cell(cells[1], env)->data == CELL_NIL.data)
+                     ? std::make_shared<cell_c>(sauros::CELL_TRUE)
+                     : std::make_shared<cell_c>(sauros::CELL_FALSE);
        });
 
-   _builtins[BUILTIN_LEN] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_LEN] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 2) {
              throw runtime_exception_c(
                  "len command expects 2 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
-          return {
-              cell_c(cell_type_e::INTEGER,
-                     std::to_string(process_cell(cells[1], env).list.size()),
-                     cells[1].location)};
+          return {std::make_shared<cell_c>(
+              cell_type_e::INTEGER,
+              std::to_string(process_cell(cells[1], env)->list.size()),
+              cells[1]->location)};
        });
 
-   _builtins[BUILTIN_IF] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_IF] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 3 && cells.size() != 4) {
              throw runtime_exception_c(
                  "if command expects 2-3 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
           auto eval = process_cell(cells[1], env);
 
-          if (eval_truthy(eval, cells[0].location)) {
+          if (eval_truthy(eval, cells[0]->location)) {
              return process_cell(cells[2], env);
           } else if (cells.size() == 4) {
              return process_cell(cells[3], env);
           }
-          return CELL_TRUE;
+          return std::make_shared<cell_c>(CELL_TRUE);
        });
 
-   _builtins[BUILTIN_SEQ] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_SEQ] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 3) {
              throw runtime_exception_c(
                  "seq command expects 3 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
           auto lhs = process_cell(cells[1], env);
           auto rhs = process_cell(cells[2], env);
 
-          return cell_c(cell_type_e::INTEGER,
-                        std::to_string((lhs.data == rhs.data)),
-                        cells[0].location);
+          return std::make_shared<cell_c>(
+              cell_type_e::INTEGER, std::to_string((lhs->data == rhs->data)),
+              cells[0]->location);
        });
 
-   _builtins[BUILTIN_SNEQ] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_SNEQ] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 3) {
              throw runtime_exception_c(
                  "sneq command expects 3 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0].location);
+                 cells[0]->location);
           }
 
           auto lhs = process_cell(cells[1], env);
           auto rhs = process_cell(cells[2], env);
 
-          return cell_c(cell_type_e::INTEGER,
-                        std::to_string((lhs.data != rhs.data)),
-                        cells[0].location);
+          return std::make_shared<cell_c>(
+              cell_type_e::INTEGER, std::to_string((lhs->data != rhs->data)),
+              cells[0]->location);
        });
 
-   _builtins[BUILTIN_LT] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_LT] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           return {perform_arithmetic(
               "<", cells,
               [](double lhs, double rhs) -> double { return lhs < rhs; }, env)};
        });
 
-   _builtins[BUILTIN_LT_EQ] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_LT_EQ] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           return {perform_arithmetic(
               "<=", cells,
               [](double lhs, double rhs) -> double { return lhs <= rhs; },
               env)};
        });
 
-   _builtins[BUILTIN_GT] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_GT] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           return {perform_arithmetic(
               ">", cells,
               [](double lhs, double rhs) -> double { return lhs > rhs; }, env)};
        });
 
-   _builtins[BUILTIN_GT_EQ] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_GT_EQ] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           return {perform_arithmetic(
               ">=", cells,
               [](double lhs, double rhs) -> double { return lhs >= rhs; },
               env)};
        });
 
-   _builtins[BUILTIN_EQ_EQ] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_EQ_EQ] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           return {perform_arithmetic(
               "==", cells,
               [](double lhs, double rhs) -> double { return lhs == rhs; },
               env)};
        });
 
-   _builtins[BUILTIN_NOT_EQ] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_NOT_EQ] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           return {perform_arithmetic(
               "!=", cells,
               [](double lhs, double rhs) -> double { return lhs != rhs; },
               env)};
        });
 
-   _builtins[BUILTIN_ADD] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_ADD] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           return {perform_arithmetic(
               "+", cells,
               [](double lhs, double rhs) -> double { return lhs + rhs; }, env)};
        });
 
-   _builtins[BUILTIN_SUB] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_SUB] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           return {perform_arithmetic(
               "-", cells,
               [](double lhs, double rhs) -> double { return lhs - rhs; }, env)};
        });
 
-   _builtins[BUILTIN_DIV] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_DIV] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           return {perform_arithmetic(
               "/", cells,
               [=](double lhs, double rhs) -> double {
@@ -884,17 +845,15 @@ void processor_c::populate_standard_builtins() {
               env, true)};
        });
 
-   _builtins[BUILTIN_MUL] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_MUL] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           return {perform_arithmetic(
               "*", cells,
               [](double lhs, double rhs) -> double { return lhs * rhs; }, env)};
        });
 
-   _builtins[BUILTIN_MOD] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_MOD] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           return {perform_arithmetic(
               "%", cells,
               [](double lhs, double rhs) -> double {
@@ -903,9 +862,8 @@ void processor_c::populate_standard_builtins() {
               env)};
        });
 
-   _builtins[BUILTIN_OR] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_OR] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           return {perform_arithmetic(
               "%", cells,
               [](double lhs, double rhs) -> double {
@@ -917,9 +875,8 @@ void processor_c::populate_standard_builtins() {
               env)};
        });
 
-   _builtins[BUILTIN_AND] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_AND] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           return {perform_arithmetic(
               "%", cells,
               [](double lhs, double rhs) -> double {
@@ -931,9 +888,8 @@ void processor_c::populate_standard_builtins() {
               env)};
        });
 
-   _builtins[BUILTIN_XOR] =
-       cell_c([this](std::vector<cell_c> &cells,
-                     std::shared_ptr<environment_c> env) -> cell_c {
+   _builtins[BUILTIN_XOR] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           return {perform_arithmetic(
               "%", cells,
               [](double lhs, double rhs) -> double {

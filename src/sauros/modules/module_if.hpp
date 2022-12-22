@@ -17,7 +17,7 @@ class module_if {
  protected:
    cell_map_t _members_map;
 
-   cell_c load(cell_c &cell, std::shared_ptr<environment_c> env);
+   cell_ptr load(cell_ptr cell, std::shared_ptr<environment_c> env);
 };
 
 } // namespace sauros

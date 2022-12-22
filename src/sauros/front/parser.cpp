@@ -138,11 +138,11 @@ std::shared_ptr<error::error_c> get_no_list_error(token_s current_token) {
 }
 } // namespace
 
-std::tuple<cell_c, std::shared_ptr<error::error_c>>
-parse(std::vector<token_s> &tokens, cell_c *current_list = nullptr) {
+std::tuple<cell_ptr, std::shared_ptr<error::error_c>>
+parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
 
    if (tokens.empty()) {
-      return std::make_tuple(cell_c(), nullptr);
+      return std::make_tuple(std::make_shared<cell_c>(), nullptr);
    }
 
    auto current_token = tokens[0];
@@ -151,14 +151,13 @@ parse(std::vector<token_s> &tokens, cell_c *current_list = nullptr) {
    switch (current_token.token) {
 
    case token_e::L_BRACKET: {
-      cell_c new_list;
-      new_list.type = cell_type_e::LIST;
+      cell_ptr new_list = std::make_shared<cell_c>(cell_type_e::LIST);
 
       // Populate the list
-      auto [_, err] = parse(tokens, &new_list);
+      auto [_, err] = parse(tokens, new_list);
 
       if (err) {
-         return std::make_tuple(cell_c(), err);
+         return std::make_tuple(std::make_shared<cell_c>(), err);
       }
 
       // If we had  a list, we add our new list to it
@@ -179,30 +178,31 @@ parse(std::vector<token_s> &tokens, cell_c *current_list = nullptr) {
          auto error = std::make_shared<error::error_c>(
              current_token.location, current_token.data,
              "unopened closing bracket `]` located");
-         return std::make_tuple(cell_c(), error);
+         return std::make_tuple(std::make_shared<cell_c>(), error);
       }
 
       // The cell list being created has been populated recursively so
       // we don't need to return anything here.
-      return std::make_tuple(cell_c(), nullptr);
+      return std::make_tuple(std::make_shared<cell_c>(), nullptr);
    }
 
    case token_e::SYMBOL: {
       if (!current_list) {
-         return std::make_tuple(cell_c(), get_no_list_error(current_token));
+         return std::make_tuple(std::make_shared<cell_c>(),
+                                get_no_list_error(current_token));
       }
 
       // Check the encoding map for builtins to see if we need to
       if (BUILTIN_STRING_TO_ENCODING.find(current_token.data) !=
           BUILTIN_STRING_TO_ENCODING.end()) {
-         cell_c builtin_translation_cell(cell_type_e::ENCODED_SYMBOL,
-                                         current_token.data,
-                                         current_token.location);
-         builtin_translation_cell.builtin_encoding =
+         cell_ptr builtin_translation_cell = std::make_shared<cell_c>(
+             cell_type_e::ENCODED_SYMBOL, current_token.data,
+             current_token.location);
+         builtin_translation_cell->builtin_encoding =
              BUILTIN_STRING_TO_ENCODING[current_token.data];
          current_list->list.push_back(builtin_translation_cell);
       } else {
-         current_list->list.push_back(cell_c(
+         current_list->list.push_back(std::make_shared<cell_c>(
              cell_type_e::SYMBOL, current_token.data, current_token.location));
       }
       return parse(tokens, current_list);
@@ -210,30 +210,33 @@ parse(std::vector<token_s> &tokens, cell_c *current_list = nullptr) {
 
    case token_e::STRING: {
       if (!current_list) {
-         return std::make_tuple(cell_c(), get_no_list_error(current_token));
+         return std::make_tuple(std::make_shared<cell_c>(),
+                                get_no_list_error(current_token));
       }
 
-      current_list->list.push_back(cell_c(
+      current_list->list.push_back(std::make_shared<cell_c>(
           cell_type_e::STRING, current_token.data, current_token.location));
       return parse(tokens, current_list);
    }
 
    case token_e::INTEGER: {
       if (!current_list) {
-         return std::make_tuple(cell_c(), get_no_list_error(current_token));
+         return std::make_tuple(std::make_shared<cell_c>(),
+                                get_no_list_error(current_token));
       }
 
-      current_list->list.push_back(cell_c(
+      current_list->list.push_back(std::make_shared<cell_c>(
           cell_type_e::INTEGER, current_token.data, current_token.location));
       return parse(tokens, current_list);
    }
 
    case token_e::DOUBLE: {
       if (!current_list) {
-         return std::make_tuple(cell_c(), get_no_list_error(current_token));
+         return std::make_tuple(std::make_shared<cell_c>(),
+                                get_no_list_error(current_token));
       }
 
-      current_list->list.push_back(cell_c(
+      current_list->list.push_back(std::make_shared<cell_c>(
           cell_type_e::DOUBLE, current_token.data, current_token.location));
       return parse(tokens, current_list);
    }
@@ -242,7 +245,7 @@ parse(std::vector<token_s> &tokens, cell_c *current_list = nullptr) {
    auto error = std::make_shared<error::error_c>(
        current_token.location, current_token.data,
        "internal error > unhandled token type");
-   return std::make_tuple(cell_c(), error);
+   return std::make_tuple(std::make_shared<cell_c>(), error);
 }
 
 product_s parse_line(const char *source_descrption, std::size_t line_number,

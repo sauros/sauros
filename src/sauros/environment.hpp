@@ -46,7 +46,7 @@ class environment_c {
    //! that the parameters represent \param outer (Optional) environment pointer
    //! that will be
    //!              the "outer" or "upper/parent" environment [super-scope]
-   environment_c(std::vector<cell_c> &params, std::vector<cell_c> &args,
+   environment_c(cells_t &params, cells_t &args,
                  std::shared_ptr<environment_c> outer);
 
    //! \brief Check if something exists
@@ -67,14 +67,14 @@ class environment_c {
    //! \note This does not check for existence and can cause
    //!       an OOB error if the item does not exist -
    //!       `exists` or `find` should be used prior to this call
-   cell_c &get(const std::string &item);
+   cell_ptr &get(const std::string &item);
 
    //! \brief Set an item to a value
    //! \param item The item name to set
    //! \param cell The item data to set
    //! \post There will exist an item that maps the string to the cell
    //! \note If the item already exists, it will be overwritten
-   void set(const std::string &item, cell_c cell);
+   void set(const std::string &item, cell_ptr cell);
 
  private:
    std::shared_ptr<environment_c> _parent{nullptr};

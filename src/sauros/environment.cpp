@@ -16,22 +16,21 @@ bool environment_c::exists(const std::string &item) {
    return false;
 }
 
-environment_c::environment_c(std::vector<cell_c> &params,
-                             std::vector<cell_c> &args,
+environment_c::environment_c(cells_t &params, cells_t &args,
                              std::shared_ptr<environment_c> outer)
     : _parent(outer) {
 
    auto arg = args.begin();
    for (auto param = params.begin(); param != params.end(); ++param) {
-      _env[param->data] = *arg++;
+      _env[(*param)->data] = *arg++;
    }
 }
 
-void environment_c::set(const std::string &item, cell_c cell) {
+void environment_c::set(const std::string &item, cell_ptr cell) {
    _env[item] = cell;
 }
 
-cell_c &environment_c::get(const std::string &item) { return _env[item]; }
+cell_ptr &environment_c::get(const std::string &item) { return _env[item]; }
 
 environment_c *environment_c::find(const std::string &var,
                                    location_s location) {
