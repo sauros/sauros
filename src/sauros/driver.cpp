@@ -205,8 +205,7 @@ int file_executor_c::run(const std::string &file) {
    return 0;
 }
 
-void file_executor_c::cell_returned(
-    cell_c cell) { /* Not needed */
+void file_executor_c::cell_returned(cell_c cell) { /* Not needed */
 }
 
 void file_executor_c::except(sauros::processor_c::runtime_exception_c &e) {

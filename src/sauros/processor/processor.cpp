@@ -114,11 +114,10 @@ void processor_c::quote_cell(std::string &out, cell_c &cell,
 
 processor_c::processor_c() { populate_standard_builtins(); }
 
-cell_c
-processor_c::process_list(std::vector<cell_c> &cells,
-                          std::shared_ptr<environment_c> env) {
+cell_c processor_c::process_list(std::vector<cell_c> &cells,
+                                 std::shared_ptr<environment_c> env) {
    if (cells.empty()) {
-      return {};
+      return CELL_NIL;
    }
 
    auto suspect_cell = cells[0];
@@ -136,7 +135,6 @@ processor_c::process_list(std::vector<cell_c> &cells,
 
       // If its not then it might be a proc
       if (cell.proc) {
-
          return cell.proc(cells, env);
       }
 
@@ -176,8 +174,8 @@ processor_c::retrieve_accessors(const std::string &value) {
    return accessor_list;
 }
 
-cell_c
-processor_c::process_cell(cell_c &cell, std::shared_ptr<environment_c> env) {
+cell_c processor_c::process_cell(cell_c &cell,
+                                 std::shared_ptr<environment_c> env) {
 
    switch (cell.type) {
    case cell_type_e::SYMBOL: {
@@ -231,7 +229,7 @@ processor_c::process_cell(cell_c &cell, std::shared_ptr<environment_c> env) {
 }
 
 cell_c processor_c::process_lambda(cell_c &cell, std::vector<cell_c> &cells,
-                            std::shared_ptr<environment_c> env) {
+                                   std::shared_ptr<environment_c> env) {
    std::vector<cell_c> exps;
    for (auto param = cells.begin() + 1; param != cells.end(); ++param) {
 
@@ -252,9 +250,8 @@ cell_c processor_c::process_lambda(cell_c &cell, std::vector<cell_c> &cells,
    return process_cell(lambda_cell, lambda_env);
 }
 
-cell_c
-processor_c::access_box_member(cell_c &cell,
-                               std::shared_ptr<environment_c> &env) {
+cell_c processor_c::access_box_member(cell_c &cell,
+                                      std::shared_ptr<environment_c> &env) {
 
    auto accessors = retrieve_accessors(cell.data);
 

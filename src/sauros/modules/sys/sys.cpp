@@ -12,9 +12,9 @@ namespace modules {
 
 sys_c::sys_c() {
 
-   _members_map["cls"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> cell_c {
+   _members_map["cls"] =
+       cell_c([this](std::vector<cell_c> &cells,
+                     std::shared_ptr<environment_c> env) -> cell_c {
 #if defined(__unix__) || defined(__unix) || defined(__linux__)
           int _ = system("clear");
 #else
@@ -23,42 +23,44 @@ sys_c::sys_c() {
           return {CELL_TRUE};
        });
 
-   _members_map["cmd"] = cell_c([this](std::vector<cell_c> &cells,
-                                       std::shared_ptr<environment_c> env)
-                                    -> cell_c {
-      if (cells.size() == 1) {
-         throw processor_c::runtime_exception_c(
-             "system command expects at least one parameter",
-             cells[0].location);
-      }
+   _members_map["cmd"] =
+       cell_c([this](std::vector<cell_c> &cells,
+                     std::shared_ptr<environment_c> env) -> cell_c {
+          if (cells.size() == 1) {
+             throw processor_c::runtime_exception_c(
+                 "system command expects at least one parameter",
+                 cells[0].location);
+          }
 
-      if (cells.size() == 2) {
-         auto c = load(cells[1], env);
-         if (c.type != cell_type_e::STRING) {
-            throw processor_c::runtime_exception_c(
-                "system command must be of type: STRING", cells[0].location);
-         }
-         return cell_c(cell_type_e::INTEGER,
-                       std::to_string(system(c.data.c_str())));
-      }
+          if (cells.size() == 2) {
+             auto c = load(cells[1], env);
+             if (c.type != cell_type_e::STRING) {
+                throw processor_c::runtime_exception_c(
+                    "system command must be of type: STRING",
+                    cells[0].location);
+             }
+             return cell_c(cell_type_e::INTEGER,
+                           std::to_string(system(c.data.c_str())));
+          }
 
-      cell_c result(cell_type_e::LIST);
-      for (auto c = cells.begin() + 1; c < cells.end(); c++) {
-         auto item = load(*c, env);
-         if (item.type != cell_type_e::STRING) {
-            throw processor_c::runtime_exception_c(
-                "system command must be of type: STRING", (*c).location);
-         }
-         result.list.push_back(cell_c(
-             cell_type_e::INTEGER, std::to_string(system(item.data.c_str()))));
-      }
+          cell_c result(cell_type_e::LIST);
+          for (auto c = cells.begin() + 1; c < cells.end(); c++) {
+             auto item = load(*c, env);
+             if (item.type != cell_type_e::STRING) {
+                throw processor_c::runtime_exception_c(
+                    "system command must be of type: STRING", (*c).location);
+             }
+             result.list.push_back(
+                 cell_c(cell_type_e::INTEGER,
+                        std::to_string(system(item.data.c_str()))));
+          }
 
-      return {result};
-   });
+          return {result};
+       });
 
-   _members_map["sleep"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> cell_c {
+   _members_map["sleep"] =
+       cell_c([this](std::vector<cell_c> &cells,
+                     std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
                  "sleep function expects 1 parameter, but " +

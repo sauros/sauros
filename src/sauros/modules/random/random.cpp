@@ -37,9 +37,9 @@ std::string generate_random_string(const std::string source, std::size_t len) {
 
 random_c::random_c() {
 
-   _members_map["string"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> cell_c {
+   _members_map["string"] =
+       cell_c([this](std::vector<cell_c> &cells,
+                     std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
                  "random::string function expects 1 parameters (length), but " +
@@ -64,12 +64,12 @@ random_c::random_c() {
                  cells[1].location);
           }
           return cell_c(cell_type_e::STRING,
-                         generate_random_string(ALL_CHARS, len_int));
+                        generate_random_string(ALL_CHARS, len_int));
        });
 
-   _members_map["alpha_string"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> cell_c {
+   _members_map["alpha_string"] =
+       cell_c([this](std::vector<cell_c> &cells,
+                     std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
                  "random::string function expects 1 parameters (length), but " +
@@ -94,13 +94,12 @@ random_c::random_c() {
                  cells[1].location);
           }
           return cell_c(cell_type_e::STRING,
-                         generate_random_string(ALPHA_NUM, len_int));
+                        generate_random_string(ALPHA_NUM, len_int));
        });
 
    _members_map["sourced_string"] = cell_c([this](std::vector<cell_c> &cells,
                                                   std::shared_ptr<environment_c>
-                                                      env)
-                                               -> cell_c {
+                                                      env) -> cell_c {
       if (cells.size() != 3) {
          throw processor_c::runtime_exception_c(
              "random::string function expects 2 parameters (source_string, "
@@ -132,12 +131,12 @@ random_c::random_c() {
              cells[2].location);
       }
       return cell_c(cell_type_e::STRING,
-                     generate_random_string(src.data, len_int));
+                    generate_random_string(src.data, len_int));
    });
 
-   _members_map["uniform_int"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> cell_c {
+   _members_map["uniform_int"] =
+       cell_c([this](std::vector<cell_c> &cells,
+                     std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 3) {
              throw processor_c::runtime_exception_c(
                  "random::uniform_int function expects 2 parameters (min, "
@@ -188,9 +187,9 @@ random_c::random_c() {
           return cell_c(cell_type_e::INTEGER, std::to_string(dist(mt)));
        });
 
-   _members_map["uniform_real"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> cell_c {
+   _members_map["uniform_real"] =
+       cell_c([this](std::vector<cell_c> &cells,
+                     std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 3) {
              throw processor_c::runtime_exception_c(
                  "random::uniform_real function expects 2 parameters (min, "

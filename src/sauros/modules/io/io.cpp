@@ -8,17 +8,17 @@ namespace modules {
 
 io_c::io_c() {
 
-   _members_map["get_str"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> cell_c {
+   _members_map["get_str"] =
+       cell_c([this](std::vector<cell_c> &cells,
+                     std::shared_ptr<environment_c> env) -> cell_c {
           std::string line;
           std::getline(std::cin, line);
           return {sauros::cell_c(sauros::cell_type_e::STRING, line)};
        });
 
-   _members_map["get_int"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> cell_c {
+   _members_map["get_int"] =
+       cell_c([this](std::vector<cell_c> &cells,
+                     std::shared_ptr<environment_c> env) -> cell_c {
           int64_t x = 0;
           std::string line;
           std::getline(std::cin, line);
@@ -32,9 +32,9 @@ io_c::io_c() {
           return CELL_NIL;
        });
 
-   _members_map["get_double"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> cell_c {
+   _members_map["get_double"] =
+       cell_c([this](std::vector<cell_c> &cells,
+                     std::shared_ptr<environment_c> env) -> cell_c {
           double x = 0.0;
           std::string line;
           std::getline(std::cin, line);
