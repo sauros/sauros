@@ -146,9 +146,7 @@ void driver_if::execute(parser::segment_parser_c::segment_s segment) {
 
    try {
       auto result = _list_processor.process_cell((*parser_result).cell, _env);
-      if (result.has_value()) {
-         cell_returned((*result));
-      }
+      cell_returned(result);
    } catch (sauros::processor_c::runtime_exception_c &e) {
       except(e);
    } catch (sauros::processor_c::assertion_exception_c &e) {
@@ -171,9 +169,7 @@ void driver_if::execute(const char *source, uint64_t line_number,
 
    try {
       auto result = _list_processor.process_cell(parser_result.cell, _env);
-      if (result.has_value()) {
-         cell_returned((*result));
-      }
+      cell_returned(result);
    } catch (sauros::processor_c::runtime_exception_c &e) {
       except(e);
    } catch (sauros::processor_c::assertion_exception_c &e) {
@@ -209,8 +205,7 @@ int file_executor_c::run(const std::string &file) {
    return 0;
 }
 
-void file_executor_c::cell_returned(
-    std::optional<cell_c> cell) { /* Not needed */
+void file_executor_c::cell_returned(cell_c cell) { /* Not needed */
 }
 
 void file_executor_c::except(sauros::processor_c::runtime_exception_c &e) {
@@ -280,13 +275,11 @@ void repl_c::start() {
 
 void repl_c::stop() { _do = false; }
 
-void repl_c::cell_returned(std::optional<cell_c> cell) {
+void repl_c::cell_returned(cell_c cell) {
 
-   if (cell.has_value()) {
-      std::string s_cell;
-      _list_processor.cell_to_string(s_cell, *cell, _env, true);
-      std::cout << s_cell << std::endl;
-   }
+   std::string s_cell;
+   _list_processor.cell_to_string(s_cell, cell, _env, true);
+   std::cout << s_cell << std::endl;
 }
 
 void repl_c::except(sauros::processor_c::runtime_exception_c &e) {
@@ -307,7 +300,7 @@ void repl_c::parser_error(std::string &e, location_s location) {
    std::cout << rang::fg::red << e << rang::fg::reset << std::endl;
 }
 
-void eval_c::cell_returned(std::optional<cell_c> cell) { _cb(cell); }
+void eval_c::cell_returned(cell_c cell) { _cb(cell); }
 
 void eval_c::except(sauros::processor_c::runtime_exception_c &e) {
    std::cout << rang::fg::yellow << "[decomposed item] : " << rang::fg::red

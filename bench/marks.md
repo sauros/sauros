@@ -22,6 +22,11 @@ mandelbrot
       3 - 0.85s user 0.00s system 99% cpu 0.859 total
       4 - 0.85s user 0.00s system 99% cpu 0.855 total
 
+[new metrics as of first map optimization work]
+
+primality.sau >> averaged an execution time of  4.8125s ( 4812.522ms )  after  50  executions
+mandelbrot.sau >> averaged an execution time of  0.7721s ( 772.0777ms )  after  50  executions
+
 [ ---------------------- ]
 ```
 
@@ -30,7 +35,6 @@ mandelbrot
 The lab server is significantly slower than Midas so they are not directly comparable
 
 ```
-
 20-December-2022
 
 [ Release Build ]

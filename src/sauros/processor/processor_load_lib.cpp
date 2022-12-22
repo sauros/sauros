@@ -174,7 +174,7 @@ void processor_c::load_library(const std::string &target, location_s location,
       }
 
       void *fn_ptr = lib->get_symbol(f);
-      cell_c::proc_f fn = reinterpret_cast<std::optional<cell_c> (*)(
+      cell_c::proc_f fn = reinterpret_cast<cell_c (*)(
           std::vector<cell_c> &, std::shared_ptr<environment_c>)>(fn_ptr);
 
       // Add to env

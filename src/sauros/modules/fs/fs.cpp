@@ -9,20 +9,20 @@ namespace sauros {
 namespace modules {
 
 fs_c::fs_c() {
-   _members_map["cwd"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+   _members_map["cwd"] =
+       cell_c([this](std::vector<cell_c> &cells,
+                     std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 1) {
              throw processor_c::runtime_exception_c(
                  "fs::cwd operation expects no parameters", cells[0].location);
           }
-          return {sauros::cell_c(sauros::cell_type_e::STRING,
-                                 std::filesystem::current_path())};
+          return sauros::cell_c(sauros::cell_type_e::STRING,
+                                std::filesystem::current_path());
        });
 
-   _members_map["ls"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+   _members_map["ls"] =
+       cell_c([this](std::vector<cell_c> &cells,
+                     std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 1) {
              throw processor_c::runtime_exception_c(
                  "fs::ls operation expects no parameters", cells[0].location);
@@ -34,12 +34,12 @@ fs_c::fs_c() {
                    std::filesystem::current_path())) {
              result.list.push_back(cell_c(cell_type_e::STRING, entry.path()));
           }
-          return {result};
+          return result;
        });
 
-   _members_map["chdir"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+   _members_map["chdir"] =
+       cell_c([this](std::vector<cell_c> &cells,
+                     std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
                  "fs::chdir operation expects exactly 1 parameter",
@@ -55,12 +55,12 @@ fs_c::fs_c() {
 
           std::filesystem::current_path(item.data);
 
-          return {CELL_TRUE};
+          return CELL_TRUE;
        });
 
-   _members_map["is_file"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+   _members_map["is_file"] =
+       cell_c([this](std::vector<cell_c> &cells,
+                     std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
                  "fs::is_file operation expects exactly 1 parameter",
@@ -75,14 +75,14 @@ fs_c::fs_c() {
           }
 
           if (std::filesystem::is_regular_file(item.data)) {
-             return {CELL_TRUE};
+             return CELL_TRUE;
           }
-          return {CELL_FALSE};
+          return CELL_FALSE;
        });
 
-   _members_map["is_dir"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+   _members_map["is_dir"] =
+       cell_c([this](std::vector<cell_c> &cells,
+                     std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
                  "fs::is_dir operation expects exactly 1 parameter",
@@ -97,14 +97,14 @@ fs_c::fs_c() {
           }
 
           if (std::filesystem::is_directory(item.data)) {
-             return {CELL_TRUE};
+             return CELL_TRUE;
           }
-          return {CELL_FALSE};
+          return CELL_FALSE;
        });
 
-   _members_map["read"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+   _members_map["read"] =
+       cell_c([this](std::vector<cell_c> &cells,
+                     std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
                  "fs::read_file operation expects exactly 1 parameter",
@@ -119,13 +119,13 @@ fs_c::fs_c() {
           }
 
           if (!std::filesystem::is_regular_file(item.data)) {
-             return {CELL_FALSE};
+             return CELL_FALSE;
           }
 
           std::fstream fs;
           fs.open(item.data, std::fstream::in);
           if (!fs.is_open()) {
-             return {CELL_FALSE};
+             return CELL_FALSE;
           }
 
           cell_c result(cell_type_e::LIST);
@@ -137,9 +137,9 @@ fs_c::fs_c() {
           return result;
        });
 
-   _members_map["write"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+   _members_map["write"] =
+       cell_c([this](std::vector<cell_c> &cells,
+                     std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 3) {
              throw processor_c::runtime_exception_c(
                  "fs::write operation expects exactly 2 parameter",
@@ -168,12 +168,12 @@ fs_c::fs_c() {
           os << source.data;
 
           os.close();
-          return {CELL_TRUE};
+          return CELL_TRUE;
        });
 
-   _members_map["app"] = cell_c(
-       [this](std::vector<cell_c> &cells,
-              std::shared_ptr<environment_c> env) -> std::optional<cell_c> {
+   _members_map["app"] =
+       cell_c([this](std::vector<cell_c> &cells,
+                     std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 3) {
              throw processor_c::runtime_exception_c(
                  "fs::append operation expects exactly 2 parameter",
@@ -202,7 +202,7 @@ fs_c::fs_c() {
           os << "\n" << source.data;
 
           os.close();
-          return {CELL_TRUE};
+          return CELL_TRUE;
        });
 }
 

@@ -54,8 +54,8 @@ class cell_c {
  public:
    //! \brief Function pointer definition for a cell
    //!        used to execute code
-   using proc_f = std::function<std::optional<cell_c>(
-       std::vector<cell_c> &, std::shared_ptr<environment_c> env)>;
+   using proc_f = std::function<cell_c(std::vector<cell_c> &,
+                                       std::shared_ptr<environment_c> env)>;
 
    //! \brief Create an empty cell
    //! \param type The type to set (Defaults to SYMBOL)
