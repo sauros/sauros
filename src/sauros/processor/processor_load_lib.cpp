@@ -65,7 +65,8 @@ void processor_c::load_library(const std::string &target, location_s location,
    {
       sauros::file_executor_c file_executor(manifest_env);
       if (0 != file_executor.run(target_manifest_file.c_str())) {
-         throw runtime_exception_c("unable to open file " + std::string(target_manifest_file),
+         throw runtime_exception_c("unable to open file " +
+                                       std::string(target_manifest_file),
                                    location);
       }
    }
@@ -182,7 +183,7 @@ void processor_c::load_library(const std::string &target, location_s location,
 
       // Add to env
       std::string scoped_name = prefix + "::" + f;
-      env->set(scoped_name,  std::make_shared<cell_c>(fn));
+      env->set(scoped_name, std::make_shared<cell_c>(fn));
    }
 }
 

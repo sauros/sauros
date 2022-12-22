@@ -31,9 +31,9 @@ void setup_env() {
                          std::to_string(cells.size() - 1) + " were given",
                      cells[0]->location);
               }
-              return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING,
-                                    std::string(LIBSAUROS_VERSION),
-                                    cells[0]->location);
+              return std::make_shared<sauros::cell_c>(
+                  sauros::cell_type_e::STRING, std::string(LIBSAUROS_VERSION),
+                  cells[0]->location);
            }));
 
    env->set(
@@ -41,9 +41,9 @@ void setup_env() {
        std::make_shared<sauros::cell_c>(
            [=](sauros::cells_t &cells,
                std::shared_ptr<sauros::environment_c> env) -> sauros::cell_ptr {
-              return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING,
-                                    std::string(get_build_hash()),
-                                    cells[0]->location);
+              return std::make_shared<sauros::cell_c>(
+                  sauros::cell_type_e::STRING, std::string(get_build_hash()),
+                  cells[0]->location);
            }));
 }
 

@@ -37,9 +37,8 @@ std::string generate_random_string(const std::string source, std::size_t len) {
 
 random_c::random_c() {
 
-   _members_map["string"] =
-       std::make_shared<cell_c>([this](cells_t &cells,
-                     std::shared_ptr<environment_c> env) -> cell_ptr {
+   _members_map["string"] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
                  "random::string function expects 1 parameters (length), but " +
@@ -63,13 +62,12 @@ random_c::random_c() {
                  "random::string failed to convert parameter to integer (stoi)",
                  cells[1]->location);
           }
-          return std::make_shared<cell_c>(cell_type_e::STRING,
-                        generate_random_string(ALL_CHARS, len_int));
+          return std::make_shared<cell_c>(
+              cell_type_e::STRING, generate_random_string(ALL_CHARS, len_int));
        });
 
-   _members_map["alpha_string"] =
-       std::make_shared<cell_c>([this](cells_t &cells,
-                     std::shared_ptr<environment_c> env) -> cell_ptr {
+   _members_map["alpha_string"] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
                  "random::string function expects 1 parameters (length), but " +
@@ -93,13 +91,13 @@ random_c::random_c() {
                  "random::string failed to convert parameter to integer (stoi)",
                  cells[1]->location);
           }
-          return std::make_shared<cell_c>(cell_type_e::STRING,
-                        generate_random_string(ALPHA_NUM, len_int));
+          return std::make_shared<cell_c>(
+              cell_type_e::STRING, generate_random_string(ALPHA_NUM, len_int));
        });
 
-   _members_map["sourced_string"] = std::make_shared<cell_c>([this](cells_t &cells,
-                                                  std::shared_ptr<environment_c>
-                                                      env) -> cell_ptr {
+   _members_map["sourced_string"] = std::make_shared<
+       cell_c>([this](cells_t &cells,
+                      std::shared_ptr<environment_c> env) -> cell_ptr {
       if (cells.size() != 3) {
          throw processor_c::runtime_exception_c(
              "random::string function expects 2 parameters (source_string, "
@@ -116,7 +114,8 @@ random_c::random_c() {
       }
 
       auto len = load(cells[2], env);
-      if (len->type != cell_type_e::DOUBLE && len->type != cell_type_e::INTEGER) {
+      if (len->type != cell_type_e::DOUBLE &&
+          len->type != cell_type_e::INTEGER) {
          throw processor_c::runtime_exception_c(
              "random::string expects parameter `len` to be numerical",
              cells[2]->location);
@@ -130,13 +129,12 @@ random_c::random_c() {
              "random::string failed to convert parameter to integer (stoi)",
              cells[2]->location);
       }
-      return std::make_shared<cell_c>(cell_type_e::STRING,
-                    generate_random_string(src->data, len_int));
+      return std::make_shared<cell_c>(
+          cell_type_e::STRING, generate_random_string(src->data, len_int));
    });
 
-   _members_map["uniform_int"] =
-       std::make_shared<cell_c>([this](cells_t &cells,
-                     std::shared_ptr<environment_c> env) -> cell_ptr {
+   _members_map["uniform_int"] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 3) {
              throw processor_c::runtime_exception_c(
                  "random::uniform_int function expects 2 parameters (min, "
@@ -184,12 +182,12 @@ random_c::random_c() {
           std::mt19937 mt(rd());
           std::uniform_int_distribution<int> dist(min_int, max_int);
 
-          return std::make_shared<cell_c>(cell_type_e::INTEGER, std::to_string(dist(mt)));
+          return std::make_shared<cell_c>(cell_type_e::INTEGER,
+                                          std::to_string(dist(mt)));
        });
 
-   _members_map["uniform_real"] =
-       std::make_shared<cell_c>([this](cells_t &cells,
-                     std::shared_ptr<environment_c> env) -> cell_ptr {
+   _members_map["uniform_real"] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 3) {
              throw processor_c::runtime_exception_c(
                  "random::uniform_real function expects 2 parameters (min, "
@@ -237,7 +235,8 @@ random_c::random_c() {
           std::mt19937 mt(rd());
           std::uniform_real_distribution<double> dist(min_int, max_int);
 
-          return std::make_shared<cell_c>(cell_type_e::DOUBLE, std::to_string(dist(mt)));
+          return std::make_shared<cell_c>(cell_type_e::DOUBLE,
+                                          std::to_string(dist(mt)));
        });
 }
 

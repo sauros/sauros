@@ -12,9 +12,8 @@ namespace modules {
 
 sys_c::sys_c() {
 
-   _members_map["cls"] =
-       std::make_shared<cell_c>([this](cells_t &cells,
-                     std::shared_ptr<environment_c> env) -> cell_ptr {
+   _members_map["cls"] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #if defined(__unix__) || defined(__unix) || defined(__linux__)
           int _ = system("clear");
 #else
@@ -23,9 +22,8 @@ sys_c::sys_c() {
           return std::make_shared<cell_c>(CELL_TRUE);
        });
 
-   _members_map["cmd"] =
-       std::make_shared<cell_c>([this](cells_t &cells,
-                     std::shared_ptr<environment_c> env) -> cell_ptr {
+   _members_map["cmd"] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() == 1) {
              throw processor_c::runtime_exception_c(
                  "system command expects at least one parameter",
@@ -39,8 +37,8 @@ sys_c::sys_c() {
                     "system command must be of type: STRING",
                     cells[0]->location);
              }
-             return std::make_shared<cell_c>(cell_type_e::INTEGER,
-                           std::to_string(system(c->data.c_str())));
+             return std::make_shared<cell_c>(
+                 cell_type_e::INTEGER, std::to_string(system(c->data.c_str())));
           }
 
           auto result = std::make_shared<cell_c>(cell_type_e::LIST);
@@ -50,17 +48,16 @@ sys_c::sys_c() {
                 throw processor_c::runtime_exception_c(
                     "system command must be of type: STRING", (*c)->location);
              }
-             result->list.push_back(
-                  std::make_shared<cell_c>(cell_type_e::INTEGER,
-                        std::to_string(system(item->data.c_str()))));
+             result->list.push_back(std::make_shared<cell_c>(
+                 cell_type_e::INTEGER,
+                 std::to_string(system(item->data.c_str()))));
           }
 
           return {result};
        });
 
-   _members_map["sleep"] =
-       std::make_shared<cell_c>([this](cells_t &cells,
-                     std::shared_ptr<environment_c> env) -> cell_ptr {
+   _members_map["sleep"] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
                  "sleep function expects 1 parameter, but " +

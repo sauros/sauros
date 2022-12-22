@@ -115,7 +115,7 @@ void processor_c::quote_cell(std::string &out, cell_ptr cell,
 processor_c::processor_c() { populate_standard_builtins(); }
 
 cell_ptr processor_c::process_list(cells_t &cells,
-                                 std::shared_ptr<environment_c> env) {
+                                   std::shared_ptr<environment_c> env) {
    if (cells.empty()) {
       return std::make_shared<cell_c>(CELL_NIL);
    }
@@ -175,7 +175,7 @@ processor_c::retrieve_accessors(const std::string &value) {
 }
 
 cell_ptr processor_c::process_cell(cell_ptr cell,
-                                 std::shared_ptr<environment_c> env) {
+                                   std::shared_ptr<environment_c> env) {
 
    switch (cell->type) {
    case cell_type_e::SYMBOL: {
@@ -229,7 +229,7 @@ cell_ptr processor_c::process_cell(cell_ptr cell,
 }
 
 cell_ptr processor_c::process_lambda(cell_ptr cell, cells_t &cells,
-                                   std::shared_ptr<environment_c> env) {
+                                     std::shared_ptr<environment_c> env) {
    cells_t exps;
    for (auto param = cells.begin() + 1; param != cells.end(); ++param) {
 
@@ -251,7 +251,7 @@ cell_ptr processor_c::process_lambda(cell_ptr cell, cells_t &cells,
 }
 
 cell_ptr processor_c::access_box_member(cell_ptr cell,
-                                      std::shared_ptr<environment_c> &env) {
+                                        std::shared_ptr<environment_c> &env) {
 
    auto accessors = retrieve_accessors(cell->data);
 

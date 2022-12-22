@@ -104,18 +104,18 @@ class processor_c {
    void quote_cell(std::string &out, cell_ptr cell,
                    std::shared_ptr<environment_c> env);
 
-   cell_ptr process_list(cells_t &cells,
-                       std::shared_ptr<environment_c> env);
+   cell_ptr process_list(cells_t &cells, std::shared_ptr<environment_c> env);
 
    cell_ptr process_lambda(cell_ptr cell, cells_t &cells,
-                         std::shared_ptr<environment_c> env);
+                           std::shared_ptr<environment_c> env);
 
-   cell_ptr access_box_member(cell_ptr cell, std::shared_ptr<environment_c> &env);
+   cell_ptr access_box_member(cell_ptr cell,
+                              std::shared_ptr<environment_c> &env);
 
    cell_ptr perform_arithmetic(std::string op, cells_t &cells,
-                             std::function<double(double, double)> fn,
-                             std::shared_ptr<environment_c> env,
-                             bool force_double = false);
+                               std::function<double(double, double)> fn,
+                               std::shared_ptr<environment_c> env,
+                               bool force_double = false);
 
    void load_library(const std::string &target, location_s location,
                      std::shared_ptr<environment_c> env);

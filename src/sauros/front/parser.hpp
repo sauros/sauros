@@ -19,8 +19,8 @@ enum class result_e {
 struct product_s {
    result_e result{result_e::OKAY}; //! The result
    std::shared_ptr<error::error_c> error_info{
-       nullptr}; // Error information, populated iff the an error happened
-   cell_ptr cell;  //! Resulting cell item from parsing
+       nullptr};  // Error information, populated iff the an error happened
+   cell_ptr cell; //! Resulting cell item from parsing
 };
 
 //! \brief The parser tokens

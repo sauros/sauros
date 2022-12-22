@@ -9,20 +9,18 @@ namespace sauros {
 namespace modules {
 
 fs_c::fs_c() {
-   _members_map["cwd"] =
-       std::make_shared<cell_c>([this](cells_t &cells,
-                     std::shared_ptr<environment_c> env) -> cell_ptr {
+   _members_map["cwd"] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 1) {
              throw processor_c::runtime_exception_c(
                  "fs::cwd operation expects no parameters", cells[0]->location);
           }
           return std::make_shared<cell_c>(sauros::cell_type_e::STRING,
-                                std::filesystem::current_path());
+                                          std::filesystem::current_path());
        });
 
-   _members_map["ls"] =
-       std::make_shared<cell_c>([this](cells_t &cells,
-                     std::shared_ptr<environment_c> env) -> cell_ptr {
+   _members_map["ls"] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 1) {
              throw processor_c::runtime_exception_c(
                  "fs::ls operation expects no parameters", cells[0]->location);
@@ -32,14 +30,14 @@ fs_c::fs_c() {
 
           for (const auto &entry : std::filesystem::directory_iterator(
                    std::filesystem::current_path())) {
-             result->list.push_back(std::make_shared<cell_c>(cell_type_e::STRING, entry.path()));
+             result->list.push_back(
+                 std::make_shared<cell_c>(cell_type_e::STRING, entry.path()));
           }
           return result;
        });
 
-   _members_map["chdir"] =
-       std::make_shared<cell_c>([this](cells_t &cells,
-                     std::shared_ptr<environment_c> env) -> cell_ptr {
+   _members_map["chdir"] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
                  "fs::chdir operation expects exactly 1 parameter",
@@ -58,9 +56,8 @@ fs_c::fs_c() {
           return std::make_shared<cell_c>(CELL_TRUE);
        });
 
-   _members_map["is_file"] =
-       std::make_shared<cell_c>([this](cells_t &cells,
-                     std::shared_ptr<environment_c> env) -> cell_ptr {
+   _members_map["is_file"] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
                  "fs::is_file operation expects exactly 1 parameter",
@@ -80,9 +77,8 @@ fs_c::fs_c() {
           return std::make_shared<cell_c>(CELL_FALSE);
        });
 
-   _members_map["is_dir"] =
-       std::make_shared<cell_c>([this](cells_t &cells,
-                     std::shared_ptr<environment_c> env) -> cell_ptr {
+   _members_map["is_dir"] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
                  "fs::is_dir operation expects exactly 1 parameter",
@@ -102,9 +98,8 @@ fs_c::fs_c() {
           return std::make_shared<cell_c>(CELL_FALSE);
        });
 
-   _members_map["read"] =
-       std::make_shared<cell_c>([this](cells_t &cells,
-                     std::shared_ptr<environment_c> env) -> cell_ptr {
+   _members_map["read"] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
                  "fs::read_file operation expects exactly 1 parameter",
@@ -132,14 +127,14 @@ fs_c::fs_c() {
 
           std::string line;
           while (std::getline(fs, line)) {
-             result->list.push_back(std::make_shared<cell_c>(cell_type_e::STRING, line));
+             result->list.push_back(
+                 std::make_shared<cell_c>(cell_type_e::STRING, line));
           }
           return result;
        });
 
-   _members_map["write"] =
-       std::make_shared<cell_c>([this](cells_t &cells,
-                     std::shared_ptr<environment_c> env) -> cell_ptr {
+   _members_map["write"] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 3) {
              throw processor_c::runtime_exception_c(
                  "fs::write operation expects exactly 2 parameter",
@@ -171,9 +166,8 @@ fs_c::fs_c() {
           return std::make_shared<cell_c>(CELL_TRUE);
        });
 
-   _members_map["app"] =
-       std::make_shared<cell_c>([this](cells_t &cells,
-                     std::shared_ptr<environment_c> env) -> cell_ptr {
+   _members_map["app"] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 3) {
              throw processor_c::runtime_exception_c(
                  "fs::append operation expects exactly 2 parameter",

@@ -188,15 +188,16 @@ parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
 
    case token_e::SYMBOL: {
       if (!current_list) {
-         return std::make_tuple(std::make_shared<cell_c>(), get_no_list_error(current_token));
+         return std::make_tuple(std::make_shared<cell_c>(),
+                                get_no_list_error(current_token));
       }
 
       // Check the encoding map for builtins to see if we need to
       if (BUILTIN_STRING_TO_ENCODING.find(current_token.data) !=
           BUILTIN_STRING_TO_ENCODING.end()) {
-         cell_ptr builtin_translation_cell = std::make_shared<cell_c>(cell_type_e::ENCODED_SYMBOL,
-                                         current_token.data,
-                                         current_token.location);
+         cell_ptr builtin_translation_cell = std::make_shared<cell_c>(
+             cell_type_e::ENCODED_SYMBOL, current_token.data,
+             current_token.location);
          builtin_translation_cell->builtin_encoding =
              BUILTIN_STRING_TO_ENCODING[current_token.data];
          current_list->list.push_back(builtin_translation_cell);
@@ -209,7 +210,8 @@ parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
 
    case token_e::STRING: {
       if (!current_list) {
-         return std::make_tuple(std::make_shared<cell_c>(), get_no_list_error(current_token));
+         return std::make_tuple(std::make_shared<cell_c>(),
+                                get_no_list_error(current_token));
       }
 
       current_list->list.push_back(std::make_shared<cell_c>(
@@ -219,7 +221,8 @@ parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
 
    case token_e::INTEGER: {
       if (!current_list) {
-         return std::make_tuple(std::make_shared<cell_c>(), get_no_list_error(current_token));
+         return std::make_tuple(std::make_shared<cell_c>(),
+                                get_no_list_error(current_token));
       }
 
       current_list->list.push_back(std::make_shared<cell_c>(
@@ -229,7 +232,8 @@ parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
 
    case token_e::DOUBLE: {
       if (!current_list) {
-         return std::make_tuple(std::make_shared<cell_c>(), get_no_list_error(current_token));
+         return std::make_tuple(std::make_shared<cell_c>(),
+                                get_no_list_error(current_token));
       }
 
       current_list->list.push_back(std::make_shared<cell_c>(

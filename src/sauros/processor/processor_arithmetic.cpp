@@ -2,11 +2,9 @@
 
 namespace sauros {
 
-cell_ptr processor_c::perform_arithmetic(std::string op,
-                                       cells_t &cells,
-                                       std::function<double(double, double)> fn,
-                                       std::shared_ptr<environment_c> env,
-                                       bool force_double) {
+cell_ptr processor_c::perform_arithmetic(
+    std::string op, cells_t &cells, std::function<double(double, double)> fn,
+    std::shared_ptr<environment_c> env, bool force_double) {
 
    if (cells.size() < 3) {
       throw runtime_exception_c("Expected a list size of at least 3 items",
@@ -49,12 +47,12 @@ cell_ptr processor_c::perform_arithmetic(std::string op,
    }
 
    if (force_double || store_as_double) {
-      return std::make_shared<cell_c>(cell_type_e::DOUBLE, std::to_string(result),
-                    cells[0]->location);
+      return std::make_shared<cell_c>(
+          cell_type_e::DOUBLE, std::to_string(result), cells[0]->location);
    } else {
-      return std::make_shared<cell_c>(cell_type_e::INTEGER,
-                    std::to_string(static_cast<int64_t>(result)),
-                    cells[0]->location);
+      return std::make_shared<cell_c>(
+          cell_type_e::INTEGER, std::to_string(static_cast<int64_t>(result)),
+          cells[0]->location);
    }
 }
 
