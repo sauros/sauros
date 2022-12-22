@@ -51,15 +51,15 @@ class environment_c;
 
 //! \brief Quick forward to decalare the cells_t type
 class cell_c;
-using cells_t = std::vector<cell_c>;
 using cell_ptr = std::shared_ptr<cell_c>;
+using cells_t = std::vector<cell_ptr>;
 
 //! \brief An cell representation
 class cell_c {
  public:
    //! \brief Function pointer definition for a cell
    //!        used to execute code
-   using proc_f = std::function<cell_c(std::vector<cell_c> &,
+   using proc_f = std::function<cell_ptr(cells_t&,
                                        std::shared_ptr<environment_c> env)>;
 
    //! \brief Create an empty cell
@@ -106,8 +106,6 @@ static const cell_c CELL_FALSE =
     cell_c(cell_type_e::INTEGER, "0"); //! A cell that represents FALSE
 static const cell_c CELL_NIL =
     cell_c(cell_type_e::STRING, "#nil"); //! A cell that represents NIL
-
-
 } // namespace sauros
 
 #endif

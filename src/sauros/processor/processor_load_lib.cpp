@@ -85,12 +85,12 @@ void processor_c::load_library(const std::string &target, location_s location,
       }
 
       auto target_name_cell = manifest_env->get("target_name");
-      if (target_name_cell.type != cell_type_e::STRING) {
+      if (target_name_cell->type != cell_type_e::STRING) {
          throw runtime_exception_c("target_name in manifest for " + target +
                                        " is not of type `STRING`",
                                    location);
       }
-      target_name = target_name_cell.data;
+      target_name = target_name_cell->data;
 
       if (!manifest_env->exists("prefix")) {
          throw runtime_exception_c("manifest for target: " + target +
@@ -99,12 +99,12 @@ void processor_c::load_library(const std::string &target, location_s location,
       }
 
       auto prefix_cell = manifest_env->get("prefix");
-      if (prefix_cell.type != cell_type_e::STRING) {
+      if (prefix_cell->type != cell_type_e::STRING) {
          throw runtime_exception_c("prefix in manifest for " + target +
                                        " is not of type `STRING`",
                                    location);
       }
-      prefix = prefix_cell.data;
+      prefix = prefix_cell->data;
 
       if (prefix.empty()) {
          throw runtime_exception_c("prefix in manifest for " + target +
@@ -119,19 +119,19 @@ void processor_c::load_library(const std::string &target, location_s location,
       }
 
       auto function_list_cell = manifest_env->get("function_list");
-      if (function_list_cell.type != cell_type_e::LIST) {
+      if (function_list_cell->type != cell_type_e::LIST) {
          throw runtime_exception_c("function_list in manifest for " + target +
                                        " is not of type `LIST`",
                                    location);
       }
 
-      for (auto el : function_list_cell.list) {
-         if (el.type != cell_type_e::STRING) {
+      for (auto el : function_list_cell->list) {
+         if (el->type != cell_type_e::STRING) {
             throw runtime_exception_c(
                 "item in " + target + " function_list is not of type `STRING`",
                 location);
          }
-         function_list.push_back(el.data);
+         function_list.push_back(el->data);
       }
    }
 
@@ -177,12 +177,12 @@ void processor_c::load_library(const std::string &target, location_s location,
       }
 
       void *fn_ptr = lib->get_symbol(f);
-      cell_c::proc_f fn = reinterpret_cast<cell_c (*)(
+      cell_c::proc_f fn = reinterpret_cast<cell_ptr (*)(
           cells_t &, std::shared_ptr<environment_c>)>(fn_ptr);
 
       // Add to env
       std::string scoped_name = prefix + "::" + f;
-      env->set(scoped_name, cell_c(fn));
+      env->set(scoped_name,  std::make_shared<cell_c>(fn));
    }
 }
 

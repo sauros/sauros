@@ -34,14 +34,13 @@ mandelbrot.sau >> averaged an execution time of  0.7721s ( 772.0777ms )  after  
 
 The lab server is significantly slower than Midas so they are not directly comparable
 
+### 20-December-2022
+
+Change out hashmap from `unordered_map` to :
+https://github.com/bosley/parallel-hashmap
+
 ```
-20-December-2022
-
-[ Release Build ]
-
--- https://github.com/bosley/parallel-hashmap
-
-[Before hashmap modifications and general tweaking]
+[before]
 
 primality.sau >> averaged an execution time of  10.6058s ( 10605.8455ms )  after  50  executions
 mandelbrot.sau >> averaged an execution time of  1.8258s ( 1825.8213ms )  after  50  executions
@@ -50,6 +49,24 @@ mandelbrot.sau >> averaged an execution time of  1.8258s ( 1825.8213ms )  after 
 
 primality.sau >> averaged an execution time of  9.5126s ( 9512.6276ms )  after  50  executions
 mandelbrot.sau >> averaged an execution time of  1.6811s ( 1681.1251ms )  after  50  executions
-
-[ ---------------------- ]
 ```
+
+### 22-December-22
+
+Update the usage from `cell_c` in every cell to `std::shared_ptr<cell_c>` aka `cell_ptr`. The idea is to minimize size
+of temporary cells being passed around.
+
+
+`cell_c` size (bytes): 144
+
+`cell_ptr` size (bytes): 16
+
+**Results:**
+```
+primality.sau >> averaged an execution time of  4.0192s ( 4019.1865ms )  after  50  executions
+mandelbrot.sau >> averaged an execution time of  1.0959s ( 1095.9398ms )  after  50  executions
+```
+
+As can be seen the primality test benifited greatly from this optimization (6.6 SECONDS faster) . The mandelbrot test did benifit (.6 SECONDS faster), but not to the magnitude of the primality test.
+
+Clearly, the primality test has more operations that result in the copying of a cell structure.

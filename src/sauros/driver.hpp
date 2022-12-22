@@ -25,7 +25,7 @@ class driver_if {
    void execute(const char *source, const uint64_t line_number,
                 std::string &line);
    void execute(parser::segment_parser_c::segment_s segment);
-   virtual void cell_returned(cell_c cell) = 0;
+   virtual void cell_returned(cell_ptr cell) = 0;
    virtual void except(sauros::processor_c::runtime_exception_c &e) = 0;
    virtual void except(sauros::processor_c::assertion_exception_c &e) = 0;
    virtual void except(sauros::environment_c::unknown_identifier_c &e) = 0;
@@ -53,7 +53,7 @@ class file_executor_c : private driver_if {
    int run(const std::string &file);
 
  private:
-   virtual void cell_returned(cell_c cell) override final;
+   virtual void cell_returned(cell_ptr cell) override final;
    virtual void
    except(sauros::processor_c::runtime_exception_c &e) override final;
    virtual void
@@ -84,7 +84,7 @@ class repl_c : private driver_if {
 
  private:
    bool _do{true};
-   virtual void cell_returned(cell_c cell) override final;
+   virtual void cell_returned(cell_ptr cell) override final;
    virtual void
    except(sauros::processor_c::runtime_exception_c &e) override final;
    virtual void
@@ -104,14 +104,14 @@ class eval_c : private driver_if {
    //! \param env The environment to use
    //! \param cb The callback to issue when the cell is returned
    eval_c(std::shared_ptr<sauros::environment_c> &env,
-          std::function<void(cell_c cell)> cb)
+          std::function<void(cell_ptr cell)> cb)
        : driver_if(env), _cb(cb) {}
 
    void eval(uint64_t line, std::string data) { execute("eval", line, data); }
 
  private:
-   std::function<void(cell_c cell)> _cb;
-   virtual void cell_returned(cell_c cell) override final;
+   std::function<void(cell_ptr cell)> _cb;
+   virtual void cell_returned(cell_ptr cell) override final;
    virtual void
    except(sauros::processor_c::runtime_exception_c &e) override final;
    virtual void

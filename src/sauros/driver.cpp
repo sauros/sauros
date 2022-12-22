@@ -204,7 +204,7 @@ int file_executor_c::run(const std::string &file) {
    return 0;
 }
 
-void file_executor_c::cell_returned(cell_c cell) { /* Not needed */
+void file_executor_c::cell_returned(cell_ptr cell) { /* Not needed */
 }
 
 void file_executor_c::except(sauros::processor_c::runtime_exception_c &e) {
@@ -274,7 +274,7 @@ void repl_c::start() {
 
 void repl_c::stop() { _do = false; }
 
-void repl_c::cell_returned(cell_c cell) {
+void repl_c::cell_returned(cell_ptr cell) {
 
    std::string s_cell;
    _list_processor.cell_to_string(s_cell, cell, _env, true);
@@ -299,7 +299,7 @@ void repl_c::parser_error(std::string &e, location_s location) {
    std::cout << rang::fg::red << e << rang::fg::reset << std::endl;
 }
 
-void eval_c::cell_returned(cell_c cell) { _cb(cell); }
+void eval_c::cell_returned(cell_ptr cell) { _cb(cell); }
 
 void eval_c::except(sauros::processor_c::runtime_exception_c &e) {
    std::cout << rang::fg::yellow << "[decomposed item] : " << rang::fg::red

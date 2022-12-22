@@ -19,31 +19,31 @@ sauros::file_executor_c *file_executor{nullptr};
 //    - This serves as a good example of how to externally extend the language
 //
 void setup_env() {
+
    env->set(
        "@version",
-       sauros::cell_c(
-           [=](std::vector<sauros::cell_c> &cells,
-               std::shared_ptr<sauros::environment_c> env) -> sauros::cell_c {
+       std::make_shared<sauros::cell_c>(
+           [=](sauros::cells_t &cells,
+               std::shared_ptr<sauros::environment_c> env) -> sauros::cell_ptr {
               if (cells.size() != 1) {
                  throw sauros::processor_c::runtime_exception_c(
                      "`@version` expects no arguments, but " +
                          std::to_string(cells.size() - 1) + " were given",
-                     cells[0].location);
+                     cells[0]->location);
               }
-
-              return sauros::cell_c(sauros::cell_type_e::STRING,
+              return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING,
                                     std::string(LIBSAUROS_VERSION),
-                                    cells[0].location);
+                                    cells[0]->location);
            }));
 
    env->set(
        "@build",
-       sauros::cell_c(
-           [=](std::vector<sauros::cell_c> &cells,
-               std::shared_ptr<sauros::environment_c> env) -> sauros::cell_c {
-              return sauros::cell_c(sauros::cell_type_e::STRING,
+       std::make_shared<sauros::cell_c>(
+           [=](sauros::cells_t &cells,
+               std::shared_ptr<sauros::environment_c> env) -> sauros::cell_ptr {
+              return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING,
                                     std::string(get_build_hash()),
-                                    cells[0].location);
+                                    cells[0]->location);
            }));
 }
 
@@ -163,10 +163,6 @@ void handle_signal(int signal) {
 }
 
 int main(int argc, char **argv) {
-
-   std::cout << "Size of a cell ::: " << sizeof(sauros::cell_c) << std::endl;
-
-
    std::vector<std::string> args(argv + 1, argv + argc);
 
    signal(SIGHUP, handle_signal);  /* Hangup the process */
