@@ -67,6 +67,6 @@ primality.sau >> averaged an execution time of  4.0192s ( 4019.1865ms )  after  
 mandelbrot.sau >> averaged an execution time of  1.0959s ( 1095.9398ms )  after  50  executions
 ```
 
-As can be seen the primality test benifited greatly from this optimization (6.6 SECONDS faster) . The mandelbrot test did benifit (.6 SECONDS faster), but not to the magnitude of the primality test.
+As can be seen the primality test benifited greatly from this optimization (5.5 SECONDS faster) . The mandelbrot test did benifit (.6 SECONDS faster), but not to the magnitude of the primality test.
 
 Clearly, the primality test has more operations that result in the copying of a cell structure.
