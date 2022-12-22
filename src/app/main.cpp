@@ -164,6 +164,9 @@ void handle_signal(int signal) {
 
 int main(int argc, char **argv) {
 
+   std::cout << "Size of a cell ::: " << sizeof(sauros::cell_c) << std::endl;
+
+
    std::vector<std::string> args(argv + 1, argv + argc);
 
    signal(SIGHUP, handle_signal);  /* Hangup the process */

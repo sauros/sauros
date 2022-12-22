@@ -16,8 +16,8 @@ bool environment_c::exists(const std::string &item) {
    return false;
 }
 
-environment_c::environment_c(std::vector<cell_c> &params,
-                             std::vector<cell_c> &args,
+environment_c::environment_c(cells_t &params,
+                             cells_t &args,
                              std::shared_ptr<environment_c> outer)
     : _parent(outer) {
 

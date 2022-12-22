@@ -46,7 +46,7 @@ class environment_c {
    //! that the parameters represent \param outer (Optional) environment pointer
    //! that will be
    //!              the "outer" or "upper/parent" environment [super-scope]
-   environment_c(std::vector<cell_c> &params, std::vector<cell_c> &args,
+   environment_c(cells_t &params, cells_t &args,
                  std::shared_ptr<environment_c> outer);
 
    //! \brief Check if something exists

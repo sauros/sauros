@@ -3,7 +3,7 @@
 namespace sauros {
 
 cell_c processor_c::perform_arithmetic(std::string op,
-                                       std::vector<cell_c> &cells,
+                                       cells_t &cells,
                                        std::function<double(double, double)> fn,
                                        std::shared_ptr<environment_c> env,
                                        bool force_double) {

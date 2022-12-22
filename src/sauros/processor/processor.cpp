@@ -114,7 +114,7 @@ void processor_c::quote_cell(std::string &out, cell_c &cell,
 
 processor_c::processor_c() { populate_standard_builtins(); }
 
-cell_c processor_c::process_list(std::vector<cell_c> &cells,
+cell_c processor_c::process_list(cells_t &cells,
                                  std::shared_ptr<environment_c> env) {
    if (cells.empty()) {
       return CELL_NIL;
@@ -228,9 +228,9 @@ cell_c processor_c::process_cell(cell_c &cell,
    return {};
 }
 
-cell_c processor_c::process_lambda(cell_c &cell, std::vector<cell_c> &cells,
+cell_c processor_c::process_lambda(cell_c &cell, cells_t &cells,
                                    std::shared_ptr<environment_c> env) {
-   std::vector<cell_c> exps;
+   cells_t exps;
    for (auto param = cells.begin() + 1; param != cells.end(); ++param) {
 
       auto evaluated = process_cell((*param), env);

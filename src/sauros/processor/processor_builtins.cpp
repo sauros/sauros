@@ -42,7 +42,7 @@ static inline bool eval_truthy(cell_c &cell, location_s &location) {
 
 void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_IMPORT] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() < 2) {
              throw runtime_exception_c(
@@ -77,7 +77,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_EXTERN] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() < 2) {
              throw runtime_exception_c(
@@ -99,7 +99,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_USE] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() < 2) {
              throw runtime_exception_c(
@@ -126,7 +126,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_EXIT] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -139,7 +139,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_BREAK] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 1) {
              throw runtime_exception_c(
@@ -154,7 +154,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_TYPE] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -170,7 +170,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_FRONT] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -194,7 +194,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_BACK] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -218,7 +218,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_AT] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 3) {
              throw runtime_exception_c("at command expects 2 parameters, but " +
@@ -254,7 +254,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_CLEAR] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -279,7 +279,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_POP] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -306,7 +306,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_PUSH] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 3) {
              throw runtime_exception_c(
@@ -337,7 +337,7 @@ void processor_c::populate_standard_builtins() {
           return {CELL_TRUE};
        });
 
-   _builtins[BUILTIN_NOT] = cell_c([this](std::vector<cell_c> &cells,
+   _builtins[BUILTIN_NOT] = cell_c([this](cells_t &cells,
                                           std::shared_ptr<environment_c> env)
                                        -> cell_c {
       if (cells.size() != 2) {
@@ -364,7 +364,7 @@ void processor_c::populate_standard_builtins() {
    });
 
    _builtins[BUILTIN_ASSERT] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() < 3) {
              throw runtime_exception_c(
@@ -407,7 +407,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_VAR] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() < 2) {
              throw runtime_exception_c("Nothing given to var command",
@@ -454,7 +454,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_PUT] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           for (auto i = cells.begin() + 1; i != cells.end(); ++i) {
 
@@ -469,7 +469,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_PUTLN] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           for (auto i = cells.begin() + 1; i != cells.end(); ++i) {
 
@@ -485,10 +485,10 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_LAMBDA] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           // First item following lambda must be a list of parameters
-          std::vector<cell_c> body(cells.begin() + 1, cells.end());
+          cells_t body(cells.begin() + 1, cells.end());
           cell_c lambda(body);
           lambda.type = cell_type_e::LAMBDA;
           lambda.data = cells[1].data;
@@ -496,7 +496,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_LOOP] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 3 && cells.size() != 4) {
              throw runtime_exception_c(
@@ -544,7 +544,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_SET] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 3) {
              throw runtime_exception_c(
@@ -604,7 +604,7 @@ void processor_c::populate_standard_builtins() {
    // used instead of `block` but its "less efficient" as it does the work to
    // construct what would be a temporary cell, while `block` does not.
    _builtins[BUILTIN_BLOCK] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           for (size_t i = 1; i < cells.size() - 1; i++) {
              auto r = process_cell(cells[i], env);
@@ -618,9 +618,9 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_LIST] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
-          std::vector<cell_c> body;
+          cells_t body;
 
           for (auto i = cells.begin() + 1; i != cells.end(); ++i) {
              body.push_back(process_cell(*i, env));
@@ -633,7 +633,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_COMPOSE] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -651,7 +651,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_DECOMPOSE] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -670,7 +670,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_BOX] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 3) {
              throw runtime_exception_c(
@@ -698,25 +698,25 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_TRUE] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           return {sauros::CELL_TRUE};
        });
 
    _builtins[BUILTIN_FALSE] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           return {sauros::CELL_FALSE};
        });
 
    _builtins[BUILTIN_NIL] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           return {sauros::CELL_NIL};
        });
 
    _builtins[BUILTIN_IS_NIL] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -730,7 +730,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_LEN] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -746,7 +746,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_IF] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 3 && cells.size() != 4) {
              throw runtime_exception_c(
@@ -766,7 +766,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_SEQ] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 3) {
              throw runtime_exception_c(
@@ -784,7 +784,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_SNEQ] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 3) {
              throw runtime_exception_c(
@@ -802,7 +802,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_LT] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           return {perform_arithmetic(
               "<", cells,
@@ -810,7 +810,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_LT_EQ] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           return {perform_arithmetic(
               "<=", cells,
@@ -819,7 +819,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_GT] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           return {perform_arithmetic(
               ">", cells,
@@ -827,7 +827,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_GT_EQ] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           return {perform_arithmetic(
               ">=", cells,
@@ -836,7 +836,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_EQ_EQ] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           return {perform_arithmetic(
               "==", cells,
@@ -845,7 +845,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_NOT_EQ] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           return {perform_arithmetic(
               "!=", cells,
@@ -854,7 +854,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_ADD] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           return {perform_arithmetic(
               "+", cells,
@@ -862,7 +862,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_SUB] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           return {perform_arithmetic(
               "-", cells,
@@ -870,7 +870,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_DIV] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           return {perform_arithmetic(
               "/", cells,
@@ -885,7 +885,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_MUL] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           return {perform_arithmetic(
               "*", cells,
@@ -893,7 +893,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_MOD] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           return {perform_arithmetic(
               "%", cells,
@@ -904,7 +904,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_OR] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           return {perform_arithmetic(
               "%", cells,
@@ -918,7 +918,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_AND] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           return {perform_arithmetic(
               "%", cells,
@@ -932,7 +932,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_XOR] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           return {perform_arithmetic(
               "%", cells,

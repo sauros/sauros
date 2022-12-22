@@ -49,6 +49,11 @@ static const char *cell_type_to_string(const cell_type_e type) {
 //! \brief Forward of environment for proc_f
 class environment_c;
 
+//! \brief Quick forward to decalare the cells_t type
+class cell_c;
+using cells_t = std::vector<cell_c>;
+using cell_ptr = std::shared_ptr<cell_c>;
+
 //! \brief An cell representation
 class cell_c {
  public:
@@ -82,14 +87,14 @@ class cell_c {
 
    //! \brief Create a list cell
    //! \param list The list to set in the cell
-   cell_c(std::vector<cell_c> list) : type(cell_type_e::LIST), list(list) {}
+   cell_c(cells_t list) : type(cell_type_e::LIST), list(list) {}
 
    // Data
    std::string data;
    cell_type_e type{cell_type_e::SYMBOL};
    location_s location;
    proc_f proc;
-   std::vector<cell_c> list;
+   cells_t list;
    bool stop_processing{false};
    std::shared_ptr<environment_c> box_env{nullptr};
    uint8_t builtin_encoding{BUILTIN_DEFAULT_VAL};
@@ -101,6 +106,7 @@ static const cell_c CELL_FALSE =
     cell_c(cell_type_e::INTEGER, "0"); //! A cell that represents FALSE
 static const cell_c CELL_NIL =
     cell_c(cell_type_e::STRING, "#nil"); //! A cell that represents NIL
+
 
 } // namespace sauros
 

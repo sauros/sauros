@@ -10,7 +10,7 @@ namespace modules {
 
 fs_c::fs_c() {
    _members_map["cwd"] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 1) {
              throw processor_c::runtime_exception_c(
@@ -21,7 +21,7 @@ fs_c::fs_c() {
        });
 
    _members_map["ls"] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 1) {
              throw processor_c::runtime_exception_c(
@@ -38,7 +38,7 @@ fs_c::fs_c() {
        });
 
    _members_map["chdir"] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
@@ -59,7 +59,7 @@ fs_c::fs_c() {
        });
 
    _members_map["is_file"] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
@@ -81,7 +81,7 @@ fs_c::fs_c() {
        });
 
    _members_map["is_dir"] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
@@ -103,7 +103,7 @@ fs_c::fs_c() {
        });
 
    _members_map["read"] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
@@ -138,7 +138,7 @@ fs_c::fs_c() {
        });
 
    _members_map["write"] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 3) {
              throw processor_c::runtime_exception_c(
@@ -172,7 +172,7 @@ fs_c::fs_c() {
        });
 
    _members_map["app"] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 3) {
              throw processor_c::runtime_exception_c(

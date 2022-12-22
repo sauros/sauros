@@ -13,7 +13,7 @@ namespace modules {
 sys_c::sys_c() {
 
    _members_map["cls"] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
 #if defined(__unix__) || defined(__unix) || defined(__linux__)
           int _ = system("clear");
@@ -24,7 +24,7 @@ sys_c::sys_c() {
        });
 
    _members_map["cmd"] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() == 1) {
              throw processor_c::runtime_exception_c(
@@ -59,7 +59,7 @@ sys_c::sys_c() {
        });
 
    _members_map["sleep"] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(

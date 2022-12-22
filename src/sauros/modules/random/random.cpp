@@ -38,7 +38,7 @@ std::string generate_random_string(const std::string source, std::size_t len) {
 random_c::random_c() {
 
    _members_map["string"] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
@@ -68,7 +68,7 @@ random_c::random_c() {
        });
 
    _members_map["alpha_string"] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 2) {
              throw processor_c::runtime_exception_c(
@@ -97,7 +97,7 @@ random_c::random_c() {
                         generate_random_string(ALPHA_NUM, len_int));
        });
 
-   _members_map["sourced_string"] = cell_c([this](std::vector<cell_c> &cells,
+   _members_map["sourced_string"] = cell_c([this](cells_t &cells,
                                                   std::shared_ptr<environment_c>
                                                       env) -> cell_c {
       if (cells.size() != 3) {
@@ -135,7 +135,7 @@ random_c::random_c() {
    });
 
    _members_map["uniform_int"] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 3) {
              throw processor_c::runtime_exception_c(
@@ -188,7 +188,7 @@ random_c::random_c() {
        });
 
    _members_map["uniform_real"] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           if (cells.size() != 3) {
              throw processor_c::runtime_exception_c(

@@ -9,7 +9,7 @@ namespace modules {
 io_c::io_c() {
 
    _members_map["get_str"] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           std::string line;
           std::getline(std::cin, line);
@@ -17,7 +17,7 @@ io_c::io_c() {
        });
 
    _members_map["get_int"] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           int64_t x = 0;
           std::string line;
@@ -33,7 +33,7 @@ io_c::io_c() {
        });
 
    _members_map["get_double"] =
-       cell_c([this](std::vector<cell_c> &cells,
+       cell_c([this](cells_t &cells,
                      std::shared_ptr<environment_c> env) -> cell_c {
           double x = 0.0;
           std::string line;
