@@ -83,15 +83,15 @@ set(SAUROS_SOURCES
 )
 
 set(PARALLEL_HASHMAP_HEADERS
-   ${CMAKE_SOURCE_DIR}/third_party/parallel_hashmap/btree.h
-   ${CMAKE_SOURCE_DIR}/third_party/parallel_hashmap/meminfo.h
-   ${CMAKE_SOURCE_DIR}/third_party/parallel_hashmap/phmap_base.h
-   ${CMAKE_SOURCE_DIR}/third_party/parallel_hashmap/phmap_bits.h
-   ${CMAKE_SOURCE_DIR}/third_party/parallel_hashmap/phmap_config.h
-   ${CMAKE_SOURCE_DIR}/third_party/parallel_hashmap/phmap_dump.h
-   ${CMAKE_SOURCE_DIR}/third_party/parallel_hashmap/phmap_fwd_decl.h
-   ${CMAKE_SOURCE_DIR}/third_party/parallel_hashmap/phmap_utils.h
-   ${CMAKE_SOURCE_DIR}/third_party/parallel_hashmap/phmap.h
+   ${CMAKE_SOURCE_DIR}/sauros/parallel_hashmap/btree.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/parallel_hashmap/meminfo.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/parallel_hashmap/phmap_base.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/parallel_hashmap/phmap_bits.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/parallel_hashmap/phmap_config.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/parallel_hashmap/phmap_dump.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/parallel_hashmap/phmap_fwd_decl.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/parallel_hashmap/phmap_utils.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/parallel_hashmap/phmap.hpp
 
 )
 

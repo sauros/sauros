@@ -48,10 +48,10 @@
 #include <memory>
 #include <mutex> // for std::lock
 
-#include "phmap_config.h"
+#include "phmap_config.hpp"
 
 #ifdef PHMAP_HAVE_SHARED_MUTEX
-    #include <shared_mutex>  // after "phmap_config.h"
+    #include <shared_mutex>  // after "phmap_config.hpp"
 #endif
 
 #ifdef _MSC_VER

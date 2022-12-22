@@ -116,9 +116,9 @@
 #include <cassert>
 #include <atomic>
 
-#include "phmap_fwd_decl.h"
-#include "phmap_utils.h"
-#include "phmap_base.h"
+#include "phmap_fwd_decl.hpp"
+#include "phmap_utils.hpp"
+#include "phmap_base.hpp"
 
 #if PHMAP_HAVE_STD_STRING_VIEW
     #include <string_view>
