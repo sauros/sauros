@@ -2,7 +2,7 @@
 #define SAUROS_MAP_TYPE_HPP
 
 #include "cell.hpp"
-#include "third_party/parallel_hashmap/phmap.h"
+#include "parallel_hashmap/phmap.hpp"
 #include <cstdint>
 
 namespace sauros {

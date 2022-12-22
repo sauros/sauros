@@ -48,7 +48,7 @@
 
 #include <string.h>
 #include <cstdint>
-#include "phmap_config.h"
+#include "phmap_config.hpp"
 
 #ifdef _MSC_VER
     #pragma warning(push)  
