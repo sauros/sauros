@@ -64,7 +64,10 @@ void processor_c::load_library(const std::string &target, location_s location,
 
    {
       sauros::file_executor_c file_executor(manifest_env);
-      file_executor.run(target_manifest_file.c_str());
+      if (0 != file_executor.run(target_manifest_file.c_str())) {
+         throw runtime_exception_c("unable to open file " + std::string(target_manifest_file),
+                                   location);
+      }
    }
 
    // Now the environment has the information we need to

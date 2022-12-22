@@ -14,3 +14,11 @@ Please be sure that the code follows the style as follows:
 - Structs end in `_s`
 - Enumerations end in `_e`
 - Type names that are redifined via `using` end in `_t` (always use `using` - not `typedef`)
+
+
+## Description of work:
+
+Please enter a description of your work here:
+```
+
+```

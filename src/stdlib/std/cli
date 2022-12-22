@@ -1,3 +1,15 @@
+;
+;  Example use:
+;
+;  The cli::get object validates user input and keeps prompting
+;  until valid input is given for the specified type
+;
+;  [import "std/cli"]
+;  [var x [cli::get.int "please enter an integer> " ]
+;  [var x [cli::get.real "please enter a real> " ]
+;  [var x [cli::get.string "please enter a string> " ]
+;
+
 [use "io"]
 
 ;  Base function that loops and receives data
@@ -30,12 +42,3 @@
 ;  Reset the cli object if someone buggered it
 ;
 [var cli::reset_get [lambda [] [set cli::get ::cli::__cli_env__]]]
-
-
-
-;;;;;;;
-
-; [putln [cli::get.int "int>"]]
-; [putln [cli::get.real "real>"]]
-; [putln [cli::get.string "string>"]]
-; [cli::reset_get]

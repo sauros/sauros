@@ -59,18 +59,18 @@ void processor_c::populate_standard_builtins() {
                     (*i).location);
              }
              if (0 != loader.run((*i).data)) {
-
+               bool success{false};
                auto sys_dir = _system.get_sauros_directory();
                if (sys_dir.has_value()) {
                   std::filesystem::path p = (*sys_dir);
                   p /= (*i).data;
-                  if (0 == loader.run(p)) {
-                     continue;
-                  }
+                  success = (0 == loader.run(p));
                }
-
-               throw sauros::processor_c::runtime_exception_c(
-                  "Unable to load import: " + (*i).data, (*i).location);
+               
+               if (!success) {
+                  throw sauros::processor_c::runtime_exception_c(
+                     "Unable to load import: " + (*i).data, (*i).location);
+               }
              }
           }
           return CELL_TRUE;
