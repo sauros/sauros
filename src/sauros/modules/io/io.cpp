@@ -13,7 +13,7 @@ io_c::io_c() {
                      std::shared_ptr<environment_c> env) -> cell_c {
           std::string line;
           std::getline(std::cin, line);
-          return {sauros::cell_c(sauros::cell_type_e::STRING, line)};
+          return sauros::cell_c(sauros::cell_type_e::STRING, line);
        });
 
    _members_map["get_int"] =

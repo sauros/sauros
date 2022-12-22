@@ -1,0 +1,44 @@
+;
+;  Example use:
+;
+;  The cli::get object validates user input and keeps prompting
+;  until valid input is given for the specified type
+;
+;  [import "std/cli"]
+;  [var x [cli::get.int "please enter an integer> " ]
+;  [var x [cli::get.real "please enter a real> " ]
+;  [var x [cli::get.string "please enter a string> " ]
+;
+
+[use "io"]
+
+;  Base function that loops and receives data
+;     prompt - Prints some prompt to a user unless its nil
+;     fn - The underlying function to use 
+;
+[var ::cli::__loop__get__item__ [lambda [prompt fn] [block
+   [var response [nil]]
+   [var continue [true]]
+   [loop [continue] [block
+      [if [not [is_nil prompt]] [put prompt]]
+      [set response [fn]]
+      [if [not [is_nil response]] [
+         [set continue [false]]
+      ]]
+   ]]
+   [response]
+]]]
+
+[box ::cli::__cli_env__ [block 
+   [var int [lambda [prompt] [::cli::__loop__get__item__ prompt io::get_int]]]
+   [var real [lambda [prompt] [::cli::__loop__get__item__ prompt io::get_double]]]
+   [var string [lambda [prompt] [::cli::__loop__get__item__ prompt io::get_str]]]
+]]
+
+;  The instance of the cli object
+;
+[var cli::get ::cli::__cli_env__]
+
+;  Reset the cli object if someone buggered it
+;
+[var cli::reset_get [lambda [] [set cli::get ::cli::__cli_env__]]]

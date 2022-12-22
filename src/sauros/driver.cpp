@@ -192,7 +192,6 @@ int file_executor_c::run(const std::string &file) {
    _file = file;
    _fs.open(_file, std::fstream::in);
    if (!_fs.is_open()) {
-      std::cerr << "Unable to open file : " << _file << std::endl;
       return 1;
    }
 

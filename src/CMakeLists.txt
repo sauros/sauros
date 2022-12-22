@@ -176,7 +176,7 @@ if(SETUP_SAUROS)
   if(DEFINED ENV{HOME})
     set(STDLIB_HOME $ENV{HOME})
     add_custom_target(copy_stdlib
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/.sauros ${STDLIB_HOME}/.sauros
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/stdlib ${STDLIB_HOME}/.sauros
     )
     add_dependencies(sauros copy_stdlib)
   else()
