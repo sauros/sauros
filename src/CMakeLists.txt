@@ -51,26 +51,26 @@ include("cmake/CheckGit.cmake")
 
 include(${CMAKE_SOURCE_DIR}/cmake/SetEnv.cmake)
 
-set(SAUROS_MODULE_SOURCES
-   ${CMAKE_SOURCE_DIR}/sauros/modules/module_if.cpp
-   ${CMAKE_SOURCE_DIR}/sauros/modules/io/io.cpp
-   ${CMAKE_SOURCE_DIR}/sauros/modules/fs/fs.cpp
-   ${CMAKE_SOURCE_DIR}/sauros/modules/sys/sys.cpp
-   ${CMAKE_SOURCE_DIR}/sauros/modules/math/math.cpp
-   ${CMAKE_SOURCE_DIR}/sauros/modules/random/random.cpp
-)
+#set(SAUROS_MODULE_SOURCES
+#   ${CMAKE_SOURCE_DIR}/sauros/modules/module_if.cpp
+#   ${CMAKE_SOURCE_DIR}/sauros/modules/io/io.cpp
+#   ${CMAKE_SOURCE_DIR}/sauros/modules/fs/fs.cpp
+#   ${CMAKE_SOURCE_DIR}/sauros/modules/sys/sys.cpp
+#   ${CMAKE_SOURCE_DIR}/sauros/modules/math/math.cpp
+#   ${CMAKE_SOURCE_DIR}/sauros/modules/random/random.cpp
+#)
 
-set(SAUROS_MODULE_HEADERS
-   ${CMAKE_SOURCE_DIR}/sauros/modules/module_if.hpp
-   ${CMAKE_SOURCE_DIR}/sauros/modules/io/io.hpp
-   ${CMAKE_SOURCE_DIR}/sauros/modules/fs/fs.hpp
-   ${CMAKE_SOURCE_DIR}/sauros/modules/sys/sys.hpp
-   ${CMAKE_SOURCE_DIR}/sauros/modules/math/math.hpp
-   ${CMAKE_SOURCE_DIR}/sauros/modules/random/random.hpp
-)
+#set(SAUROS_MODULE_HEADERS
+#   ${CMAKE_SOURCE_DIR}/sauros/modules/module_if.hpp
+#   ${CMAKE_SOURCE_DIR}/sauros/modules/io/io.hpp
+#   ${CMAKE_SOURCE_DIR}/sauros/modules/fs/fs.hpp
+#   ${CMAKE_SOURCE_DIR}/sauros/modules/sys/sys.hpp
+#   ${CMAKE_SOURCE_DIR}/sauros/modules/math/math.hpp
+#   ${CMAKE_SOURCE_DIR}/sauros/modules/random/random.hpp
+#)
 
 set(SAUROS_SOURCES
-   ${CMAKE_SOURCE_DIR}/sauros/modules.cpp
+#   ${CMAKE_SOURCE_DIR}/sauros/modules.cpp
    ${CMAKE_SOURCE_DIR}/sauros/environment.cpp
    ${CMAKE_SOURCE_DIR}/sauros/driver.cpp
    ${CMAKE_SOURCE_DIR}/sauros/system/system.cpp
@@ -79,7 +79,7 @@ set(SAUROS_SOURCES
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor_load_lib.cpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor_arithmetic.cpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor_builtins.cpp
-   ${SAUROS_MODULE_SOURCES}
+#   ${SAUROS_MODULE_SOURCES}
 )
 
 set(PARALLEL_HASHMAP_HEADERS
@@ -96,7 +96,7 @@ set(PARALLEL_HASHMAP_HEADERS
 )
 
 set(HEADERS
-   ${CMAKE_SOURCE_DIR}/sauros/modules.hpp
+#   ${CMAKE_SOURCE_DIR}/sauros/modules.hpp
    ${CMAKE_SOURCE_DIR}/sauros/front/parser.hpp
    ${CMAKE_SOURCE_DIR}/sauros/driver.hpp
    ${CMAKE_SOURCE_DIR}/sauros/rang.hpp
@@ -109,7 +109,7 @@ set(HEADERS
    ${CMAKE_SOURCE_DIR}/sauros/version.hpp
    ${CMAKE_SOURCE_DIR}/sauros/sauros.hpp
    ${CMAKE_SOURCE_DIR}/sauros/RLL/RLL.h
-   ${SAUROS_MODULE_HEADERS}
+#   ${SAUROS_MODULE_HEADERS}
    ${PARALLEL_HASHMAP_HEADERS}
 )
 

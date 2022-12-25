@@ -7,18 +7,18 @@ if not os.getenv("SAUROS_HOME"):
    exit(1)
 
 sauros_home = os.getenv("SAUROS_HOME")
-sauros_libs = os.path.join(sauros_home, "libs")
+sauros_pckgs = os.path.join(sauros_home, "packages")
 
 if not os.path.isdir(sauros_home):
    os.mkdir(sauros_home)
 
-if not os.path.isdir(sauros_libs):
-   os.mkdir(sauros_libs)
+if not os.path.isdir(sauros_pckgs):
+   os.mkdir(sauros_pckgs)
 
 
 def build_and_copy(path):
 
-   install_target = os.path.join(sauros_libs, path)
+   install_target = os.path.join(sauros_pckgs, path)
    if not os.path.isdir(install_target):
       os.mkdir(install_target)
    else:

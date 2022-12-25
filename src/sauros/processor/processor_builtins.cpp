@@ -98,6 +98,7 @@ void processor_c::populate_standard_builtins() {
 
    _builtins[BUILTIN_USE] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+/*
           if (cells.size() < 2) {
              throw runtime_exception_c(
                  "use command expects at least 1 parameters, but " +
@@ -120,6 +121,7 @@ void processor_c::populate_standard_builtins() {
              _modules.populate_environment((*i)->data, env);
           }
           return std::make_shared<cell_c>(CELL_TRUE);
+*/
        });
 
    _builtins[BUILTIN_EXIT] = std::make_shared<cell_c>(

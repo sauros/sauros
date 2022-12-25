@@ -4,7 +4,6 @@
 #include "sauros/builtin_encodings.hpp"
 #include "sauros/cell.hpp"
 #include "sauros/environment.hpp"
-#include "sauros/modules.hpp"
 #include "sauros/system/system.hpp"
 
 #include "sauros/cell_map.hpp"
@@ -92,7 +91,6 @@ class processor_c {
 
  private:
    sauros::system_c _system;
-   sauros::modules_c _modules;
    std::array<cell_ptr, BUILTIN_ENTRY_COUNT> _builtins;
    phmap::parallel_node_hash_map<std::string, rll::shared_library *>
        _loaded_libs;
