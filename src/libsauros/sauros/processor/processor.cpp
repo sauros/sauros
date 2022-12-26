@@ -237,6 +237,14 @@ cell_ptr processor_c::process_lambda(cell_ptr cell, cells_t &cells,
       exps.push_back(std::move(evaluated));
    }
 
+   if (cell->list[0]->list.size() != exps.size()) {
+      throw runtime_exception_c(
+          "Invalid number of paramters given to lambda: " + cells[0]->data +
+              ". " + std::to_string(exps.size()) + " parameters given, but " +
+              std::to_string(cell->list[0]->list.size()) + " were expected.",
+          cells[0]->location);
+   }
+
    // Create the lambda cell
    cell_ptr lambda_cell = std::make_shared<cell_c>();
    lambda_cell->data = cells[0]->data;

@@ -38,7 +38,8 @@ constexpr uint8_t BUILTIN_LOOP = 21;
 constexpr uint8_t BUILTIN_TYPE = 22;
 constexpr uint8_t BUILTIN_IMPORT = 23;
 constexpr uint8_t BUILTIN_USE = 24;
-constexpr uint8_t RESERVED = 25; // Removed `extern` command, reserving this for later
+constexpr uint8_t RESERVED =
+    25; // Removed `extern` command, reserving this for later
 constexpr uint8_t BUILTIN_NOT = 26;
 constexpr uint8_t BUILTIN_OR = 27;
 constexpr uint8_t BUILTIN_AND = 28;
