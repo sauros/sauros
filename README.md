@@ -29,10 +29,21 @@ Building Sauros is simple - there are no external dependencies aside from he lib
 
 ```
 git clone git@github.com:bosley/sauros.git
-mkdir build 
-cd build
-cmake ../src
+
+cd sauros/src
+
+mkdir build_lib
+cd build_lib
+cmake ../libsauros
 make -j5
+sudo make install
+
+cd ../
+mkdir build_app
+cd build_app
+cmake ../app
+make -l5
+sudo make install
 ```
 
 ## Installing 
@@ -65,22 +76,6 @@ target_link_libraries(YOUR-PROJECT-NAME-HERE
 ```
 
 Check out the `embedded_example` in the Sauros root directory to see how this is done and how Sauros is used by an external application.
-
-## Using the stdlib
-
-The stdlib is not very expansive, and won't be for some time, but there still exist some functions!
-
-If Sauros is installed as described above with `step 2` included then you should be able to access the standard library using the `import` instruction as so:
-
-```
-[import "std/cli"]
-
-[var an_integer [cli::get.int "please enter an int> "]]
-
-[putln "You gave the valid integer: " an_integer]
-
-```
-
 
 ## Helping out
 
