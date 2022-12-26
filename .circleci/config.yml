@@ -24,3 +24,6 @@ jobs:
       - run:
           name: Application Build
           command: 'cd src/app && mkdir build && cd build && cmake ../ && make -j4 && sudo make install'
+      - run:
+          name: Scripted Tests
+          command: 'cd src/app/test_scripts && python3 run.py ../build/sauros
