@@ -48,8 +48,8 @@ void processor_c::load_package(const std::string &target, location_s location,
 
    target_manifest_file /= "pkg.sau";
 
-   std::cout << "looking for package : " << target_manifest_file.c_str() <<
-   std::endl;
+   std::cout << "looking for package : " << target_manifest_file.c_str()
+             << std::endl;
 
    if (!std::filesystem::is_regular_file(target_manifest_file)) {
       throw runtime_exception_c(
@@ -85,9 +85,8 @@ void processor_c::load_package(const std::string &target, location_s location,
 
    {
       if (!package_load_env->exists("pkg_name")) {
-         throw runtime_exception_c(" target: " + target +
-                                       " does not contain a pkg_name",
-                                   location);
+         throw runtime_exception_c(
+             " target: " + target + " does not contain a pkg_name", location);
       }
 
       auto package_name_cell = package_load_env->get("pkg_name");
@@ -106,9 +105,8 @@ void processor_c::load_package(const std::string &target, location_s location,
       {
          sauros::file_executor_c file_executor(package.env);
          if (0 != file_executor.run(package_file.c_str())) {
-            throw runtime_exception_c("unable to open file " +
-                                          std::string(package_file),
-                                    location);
+            throw runtime_exception_c(
+                "unable to open file " + std::string(package_file), location);
          }
       }
 
@@ -116,86 +114,95 @@ void processor_c::load_package(const std::string &target, location_s location,
 
       // Check if we need to load library info
       if (package.env->exists("library_file")) {
-         
+
          auto library_file_cell = package.env->get("library_file");
          if (library_file_cell->type != cell_type_e::STRING) {
-            throw runtime_exception_c("library_file in package.sau for " + target +
-                                          " is not of type `STRING`",
-                                    location);
+            throw runtime_exception_c("library_file in package.sau for " +
+                                          target + " is not of type `STRING`",
+                                      location);
          }
 
-         std::cout << "\t[library file] " << library_file_cell->data << std::endl;
+         std::cout << "\t[library file] " << library_file_cell->data
+                   << std::endl;
 
          {
             auto library_file_actual = root;
             library_file_actual /= library_file_cell->data;
             if (!std::filesystem::is_regular_file(library_file_actual)) {
-               throw runtime_exception_c("library file:"+ library_file_actual.string() +
-                                             " for package: " + target + " does not exist",
-                                       location);
+               throw runtime_exception_c(
+                   "library file:" + library_file_actual.string() +
+                       " for package: " + target + " does not exist",
+                   location);
             }
             package.library_file = library_file_actual.string();
          }
 
          if (!package.env->exists("library_functions")) {
-            throw runtime_exception_c(target + " does not contain a library_functions list for library listed as: " +  package.library_file,
-                                    location);
+            throw runtime_exception_c(
+                target +
+                    " does not contain a library_functions list for library "
+                    "listed as: " +
+                    package.library_file,
+                location);
          }
 
          auto library_functions_cell = package.env->get("library_functions");
          if (library_functions_cell->type != cell_type_e::LIST) {
-            throw runtime_exception_c("library_functions in package.sau for " + target +
-                                          " is not of type `LIST`",
-                                    location);
+            throw runtime_exception_c("library_functions in package.sau for " +
+                                          target + " is not of type `LIST`",
+                                      location);
          }
 
-         // Load teh functions 
-         for (auto& function_name_cell : library_functions_cell->list) {
+         // Load teh functions
+         for (auto &function_name_cell : library_functions_cell->list) {
             if (function_name_cell->type != cell_type_e::STRING) {
-               throw runtime_exception_c("function name listed in package.sau for " + target +
-                                             " is not of type `STRING`",
-                                       location);
+               throw runtime_exception_c(
+                   "function name listed in package.sau for " + target +
+                       " is not of type `STRING`",
+                   location);
             }
             package.library_function_list.push_back(function_name_cell->data);
 
-            std::cout << "\t[library function] " << function_name_cell->data << std::endl;
+            std::cout << "\t[library function] " << function_name_cell->data
+                      << std::endl;
          }
       }
 
       // Check if there are source files listed
-      
+
       if (package.env->exists("source_files")) {
          auto source_files_cell = package.env->get("source_files");
          if (source_files_cell->type != cell_type_e::LIST) {
-            throw runtime_exception_c("source_files in package.sau for " + target +
-                                          " is not of type `LIST`",
-                                    location);
+            throw runtime_exception_c("source_files in package.sau for " +
+                                          target + " is not of type `LIST`",
+                                      location);
          }
 
-         // Load teh functions 
-         for (auto& file_name_cell : source_files_cell->list) {
+         // Load teh functions
+         for (auto &file_name_cell : source_files_cell->list) {
             if (file_name_cell->type != cell_type_e::STRING) {
-               throw runtime_exception_c("file name listed in package.sau for " + target +
-                                             " is not of type `STRING`",
-                                       location);
+               throw runtime_exception_c(
+                   "file name listed in package.sau for " + target +
+                       " is not of type `STRING`",
+                   location);
             }
-            
+
             {
                auto file_actual = root;
                file_actual /= file_name_cell->data;
                if (!std::filesystem::is_regular_file(file_actual)) {
-                  throw runtime_exception_c("source file:"+ file_actual.string() +
-                                                " for package: " + package.name + " does not exist",
-                                          location);
+                  throw runtime_exception_c(
+                      "source file:" + file_actual.string() +
+                          " for package: " + package.name + " does not exist",
+                      location);
                }
                package.source_file_list.push_back(file_actual);
             }
 
-            std::cout << "\t[source file] " << file_name_cell->data << std::endl;
+            std::cout << "\t[source file] " << file_name_cell->data
+                      << std::endl;
          }
-
       }
-
 
    } // End anon scope
 
@@ -219,11 +226,9 @@ void processor_c::load_package(const std::string &target, location_s location,
 
    if (!lib->is_loaded()) {
       delete lib;
-      throw runtime_exception_c("failed to load library: `" +
-                                    package.library_file + "`",
-                                location);
+      throw runtime_exception_c(
+          "failed to load library: `" + package.library_file + "`", location);
    }
-
 
    std::cout << "Library loaded\n";
 
@@ -256,13 +261,11 @@ void processor_c::load_package(const std::string &target, location_s location,
 
       sauros::file_executor_c file_executor(boxed_cell->box_env);
       if (0 != file_executor.run(f)) {
-         throw runtime_exception_c("unable to open file " +
-                                       std::string(f),
+         throw runtime_exception_c("unable to open file " + std::string(f),
                                    location);
       }
    }
 
-   
    //
    //    Add the library to the main enviornment
    //

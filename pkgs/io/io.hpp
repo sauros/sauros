@@ -15,22 +15,25 @@ extern "C" {
    Get user input string
 */
 API_EXPORT
-extern sauros::cell_ptr _pkg_io_getline_str_(sauros::cells_t &cells,
-                              std::shared_ptr<sauros::environment_c> env);
+extern sauros::cell_ptr
+_pkg_io_getline_str_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env);
 
 /*
    Get user input integer
 */
 API_EXPORT
-extern sauros::cell_ptr _pkg_io_getline_int_(sauros::cells_t &cells,
-                              std::shared_ptr<sauros::environment_c> env);
+extern sauros::cell_ptr
+_pkg_io_getline_int_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env);
 
 /*
    Get user input double
 */
 API_EXPORT
-extern sauros::cell_ptr _pkg_io_getline_real_(sauros::cells_t &cells,
-                                 std::shared_ptr<sauros::environment_c> env);
+extern sauros::cell_ptr
+_pkg_io_getline_real_(sauros::cells_t &cells,
+                      std::shared_ptr<sauros::environment_c> env);
 }
 
 #endif

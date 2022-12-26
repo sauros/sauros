@@ -77,31 +77,29 @@ void processor_c::populate_standard_builtins() {
 
    _builtins[BUILTIN_EXTERN] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          /*
+           if (cells.size() < 2) {
+              throw runtime_exception_c(
+                  "use command expects at least 1 parameters, but " +
+                      std::to_string(cells.size() - 1) + " were given",
+                  cells[0]->location);
+           }
 
-         /*
-          if (cells.size() < 2) {
-             throw runtime_exception_c(
-                 "use command expects at least 1 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
-          }
+           for (auto i = cells.begin() + 1; i < cells.end(); i++) {
+              if ((*i)->type != sauros::cell_type_e::STRING) {
+                 throw sauros::processor_c::runtime_exception_c(
+                     "extern command expects parameters to be raw strings",
+                     (*i)->location);
+              }
 
-          for (auto i = cells.begin() + 1; i < cells.end(); i++) {
-             if ((*i)->type != sauros::cell_type_e::STRING) {
-                throw sauros::processor_c::runtime_exception_c(
-                    "extern command expects parameters to be raw strings",
-                    (*i)->location);
-             }
-
-             load_library((*i)->data, (*i)->location, env);
-          }
-          */
+              load_library((*i)->data, (*i)->location, env);
+           }
+           */
           return std::make_shared<cell_c>(CELL_FALSE);
        });
 
    _builtins[BUILTIN_USE] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
-
           if (cells.size() < 2) {
              throw runtime_exception_c(
                  "use command expects at least 1 parameters, but " +
