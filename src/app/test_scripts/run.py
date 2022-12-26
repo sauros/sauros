@@ -6,11 +6,9 @@ import subprocess
 import threading
 import time
 
-if len(sys.argv) < 2:
-   print("Expected path to sauros binary")
-   exit(1)
-
-binary = sys.argv[1]
+binary = "sauros"
+if len(sys.argv) == 2:
+   binary = sys.argv[1]
 
 print("\n<< SAUROS TESTS >>\n")
 check_directory = os.getcwd()

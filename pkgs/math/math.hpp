@@ -16,12 +16,12 @@ extern sauros::cell_ptr
 _sauros_pkg_math_log_(sauros::cells_t &cells,
                      std::shared_ptr<sauros::environment_c> env);
 
-/*
 API_EXPORT
 extern sauros::cell_ptr
-log2(sauros::cells_t &cells,
+_sauros_pkg_math_log2_(sauros::cells_t &cells,
                      std::shared_ptr<sauros::environment_c> env);
 
+/*
 API_EXPORT
 extern sauros::cell_ptr
 log10(sauros::cells_t &cells,
