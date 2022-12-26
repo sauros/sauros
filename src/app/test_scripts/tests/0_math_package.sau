@@ -1,0 +1,30 @@
+[use "math"]
+
+[assert "math_package.sau > pi" [== math.pi 3.14159265359]]
+[assert "math_package.sau > phi" [== math.phi 1.61803398875]]
+[assert "math_package.sau > e" [== math.e 2.71828182845]]
+
+[assert "math_package.sau > log" [== [math.log 4] 1.386294]]
+[assert "math_package.sau > log2" [== [math.log2 10] 3.321928]]
+[assert "math_package.sau > log10" [== [math.log10 8] 0.903090]]
+
+[assert "math_package.sau > sin" [== [math.sin 1] 0.841471]]
+[assert "math_package.sau > cos" [== [math.cos 1] 0.540302]]
+[assert "math_package.sau > tan" [== [math.tan 1] 1.557408]]
+
+[assert "math_package.sau > asin" [== [math.asin 1] 1.570796]]
+[assert "math_package.sau > acos" [== [math.acos 1] 0.000000]]
+[assert "math_package.sau > atan" [== [math.atan 1] 0.785398]]
+
+[assert "math_package.sau > asinh" [== [math.asinh 1] 0.881374]]
+[assert "math_package.sau > acosh" [== [math.acosh 1] 0.000000]]
+[assert "math_package.sau > atanh" [== [math.atanh 0.5] 0.549306]]
+
+[assert "math_package.sau > exp" [== [math.exp 8] 2980.957987]]
+[assert "math_package.sau > sqrt" [== [math.sqrt 18] 4.242641]]
+
+[assert "math_package.sau > abs" [== [math.abs -2.5] 2.5]]
+[assert "math_package.sau > ceil" [== [math.ceil 1.3] 2.0]]
+[assert "math_package.sau > floor" [== [math.floor 1.9] 1.0]]
+
+[assert "math_package.sau > pow" [== [math.pow 2 8] 256.000000]]

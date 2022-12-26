@@ -19,17 +19,14 @@ jobs:
           name: Install CppuTest
           command: 'bash scripts/install_cpputest.sh'
       - run:
-          name: Dir Setup
-          command: 'mkdir build && mkdir build-release && mkdir build-asan'
+          name: Library Build
+          command: 'cd src/libsauros && mkdir build && cd build && cmake ../ && make -j4 && sudo make install'
       - run:
-          name: Debug Build
-          command: 'cd build && cmake ../src -DCMAKE_BUILD_TYPE=Debug && make -j5'
+          name: Application Build
+          command: 'cd src/app && mkdir build && cd build && cmake ../ && make -j4 && sudo make install'
       - run:
-          name: Release Build
-          command: 'cd build-release && cmake ../src -DCMAKE_BUILD_TYPE=Release && make -j5'
+          name: Install Packages
+          command: 'export SAUROS_HOME="/tmp/.sauros" && cd pkgs && python3 install.py'
       - run:
-          name: ASAN Build
-          command: 'cd build-asan && cmake ../src -DCMAKE_BUILD_TYPE=Release -DWITH_ASAN=ON && make -j5'
-      - run:
-          name: Execution Tests
-          command: 'cd src/test_scripts && python3 run.py ../../build/sauros'
+          name: Scripted Tests
+          command: 'cd src/app/test_scripts && export SAUROS_HOME="/tmp/.sauros" && python3 run.py ../build/sauros'
