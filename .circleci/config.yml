@@ -29,4 +29,4 @@ jobs:
           command: 'export SAUROS_HOME="/tmp/.sauros" && cd pkgs && python3 install.py'
       - run:
           name: Scripted Tests
-          command: 'cd src/app/test_scripts && python3 run.py ../build/sauros'
+          command: 'cd src/app/test_scripts && export SAUROS_HOME="/tmp/.sauros" && python3 run.py ../build/sauros'
