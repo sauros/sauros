@@ -58,10 +58,6 @@ target_link_libraries(sauros
    dl
 )
 
-set_target_properties(sauros PROPERTIES
-            CXX_STANDARD 20
-            CXX_EXTENSIONS ON)
-
 #
 # Install bin
 #

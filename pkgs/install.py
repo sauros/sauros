@@ -113,7 +113,7 @@ def copy_packages(packages):
             os.mkdir(target.name)
          os.chdir(target.name)
          for file in target.files:
-            print("Copying: ", file)
+           # print("Copying: ", file)
             subprocess.run(["cp", file, "./"], stdout=subprocess.PIPE)
          os.chdir("../")
          
