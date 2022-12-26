@@ -9,13 +9,12 @@
 #define API_EXPORT
 #endif
 
-
 extern "C" {
 
 API_EXPORT
 extern sauros::cell_ptr
-c_api_process_cell(sauros::cell_ptr cell, std::shared_ptr<sauros::environment_c> env);
-
+c_api_process_cell(sauros::cell_ptr cell,
+                   std::shared_ptr<sauros::environment_c> env);
 }
 
 #endif

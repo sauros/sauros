@@ -1,5 +1,5 @@
-#include "sauros/driver.hpp"
 #include "processor.hpp"
+#include "sauros/driver.hpp"
 
 #include <filesystem>
 #include <iostream>

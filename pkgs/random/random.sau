@@ -1,0 +1,8 @@
+;  Author: bosley
+;  About:  A library for random data generation
+
+[var string [lambda [length] [random._pkg_random_string_ length]]]
+[var alpha_string [lambda [length] [random._pkg_random_alpha_string_ length]]]
+[var sourced_string [lambda [source_string length] [random._pkg_random_sourced_string_ source_string length]]]
+[var uniform_int [lambda [min max] [random._pkg_random_uniform_int_ min max]]]
+[var uniform_real [lambda [min max] [random._pkg_random_uniform_real_ min max]]]
