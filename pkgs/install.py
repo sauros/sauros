@@ -7,7 +7,7 @@ if not os.getenv("SAUROS_HOME"):
    exit(1)
 
 sauros_home = os.getenv("SAUROS_HOME")
-sauros_pckgs = os.path.join(sauros_home, "packages")
+sauros_pckgs = os.path.join(sauros_home, "pkgs")
 
 # A name of a directory
 # and relevant files to a package (any .sau and .lib)
@@ -99,16 +99,6 @@ def build_package(pkg):
    top_level_pkg = target_item(pkg)
    scan_target(top_level_pkg)
    new_package.targets.append(top_level_pkg)
-
-   print("Scanning for submodules")
-
-   # Check for sub directories and build targets for them
-   for dir in dirs:
-      os.chdir(dir)
-      submodule = target_item(dir)
-      scan_target(submodule)
-      new_package.targets.append(submodule)
-      os.chdir("../")
 
    return new_package
 
