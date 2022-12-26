@@ -26,4 +26,4 @@ jobs:
           command: 'cd src && python3 build.py release'
       - run:
           name: Execution Tests
-          command: 'cd src/app/test_scripts && python3 run.py `which sauros`
+          command: 'cd src/app/test_scripts && python3 run.py `which sauros`'
