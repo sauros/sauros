@@ -42,7 +42,7 @@ cd ../
 mkdir build_app
 cd build_app
 cmake ../app
-make -l5
+make -j5
 sudo make install
 ```
 
