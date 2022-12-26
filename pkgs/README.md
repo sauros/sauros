@@ -1,70 +1,69 @@
-# Packages
+# Sauros Packages
 
-These packages are `std` and an example package. The entirity of the std library exists as a single package.
-
-## Layout
-
-Each package must contain `sau` files or `.lib` shared libraries when they are installed. Submodules are allowed in the top-most directory of the package only.
+Packages are an easy way to extend the reach of Sauros
 
 
-## Example Module - No submodules
+### Layout
 
-File nameed `package.sau` must be in the root of the module directory
+Within each package there must exist a `pkg.sau` file that describes the package so it can be loaded by sauros. 
+A package may contain a group of `.sau` files and/or a shared library. 
 
-```
-; Name of the package
-[var package_name "my_package"]
-
-; In packages one of, or both `source_files` or `library_file` must exist.
-; if `library_file` exists, then so too must `library_functions` to list
-; all methods available within the library
-;  - If the library exists it will be loaded into the environment
-;    prior to `source_files` so the sources can access the functions
-
-; .sau files that should be included in the package
-[var source_files [list
-   "version.sau"
-]]
-```
-
-In the event that there are submodules, a directory by that name must exist
-and in that directory a `submodule.sau` must exist to detail the submodule.
-
-## Example Module - With submodules
+Example:
 
 ```
-; Name of the package
-[var package_name "my_package"]
+; Pkg name
+[var pkg_name "io"]
 
-; Indicate that we need to include some submodules
-[var submodules [list "sub_module_one" "sub_module_two"]]
+; Optional C++ shared lib to link
+[var library_file "io.lib"]
 
-; No shared libs at this level (but can be done as above)
-
-; Top level files for the std package
-[var source_files [list
-   "top_level.sau"
-]]
-
-```
-
-### sub_module_one
-
-Within the directory must exist the file `submodule.sau`
-
-```
-
-[var submodule_name "sub_module_one"]
-
-; C++ shared lib to link to
-[var library_file "sub_module_one.lib"]
+; If a library_file exists, then so too must a library_functions which 
+; details the names of the given functions that the library has to offer
 [var library_functions [list
-   "example_method"
+   "_pkg_io_getline_str_"
+   "_pkg_io_getline_real_"
+   "_pkg_io_getline_int_"
 ]]
 
-; Files to include under the current submodule
+; Optional inclusion of a source_files listing that will import the files 
+; into sauros
 [var source_files [list
-   "some_file.sau"
+   "prompt.sau"
 ]]
 
+```
+
+### Library Function Signatures
+
+All functions offered by a library must follow a signature that can be used in a `process cell`, that is, a cell that can be called on. That signature is as follows:
+
+```
+sauros::cell_ptr
+_my_function_name_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env);
+```
+
+For examples on function signatures and how to process cells for a given function, check out the package `io` in `pkgs` as a simple example.
+
+
+### Loading
+
+When the package is loaded, the library file is the first thing to be brought into the environment that will encapsulate the package. This allows the library to be used by the files brought in via the `source_files` list. 
+
+This feature was created to ensure that unique function names could be abstracted away to sauros specific function names (i.e _pkg_io_getline_real_ -> get_real)
+
+### Access
+
+When a package is imported, it is done so into a `box` cell. That is, a cell that contains an environment that can be accessed by the `.` operator from an outer environment. This is why in `prompt.sau` under the `io` package we see the use of `io.` in the lambda body - lambdas have their own environment as well so `.` is required to access the `io` environment specifically. 
+
+### Example Usage
+
+```
+[use "io"]
+[use "random"]
+
+[var min [io.get_int "min> "]]
+[var max [io.get_int "max> "]]
+
+[putln "Random number: " [random.uniform_int min max]]
 ```

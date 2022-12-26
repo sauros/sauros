@@ -16,8 +16,7 @@
 [var source_string [nil]]
 
 [loop [getting_string] [block
-   [put "Please enter some text: "]
-   [set source_string [io::get_str]]
+   [set source_string [io.get_string "Please enter some text> "]]
    [if [not [is_nil source_string]] [set getting_string [false]]]
 ]]
 
@@ -27,9 +26,8 @@
 [var target_len [nil]]
 
 [loop [getting_len] [block
-   [put "Please enter a length (integer): "]
-   [set target_len [io::get_int]]
+   [set target_len [io.get_int "Please enter a length (integer)> "]]
    [if [not [is_nil target_len]] [set getting_len [false]]]
 ]]
 
-[putln "Your scrambled text : " [random::sourced_string source_string target_len]]
+[putln "Your scrambled text : " [random.sourced_string source_string target_len]]
