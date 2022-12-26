@@ -19,17 +19,11 @@ jobs:
           name: Install CppuTest
           command: 'bash scripts/install_cpputest.sh'
       - run:
-          name: Dir Setup
-          command: 'mkdir build && mkdir build-release && mkdir build-asan'
-      - run:
           name: Debug Build
-          command: 'cd build && cmake ../src -DCMAKE_BUILD_TYPE=Debug && make -j5'
+          command: 'cd src && python3 build.py debug'
       - run:
           name: Release Build
-          command: 'cd build-release && cmake ../src -DCMAKE_BUILD_TYPE=Release && make -j5'
-      - run:
-          name: ASAN Build
-          command: 'cd build-asan && cmake ../src -DCMAKE_BUILD_TYPE=Release -DWITH_ASAN=ON && make -j5'
+          command: 'cd src && python3 build.py release'
       - run:
           name: Execution Tests
-          command: 'cd src/test_scripts && python3 run.py ../../build/sauros'
+          command: 'cd src/app/test_scripts && python3 run.py ../build/sauros'
