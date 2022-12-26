@@ -19,5 +19,8 @@ jobs:
           name: Install CppuTest
           command: 'bash scripts/install_cpputest.sh'
       - run:
-          name: Release Build
+          name: Library Build
           command: 'cd src/libsauros && mkdir build && cd build && cmake ../ && make -j4 && sudo make install'
+      - run:
+          name: Application Build
+          command: 'cd src/app && mkdir build && cd build && cmake ../ && make -j4 && sudo make install'
