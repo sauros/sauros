@@ -54,9 +54,8 @@ target_include_directories(sauros
 
 target_link_libraries(sauros 
    PUBLIC hwinfo::HWinfo
-   dl
-   PRIVATE
    ${LIBSAUROS_LIBRARIES}
+   dl
 )
 
 #
