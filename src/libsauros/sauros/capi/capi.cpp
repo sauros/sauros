@@ -1,5 +1,5 @@
 #include "capi.hpp"
-#include "processor/processor.hpp"
+#include "sauros/processor/processor.hpp"
 
 sauros::cell_ptr
 c_api_process_cell(sauros::cell_ptr cell, 

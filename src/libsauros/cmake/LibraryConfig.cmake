@@ -1,10 +1,11 @@
 # Select library type
 set(_PN ${PROJECT_NAME})
-option(BUILD_SHARED_LIBS "Build ${_PN} as a shared library." OFF)
+option(BUILD_SHARED_LIBS "Build ${_PN} as a shared library." ON)
 if(BUILD_SHARED_LIBS)
   set(LIBRARY_TYPE SHARED)
 else()
   set(LIBRARY_TYPE STATIC)
+  message(WARNING "Static builds can not utilize sauros packages")
 endif()
 
 # Set a default build type if none was specified
