@@ -77,6 +77,8 @@ void processor_c::populate_standard_builtins() {
 
    _builtins[BUILTIN_EXTERN] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+
+         /*
           if (cells.size() < 2) {
              throw runtime_exception_c(
                  "use command expects at least 1 parameters, but " +
@@ -93,12 +95,13 @@ void processor_c::populate_standard_builtins() {
 
              load_library((*i)->data, (*i)->location, env);
           }
-          return std::make_shared<cell_c>(CELL_TRUE);
+          */
+          return std::make_shared<cell_c>(CELL_FALSE);
        });
 
    _builtins[BUILTIN_USE] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
-/*
+
           if (cells.size() < 2) {
              throw runtime_exception_c(
                  "use command expects at least 1 parameters, but " +
@@ -113,15 +116,10 @@ void processor_c::populate_standard_builtins() {
                     (*i)->location);
              }
 
-             if (!_modules.contains((*i)->data)) {
-                throw sauros::processor_c::runtime_exception_c("unknown module",
-                                                               (*i)->location);
-             }
-
-             _modules.populate_environment((*i)->data, env);
+             load_package((*i)->data, (*i)->location, env);
           }
+
           return std::make_shared<cell_c>(CELL_TRUE);
-*/
        });
 
    _builtins[BUILTIN_EXIT] = std::make_shared<cell_c>(

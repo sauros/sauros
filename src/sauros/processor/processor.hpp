@@ -93,7 +93,7 @@ class processor_c {
    sauros::system_c _system;
    std::array<cell_ptr, BUILTIN_ENTRY_COUNT> _builtins;
    phmap::parallel_node_hash_map<std::string, rll::shared_library *>
-       _loaded_libs;
+       _loaded_package;
 
    void populate_standard_builtins();
 
@@ -115,7 +115,7 @@ class processor_c {
                                std::shared_ptr<environment_c> env,
                                bool force_double = false);
 
-   void load_library(const std::string &target, location_s location,
+   void load_package(const std::string &target, location_s location,
                      std::shared_ptr<environment_c> env);
 };
 
