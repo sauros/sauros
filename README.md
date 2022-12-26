@@ -46,18 +46,6 @@ make -l5
 sudo make install
 ```
 
-## Installing 
-
-Sauros can be installed like any language. 
-
-1) Ensure that `SAUROS_HOME` is defined in your enviornment
-2) Follow the build instructions and ensure the `SETUP_SAUROS` option is set to `ON`
-3) Run `make` and `make install` 
-
-The sauros binary will be installed along with all of the sauros libraries. 
-
-If you only want the libraries, and not to install the binary, `skip step 2`.
-
 ## Embedding Sauros
 
 Embedding sauros into another application can now be done with a `CMakeLists.txt` as follows:
