@@ -1,0 +1,13 @@
+; Pkg name
+[var pkg_name "math"]
+
+; C++ shared lib to link to
+[var library_file "math.lib"]
+[var library_functions [list
+   "_sauros_pkg_math_log_"
+]]
+
+; Files to include under the current pkg
+[var source_files [list
+   "math.sau"
+]]

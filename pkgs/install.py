@@ -100,6 +100,7 @@ def build_package(pkg):
    scan_target(top_level_pkg)
    new_package.targets.append(top_level_pkg)
 
+   os.chdir("../")
    return new_package
 
 # Copy all of the files that we scanned and deemed relevant
