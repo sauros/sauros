@@ -16,10 +16,7 @@ sauros::cell_ptr single_arithmetic(sauros::cells_t &cells,
 
    auto op = [=](sauros::cell_ptr cell,
                  std::shared_ptr<sauros::environment_c> env) -> double {
-      std::cout << "About to process!" << std::endl;
       auto item = c_api_process_cell(cell, env);
-
-      std::cout << "Processed!" << std::endl;
       if (item->type != sauros::cell_type_e::DOUBLE &&
           item->type != sauros::cell_type_e::INTEGER) {
          throw sauros::processor_c::runtime_exception_c(

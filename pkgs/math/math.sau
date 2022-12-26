@@ -23,4 +23,4 @@
 [var ceil [lambda [x] [math._sauros_pkg_math_ceil_ x]]]
 [var floor [lambda [x] [math._sauros_pkg_math_floor_ x]]]
 [var abs [lambda [x] [math._sauros_pkg_math_abs_ x]]]
-[var pow [lambda [x] [math._sauros_pkg_math_pow_ x]]]
+[var pow [lambda [base power] [math._sauros_pkg_math_pow_ base power]]]
