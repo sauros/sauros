@@ -89,6 +89,10 @@ class cell_c {
    //! \param list The list to set in the cell
    cell_c(cells_t list) : type(cell_type_e::LIST), list(list) {}
 
+   //! \brief Clone the cell
+   //! \returns A new copy of the cell in a shared_ptr
+   cell_ptr clone() const { return std::shared_ptr<cell_c>(new cell_c(*this)); }
+
    // Data
    std::string data;
    cell_type_e type{cell_type_e::SYMBOL};

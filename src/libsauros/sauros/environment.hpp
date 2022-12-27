@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include <iostream>
+
 #include "cell_map.hpp"
 
 namespace sauros {
@@ -75,6 +77,9 @@ class environment_c {
    //! \post There will exist an item that maps the string to the cell
    //! \note If the item already exists, it will be overwritten
    void set(const std::string &item, cell_ptr cell);
+
+   //! \brief Retrieve a copy of the env map
+   cell_map_t get_map() const { return _env; }
 
  private:
    std::shared_ptr<environment_c> _parent{nullptr};

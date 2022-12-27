@@ -193,6 +193,10 @@ cell_ptr processor_c::process_cell(cell_ptr cell,
       //
       auto env_with_data = env->find(cell->data, cell->location);
       auto r = env_with_data->get(cell->data);
+
+      if (r->type == cell_type_e::BOX) {
+         return clone_box(r);
+      }
       return {r};
    }
 
@@ -256,6 +260,16 @@ cell_ptr processor_c::process_lambda(cell_ptr cell, cells_t &cells,
        environment_c(cell->list[0]->list, exps, env));
 
    return process_cell(lambda_cell, lambda_env);
+}
+
+cell_ptr processor_c::clone_box(cell_ptr cell) {
+
+   cell_c new_box(cell_type_e::BOX);
+   new_box.box_env = std::shared_ptr<environment_c>(new environment_c());
+   for (auto [key, value] : cell->box_env->get_map()) {
+      new_box.box_env->set(key, value->clone());
+   }
+   return std::make_shared<cell_c>(new_box);
 }
 
 cell_ptr processor_c::access_box_member(cell_ptr cell,
