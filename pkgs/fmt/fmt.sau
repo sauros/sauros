@@ -1,0 +1,8 @@
+;  Author: bosley
+;  About:  A formatter library
+
+;  Encode cell data and escaped chars into a string
+[var encode [lambda [string data] [fmt._pkg_fmt_format_encode_ string data]]]
+
+; Encode only escaped chars into a string
+[var string [lambda [string] [fmt._pkg_fmt_format_string_ string]]]

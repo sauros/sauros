@@ -1,0 +1,14 @@
+; Pkg name
+[var pkg_name "fmt"]
+
+; C++ shared lib to link to
+[var library_file "fmt.lib"]
+[var library_functions [list
+   "_pkg_fmt_format_encode_"
+   "_pkg_fmt_format_string_"
+]]
+
+; Files to include under the current pkg
+[var source_files [list
+   "fmt.sau"
+]]
