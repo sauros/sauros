@@ -15,7 +15,7 @@ namespace sauros {
 // Investigating the issue is backlogged.
 
 processor_c::~processor_c() {
-   for (auto [key, value] : _loaded_package) {
+   for (auto [key, value] : _loaded_packages) {
       if (value) {
          delete value;
       }
@@ -26,9 +26,11 @@ void processor_c::load_package(const std::string &target, location_s location,
                                std::shared_ptr<environment_c> env) {
 
    // Check to see if its already loaded
-   if (_loaded_package.find(target) != _loaded_package.end()) {
+   if (_loaded_packages.find(target) != _loaded_packages.end()) {
       return;
    }
+
+   _loaded_packages[target] = new rll::shared_library();
 
    auto sauros_home = _system.get_sauros_directory();
 
@@ -212,21 +214,23 @@ void processor_c::load_package(const std::string &target, location_s location,
    //    Load the library
    //
 
-   auto lib = new rll::shared_library();
-
    try {
-      lib->load(package.library_file.c_str());
+      _loaded_packages[target]->load(package.library_file.c_str());
    } catch (rll::exception::library_loading_error &e) {
-      delete lib;
+      delete _loaded_packages[target];
+      _loaded_packages.erase(target);
       throw runtime_exception_c("error loading `" + target + "`: " + e.what(),
                                 location);
    }
 
-   if (!lib->is_loaded()) {
-      delete lib;
+   if (!_loaded_packages[target]->is_loaded()) {
+      delete _loaded_packages[target];
+      _loaded_packages.erase(target);
       throw runtime_exception_c(
           "failed to load library: `" + package.library_file + "`", location);
    }
+
+   ;
 
    // std::cout << "Library loaded\n";
 
@@ -234,14 +238,14 @@ void processor_c::load_package(const std::string &target, location_s location,
 
       // std::cout << "Loading function : " << f << std::endl;
 
-      if (!lib->has_symbol(f)) {
+      if (!_loaded_packages[target]->has_symbol(f)) {
          throw runtime_exception_c(
              "error loading `" + target + "`: listed function `" + f +
                  "` was not found in `" + package.library_file.c_str() + "`",
              location);
       }
 
-      void *fn_ptr = lib->get_symbol(f);
+      void *fn_ptr = _loaded_packages[target]->get_symbol(f);
       cell_c::proc_f fn = reinterpret_cast<cell_ptr (*)(
           cells_t &, std::shared_ptr<environment_c>)>(fn_ptr);
 
