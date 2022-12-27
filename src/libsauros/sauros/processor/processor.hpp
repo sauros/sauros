@@ -107,6 +107,8 @@ class processor_c {
    cell_ptr process_lambda(cell_ptr cell, cells_t &cells,
                            std::shared_ptr<environment_c> env);
 
+   cell_ptr clone_box(cell_ptr cell);
+
    cell_ptr access_box_member(cell_ptr cell,
                               std::shared_ptr<environment_c> &env);
 
