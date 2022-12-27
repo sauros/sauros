@@ -2,6 +2,9 @@
 #include "rang.hpp"
 #include <filesystem>
 #include <iostream>
+#include <sauros/linenoise/linenoise.hpp>
+#include <sauros/system/system.hpp>
+#include <unordered_map>
 
 namespace sauros {
 
@@ -234,26 +237,81 @@ void file_executor_c::parser_error(std::string &e, location_s location) {
 
 void repl_c::start() {
 
+   std::unordered_map<std::string, std::vector<std::string>> completion_map = {
+       {"[u", {"[use "}},
+       {"[v", {"[var "}},
+       {"[i", {"[import ", "[is_nil ", "[if "}},
+       {"[p", {"[put ", "[putln ", "[push ", "[pop "}},
+       {"[c", {"[compose ", "[clear "}},
+       {"[co", {"[compose "}},
+       {"[comp", {"[compose ", "[decompose "}},
+       {"[b", {"[box ", "[back ", "[break"}},
+       {"[ba", {"[back "}},
+       {"[br", {"[break "}},
+       {"[bo", {"[box "}},
+       {"[s", {"[set ", "[sneq ", "[seq "}},
+       {"[e", {"[exit 0]", "[exit 1]", "[exit "}},
+       {"[ni", {"[nil ", "[is_nil "}},
+       {"[l", {"[list ", "[len ", "[loop [", "[lambda ["}},
+       {"[li", {"[list "}},
+       {"[lo", {"[loop ["}},
+       {"[la", {"[lambda ["}},
+       {"[a", {"[at ", "[assert "}},
+       {"[as", {"[assert "}},
+       {"[=", {"[== ", "[!= "}},
+       {"[!", {"[!= "}},
+       {"[>", {"[>= "}},
+       {"[<", {"[<= "}},
+       {"[x", {"[xor "}},
+       {"[t", {"[true ", "[type "}},
+       {"[tr", {"[true "}},
+       {"[ty", {"[type "}},
+   };
+
+   linenoise::SetCompletionCallback(
+       [&](const char *editBuffer, std::vector<std::string> &completions) {
+          std::string first = editBuffer;
+          if (completion_map.find(first) != completion_map.end()) {
+             std::vector<std::string> v = completion_map[first];
+             completions.insert(completions.end(), v.begin(), v.end());
+          }
+       });
+
+   std::filesystem::path history_path(".sauros_repl_history.txt");
+   {
+      system_c system;
+      auto home = system.get_sauros_directory();
+      if (home.has_value()) {
+         history_path = std::filesystem::path(*home);
+         history_path /= "repl_history.txt";
+      }
+   }
+
+   linenoise::SetHistoryMaxLen(repl_c::MAX_HISTORY_LENGTH);
+   linenoise::LoadHistory(history_path.c_str());
+   linenoise::SetMultiLine(true);
+
    uint64_t line_number{0};
    bool show_prompt{true};
    std::string buffer;
 
-   uint64_t tabs = 0;
+   std::string prompt = ">>> ";
    while (_do) {
 
       line_number++;
 
       if (show_prompt) {
-         std::cout << rang::fg::cyan << "> " << rang::fg::reset;
+         prompt = ">>> ";
       } else {
-         for (auto i = 0; i < tabs; i++) {
-            std::cout << "  ";
-         }
+         prompt = "";
       }
 
       std::string line;
-      std::getline(std::cin, line);
-
+      auto quit = linenoise::Readline(prompt.c_str(), line);
+      if (quit) {
+         _do = false;
+         continue;
+      }
       if (line.empty()) {
          continue;
       }
@@ -263,11 +321,15 @@ void repl_c::start() {
 
          execute("repl", line_number, (*buffer));
          show_prompt = true;
-         tabs = 0;
+
+         // Add line to history
+         linenoise::AddHistory((*buffer).c_str());
+
+         // Save history
+         linenoise::SaveHistory(history_path.c_str());
 
       } else {
          show_prompt = false;
-         tabs++;
       }
    }
 }

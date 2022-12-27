@@ -77,6 +77,10 @@ set(PARALLEL_HASHMAP_HEADERS
    ${CMAKE_SOURCE_DIR}/sauros/parallel_hashmap/phmap.hpp
 )
 
+set(LINENOISE_HEADERS
+   ${CMAKE_SOURCE_DIR}/sauros/linenoise/linenoise.hpp
+)
+
 set(HEADERS
    ${CMAKE_SOURCE_DIR}/sauros/front/parser.hpp
    ${CMAKE_SOURCE_DIR}/sauros/driver.hpp
@@ -92,6 +96,7 @@ set(HEADERS
    ${CMAKE_SOURCE_DIR}/sauros/sauros.hpp
    ${CMAKE_SOURCE_DIR}/sauros/RLL/RLL.h
    ${PARALLEL_HASHMAP_HEADERS}
+   ${LINENOISE_HEADERS}
 )
 
 set(SOURCES

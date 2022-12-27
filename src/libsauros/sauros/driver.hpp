@@ -70,6 +70,9 @@ class file_executor_c : private driver_if {
 //! \brief REPL
 class repl_c : private driver_if {
  public:
+   //! \brief The maximum lines remembered by repl
+   static constexpr size_t MAX_HISTORY_LENGTH = 255;
+
    repl_c() = delete;
 
    //! \brief Create the repl object
