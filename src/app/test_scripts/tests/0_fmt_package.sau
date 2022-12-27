@@ -1,0 +1,36 @@
+[use "fmt"]
+
+[var string_data "This is a string"]
+[var real_data 3.14159]
+[var int_data 32]
+
+[var formatted [
+   fmt.encode
+   "String data: [%] | Real data: [%] | Int data [%]"
+    [list string_data real_data int_data]
+]]
+
+[assert "fmt_package.sau > data encode" 
+         [seq "String data: [This is a string] | Real data: [3.14159] | Int data [32]" 
+               formatted]
+]
+
+[assert "fmt_package.sau > direct string"
+        [seq "hello" [fmt.encode "%" "hello"]
+        ]
+]
+
+[assert "fmt_package.sau > direct int"
+        [seq "33" [fmt.encode "%" 33]
+        ]
+]
+
+[assert "fmt_package.sau > direct real"
+        [seq "-982.456" [fmt.encode "%" -982.456]
+        ]
+]
+
+[assert "fmt_package.sau > escaped encoder"
+        [seq "%hello%%" [fmt.encode "\%%\%\%" "hello"]
+        ]
+]
