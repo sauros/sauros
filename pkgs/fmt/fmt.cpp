@@ -1,8 +1,50 @@
 #include "fmt.hpp"
 #include <sauros/capi/capi.hpp>
-
-#include <iostream>
 #include <string>
+
+namespace {
+
+inline void check_buffer(std::string &buffer, char c) {
+   switch (c) {
+   case 'n':
+      buffer += '\n';
+      break;
+   case 't':
+      buffer += '\t';
+      break;
+   case 'r':
+      buffer += '\r';
+      break;
+   case 'a':
+      buffer += '\a';
+      break;
+   case 'b':
+      buffer += '\b';
+      break;
+   case 'v':
+      buffer += '\v';
+      break;
+   case '?':
+      buffer += '\?';
+      break;
+   case '"':
+      buffer += '\"';
+      break;
+   case '\'':
+      buffer += '\'';
+      break;
+   case '%':
+      buffer += '%';
+      break;
+   case '\\':
+      buffer += '\\';
+      break;
+   default:
+      break;
+   }
+}
+
+} // namespace
 
 sauros::cell_ptr
 _pkg_fmt_format_encode_(sauros::cells_t &cells,
@@ -25,7 +67,7 @@ _pkg_fmt_format_encode_(sauros::cells_t &cells,
       if (source->type == sauros::cell_type_e::LIST) {
          source_cells.reserve(source->list.size());
          for (auto &c : source->list) {
-            source_cells.push_back(c_api_process_cell(c, env));
+            source_cells.push_back(c_api_cell_to_string(c, env));
          }
       } else {
          source_cells.push_back(source);
@@ -45,25 +87,7 @@ _pkg_fmt_format_encode_(sauros::cells_t &cells,
                 "formated string ends with escape character",
                 cells[1]->location);
          }
-         switch (target[i + 1]) {
-         case 'n':
-            buffer += '\n';
-            break;
-         case 't':
-            buffer += '\t';
-            break;
-         case 'r':
-            buffer += '\r';
-            break;
-         case '%':
-            buffer += '%';
-            break;
-         case '\\':
-            buffer += '\\';
-            break;
-         default:
-            break;
-         }
+         check_buffer(buffer, target[i + 1]);
          i++;
          continue;
       }
@@ -112,25 +136,7 @@ _pkg_fmt_format_string_(sauros::cells_t &cells,
                 "formated string ends with escape character",
                 cells[1]->location);
          }
-         switch (target[i + 1]) {
-         case 'n':
-            buffer += '\n';
-            break;
-         case 't':
-            buffer += '\t';
-            break;
-         case 'r':
-            buffer += '\r';
-            break;
-         case '%':
-            buffer += '%';
-            break;
-         case '\\':
-            buffer += '\\';
-            break;
-         default:
-            break;
-         }
+         check_buffer(buffer, target[i + 1]);
          i++;
          continue;
       }
