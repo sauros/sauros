@@ -1,0 +1,8 @@
+;  Author: bosley
+;  About:  An operating system interface library
+
+;  Retrieve the current working directory
+;     param: prompt <optional> - A prompt to display to the user
+;
+[var cwd [lambda [] [os._pkg_os_cwd_]]]
+

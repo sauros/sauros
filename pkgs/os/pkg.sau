@@ -1,0 +1,13 @@
+; Pkg name
+[var pkg_name "os"]
+
+; C++ shared lib to link to
+[var library_file "os.lib"]
+[var library_functions [list
+   "_pkg_os_cwd_"
+]]
+
+; Files to include under the current pkg
+[var source_files [list
+   "os.sau"
+]]
