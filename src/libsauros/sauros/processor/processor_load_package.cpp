@@ -46,8 +46,8 @@ void processor_c::load_package(const std::string &target, location_s location,
 
    target_manifest_file /= "pkg.sau";
 
-   //std::cout << "looking for package : " << target_manifest_file.c_str()
-            // << std::endl;
+   // std::cout << "looking for package : " << target_manifest_file.c_str()
+   //  << std::endl;
 
    if (!std::filesystem::is_regular_file(target_manifest_file)) {
       throw runtime_exception_c(
@@ -108,7 +108,7 @@ void processor_c::load_package(const std::string &target, location_s location,
          }
       }
 
-      //std::cout << "pkg_name: " << package.name << std::endl;
+      // std::cout << "pkg_name: " << package.name << std::endl;
 
       // Check if we need to load library info
       if (package.env->exists("library_file")) {
@@ -120,8 +120,8 @@ void processor_c::load_package(const std::string &target, location_s location,
                                       location);
          }
 
-         //std::cout << "\t[library file] " << library_file_cell->data
-                  // << std::endl;
+         // std::cout << "\t[library file] " << library_file_cell->data
+         //  << std::endl;
 
          {
             auto library_file_actual = root;
@@ -161,8 +161,8 @@ void processor_c::load_package(const std::string &target, location_s location,
             }
             package.library_function_list.push_back(function_name_cell->data);
 
-            //std::cout << "\t[library function] " << function_name_cell->data
-                    //  << std::endl;
+            // std::cout << "\t[library function] " << function_name_cell->data
+            //   << std::endl;
          }
       }
 
@@ -197,8 +197,8 @@ void processor_c::load_package(const std::string &target, location_s location,
                package.source_file_list.push_back(file_actual);
             }
 
-            //std::cout << "\t[source file] " << file_name_cell->data
-                   //   << std::endl;
+            // std::cout << "\t[source file] " << file_name_cell->data
+            //    << std::endl;
          }
       }
 
@@ -228,11 +228,11 @@ void processor_c::load_package(const std::string &target, location_s location,
           "failed to load library: `" + package.library_file + "`", location);
    }
 
-   //std::cout << "Library loaded\n";
+   // std::cout << "Library loaded\n";
 
    for (auto &f : package.library_function_list) {
 
-      //std::cout << "Loading function : " << f << std::endl;
+      // std::cout << "Loading function : " << f << std::endl;
 
       if (!lib->has_symbol(f)) {
          throw runtime_exception_c(
@@ -255,7 +255,7 @@ void processor_c::load_package(const std::string &target, location_s location,
 
    for (auto &f : package.source_file_list) {
 
-      //std::cout << "Loading source file : " << f << std::endl;
+      // std::cout << "Loading source file : " << f << std::endl;
 
       sauros::file_executor_c file_executor(boxed_cell->box_env);
       if (0 != file_executor.run(f)) {
