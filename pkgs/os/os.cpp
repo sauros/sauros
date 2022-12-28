@@ -14,8 +14,8 @@ using command = std::function<bool(std::string)>;
    send us a list. This function flattens lists to a list we can
    operate with
 */
-sauros::cells_t populate_source(sauros::cells_t &cells, std::shared_ptr<sauros::environment_c> env) {
-   auto raw_source = c_api_process_cell(cells[1], env);
+sauros::cells_t populate_source(sauros::cells_t &cells, size_t cell_sources, std::shared_ptr<sauros::environment_c> env) {
+   auto raw_source = c_api_process_cell(cells[cell_sources], env);
    sauros::cells_t source_cells;
    {
       auto source = raw_source;
@@ -32,16 +32,7 @@ sauros::cells_t populate_source(sauros::cells_t &cells, std::shared_ptr<sauros::
 }
 
 sauros::cell_ptr execute_commands(sauros::cells_t &cells, std::shared_ptr<sauros::environment_c> env, const std::string cmd_name, command cmd) {
-   sauros::cells_t sources;
-   if (cells.size() == 1) {
-      sources.push_back(
-         std::make_shared<sauros::cell_c>(
-            sauros::cell_type_e::STRING, std::filesystem::current_path().string()
-         )
-      );
-   } else {
-      sources = populate_source(cells, env);
-   }
+   sauros::cells_t sources = populate_source(cells, 1, env);
 
    auto result = std::make_shared<sauros::cell_c>(sauros::cell_type_e::LIST);
    for(auto &s : sources) {
@@ -85,16 +76,7 @@ _pkg_os_ls_(sauros::cells_t &cells,
    // If they didn't give use anything other than ls we assume its the cwd
    // otherwise we need to populate a list of them so we treat them as a list
    // throughout
-   sauros::cells_t sources;
-   if (cells.size() == 1) {
-      sources.push_back(
-         std::make_shared<sauros::cell_c>(
-            sauros::cell_type_e::STRING, std::filesystem::current_path().string()
-         )
-      );
-   } else {
-      sources = populate_source(cells, env);
-   }
+   sauros::cells_t sources = populate_source(cells, 1, env);
 
    auto result = std::make_shared<sauros::cell_c>(sauros::cell_type_e::LIST);
    for(auto &s : sources) {
@@ -359,7 +341,55 @@ _pkg_os_copy_(sauros::cells_t &cells,
 sauros::cell_ptr
 _pkg_os_file_append_(sauros::cells_t &cells,
                      std::shared_ptr<sauros::environment_c> env) {
-   return execute_commands(cells, env, "delete_all", [](std::string target) -> bool {
-      return std::filesystem::remove_all (target);
-   });
+   auto file = c_api_process_cell(cells[1], env);
+   if (file->type != sauros::cell_type_e::STRING) {
+      throw sauros::processor_c::runtime_exception_c(
+         "file operation expects file name to be a string",
+         cells[1]->location);
+   }
+   
+   std::ofstream out_file;
+   out_file.open(file->data, std::ios::out | std::ios::app);
+
+   if (!out_file.is_open()) {
+      return std::make_shared<sauros::cell_c>(sauros::CELL_FALSE);
+   }
+
+   sauros::cells_t lines = populate_source(cells, 2, env);
+
+   for(auto &line : lines) {
+      out_file << line->data;
+   }
+
+   out_file.close();
+
+   return std::make_shared<sauros::cell_c>(sauros::CELL_TRUE);
+}
+
+sauros::cell_ptr
+_pkg_os_file_write_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env) {
+   auto file = c_api_process_cell(cells[1], env);
+   if (file->type != sauros::cell_type_e::STRING) {
+      throw sauros::processor_c::runtime_exception_c(
+         "file operation expects file name to be a string",
+         cells[1]->location);
+   }
+   
+   std::ofstream out_file;
+   out_file.open(file->data, std::ios::out | std::ios::trunc);
+
+   if (!out_file.is_open()) {
+      return std::make_shared<sauros::cell_c>(sauros::CELL_FALSE);
+   }
+
+   sauros::cells_t lines = populate_source(cells, 2, env);
+
+   for(auto &line : lines) {
+      out_file << line->data;
+   }
+
+   out_file.close();
+
+   return std::make_shared<sauros::cell_c>(sauros::CELL_TRUE);
 }
