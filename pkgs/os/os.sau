@@ -6,3 +6,16 @@
 ;
 [var cwd [lambda [] [os._pkg_os_cwd_]]]
 
+;  Get a list of a directory or directories
+;  The result will be a list of lists, with each list being
+;  the result of a specific ls. The first entry of each sublist
+;  will be the name of the directory searched, followed by all of the 
+;  items in the directory. If the given item is not a valid directory
+;  the only entry for that particular list will be a nil cell
+;
+[var ls [lambda [dir] [os._pkg_os_ls_ dir]]]
+
+;  Change the current working directory
+;  Returns true iff the given dir exists and
+;  changing to the directory was a success
+[var chdir [lambda [dir] [os._pkg_os_chdir_ dir]]]

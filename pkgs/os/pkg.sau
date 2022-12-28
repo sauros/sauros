@@ -5,6 +5,8 @@
 [var library_file "os.lib"]
 [var library_functions [list
    "_pkg_os_cwd_"
+   "_pkg_os_ls_"
+   "_pkg_os_chdir_"
 ]]
 
 ; Files to include under the current pkg

@@ -19,6 +19,22 @@ extern sauros::cell_ptr
 _pkg_os_cwd_(sauros::cells_t &cells,
                      std::shared_ptr<sauros::environment_c> env);
 
+/*
+   Change working directory
+*/
+API_EXPORT
+extern sauros::cell_ptr
+_pkg_os_ls_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env);
+
+/*
+   Change working directory
+*/
+API_EXPORT
+extern sauros::cell_ptr
+_pkg_os_chdir_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env);
+
 }
 
 #endif
