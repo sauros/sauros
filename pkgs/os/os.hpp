@@ -50,6 +50,46 @@ API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_os_name_(sauros::cells_t &cells,
                      std::shared_ptr<sauros::environment_c> env);
+
+/*
+   Check if an item is a file
+*/
+API_EXPORT
+extern sauros::cell_ptr
+_pkg_os_is_file_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env);
+
+/*
+   Check if an item is a directory
+*/
+API_EXPORT
+extern sauros::cell_ptr
+_pkg_os_is_dir_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env);
+
+/*
+   Check if a path exists
+*/
+API_EXPORT
+extern sauros::cell_ptr
+_pkg_os_exists_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env);
+
+/*
+   Create one or more dirs (string vs list of strings)
+*/
+API_EXPORT
+extern sauros::cell_ptr
+_pkg_os_mkdir_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env);
+
+/*
+   Delete one or more files or directories  (string vs list of strings)
+*/
+API_EXPORT
+extern sauros::cell_ptr
+_pkg_os_delete_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env);
 }
 
 #endif

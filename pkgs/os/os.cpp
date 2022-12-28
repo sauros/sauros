@@ -4,7 +4,10 @@
 #include <iostream>
 #include <string>
 #include <filesystem>
+#include <functional>
 #include <sauros/capi/capi.hpp>
+
+using command = std::function<bool(std::string)>;
 
 /*
    A user could send a single item to work with, or they could 
@@ -26,6 +29,47 @@ sauros::cells_t populate_source(sauros::cells_t &cells, std::shared_ptr<sauros::
       }
    }
    return source_cells;
+}
+
+sauros::cell_ptr execute_commands(sauros::cells_t &cells, std::shared_ptr<sauros::environment_c> env, const std::string cmd_name, command cmd) {
+   sauros::cells_t sources;
+   if (cells.size() == 1) {
+      sources.push_back(
+         std::make_shared<sauros::cell_c>(
+            sauros::cell_type_e::STRING, std::filesystem::current_path().string()
+         )
+      );
+   } else {
+      sources = populate_source(cells, env);
+   }
+
+   auto result = std::make_shared<sauros::cell_c>(sauros::cell_type_e::LIST);
+   for(auto &s : sources) {
+
+      auto current_dir = std::make_shared<sauros::cell_c>(sauros::cell_type_e::LIST);
+
+      if (s->type != sauros::cell_type_e::STRING) {
+        throw sauros::processor_c::runtime_exception_c(
+          cmd_name + " command expectes strings for all items",
+          cells[0]->location);
+      }
+      // Indicate the path being listed
+      current_dir->list.push_back(s);
+
+      if (!cmd(s->data)) {
+         current_dir->list.push_back(
+            std::make_shared<sauros::cell_c>(sauros::CELL_FALSE)
+         );
+      } else {
+         current_dir->list.push_back(
+            std::make_shared<sauros::cell_c>(sauros::CELL_TRUE)
+         );
+      }
+      
+       result->list.push_back(current_dir);
+   }
+
+   return result;
 }
 
 sauros::cell_ptr
@@ -158,3 +202,77 @@ return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING, "unknown");
 #endif
 }
 
+sauros::cell_ptr
+_pkg_os_is_file_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env) {
+
+   auto raw_dest = c_api_process_cell(cells[1], env);
+   if (raw_dest->type != sauros::cell_type_e::STRING) {
+
+      std::cout << cells[1]->data << std::endl;
+      throw sauros::processor_c::runtime_exception_c(
+         "is_file command expects parameter to be a string",
+         cells[0]->location);
+   }
+
+   if (std::filesystem::is_block_file(raw_dest->data) || 
+       std::filesystem::is_regular_file(raw_dest->data) ||
+       std::filesystem::is_character_file(raw_dest->data) ){
+         return std::make_shared<sauros::cell_c>(sauros::CELL_TRUE);
+   }
+   return std::make_shared<sauros::cell_c>(sauros::CELL_FALSE);
+}
+
+sauros::cell_ptr
+_pkg_os_is_dir_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env) {
+
+   auto raw_dest = c_api_process_cell(cells[1], env);
+   if (raw_dest->type != sauros::cell_type_e::STRING) {
+
+      std::cout << cells[1]->data << std::endl;
+      throw sauros::processor_c::runtime_exception_c(
+         "is_file command expects parameter to be a string",
+         cells[0]->location);
+   }
+
+   if (std::filesystem::is_directory(raw_dest->data) ){
+      return std::make_shared<sauros::cell_c>(sauros::CELL_TRUE);
+   }
+   return std::make_shared<sauros::cell_c>(sauros::CELL_FALSE);
+}
+
+sauros::cell_ptr
+_pkg_os_exists_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env) {
+
+   auto raw_dest = c_api_process_cell(cells[1], env);
+   if (raw_dest->type != sauros::cell_type_e::STRING) {
+
+      std::cout << cells[1]->data << std::endl;
+      throw sauros::processor_c::runtime_exception_c(
+         "is_file command expects parameter to be a string",
+         cells[0]->location);
+   }
+   
+   if (std::filesystem::exists(raw_dest->data)){
+      return std::make_shared<sauros::cell_c>(sauros::CELL_TRUE);
+   }
+   return std::make_shared<sauros::cell_c>(sauros::CELL_FALSE);
+}
+
+sauros::cell_ptr
+_pkg_os_mkdir_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env) {
+   return execute_commands(cells, env, "mkdir", [](std::string target) -> bool {
+      return std::filesystem::create_directory(target);
+   });
+}
+
+sauros::cell_ptr
+_pkg_os_delete_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env) {
+   return execute_commands(cells, env, "mkdir", [](std::string target) -> bool {
+      return std::filesystem::remove(target);
+   });
+}

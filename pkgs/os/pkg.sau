@@ -9,6 +9,11 @@
    "_pkg_os_chdir_"
    "_pkg_os_endian_"
    "_pkg_os_os_name_"
+   "_pkg_os_is_file_"
+   "_pkg_os_is_dir_"
+   "_pkg_os_exists_"
+   "_pkg_os_mkdir_"
+   "_pkg_os_delete_"
 ]]
 
 ; Files to include under the current pkg

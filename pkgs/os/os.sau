@@ -31,3 +31,30 @@
 ;             unix, or unknown
 ;
 [var os_name [lambda [] [os._pkg_os_os_name_]]]
+
+;  Checks if a given string is a file
+;  returns true iff the item exists as a file
+;
+[var is_file [lambda [x] [os._pkg_os_is_file_ x]]]
+
+;  Checks if a given string is a dir
+;  returns true iff the item exists as a dir
+;
+[var is_dir [lambda [x] [os._pkg_os_is_dir_ x]]]
+
+;  Checks if a given string is a file or dir
+;  returns true iff the item exists as a file or dir
+;
+[var exists [lambda [x] [os._pkg_os_exists_ x]]]
+
+;  Make a directory or series of directories
+;  - Makes a single direcory if given a string,
+;     makes multiple if given a list of strings
+;
+[var mkdir [lambda [x] [os._pkg_os_mkdir_ x]]]
+
+;  Delete a directory or series of directories
+;  - Deletes a single direcory if given a string,
+;     deletes multiple if given a list of strings
+;
+[var delete [lambda [x] [os._pkg_os_delete_ x]]]
