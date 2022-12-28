@@ -1,4 +1,3 @@
-
 ; An object that represents copy flags
 ; - This object can be directly used but it is advised
 ;   to use the create_copy_flags function
@@ -116,3 +115,7 @@
 ;  The flag options will set how to handle the copy function
 ;
 [var copy [lambda [source destination flags] [os._pkg_os_copy_ source destination flags]]]
+
+
+[var file_append [lambda [file data] [os._pkg_os_file_append_ file data]]]
+[var file_write [lambda [file data] [os._pkg_os_file_write_ file data]]]

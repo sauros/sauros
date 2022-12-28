@@ -355,3 +355,11 @@ _pkg_os_copy_(sauros::cells_t &cells,
 
    return std::make_shared<sauros::cell_c>(sauros::CELL_TRUE);
 }
+
+sauros::cell_ptr
+_pkg_os_file_append_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env) {
+   return execute_commands(cells, env, "delete_all", [](std::string target) -> bool {
+      return std::filesystem::remove_all (target);
+   });
+}

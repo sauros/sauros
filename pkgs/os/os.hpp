@@ -106,6 +106,14 @@ API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_copy_(sauros::cells_t &cells,
                      std::shared_ptr<sauros::environment_c> env);
+
+/*
+   Append data to a file
+*/
+API_EXPORT
+extern sauros::cell_ptr
+_pkg_os_file_append_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env);
 }
 
 #endif
