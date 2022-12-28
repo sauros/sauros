@@ -1,3 +1,29 @@
+
+; An object that represents copy flags
+; - This object can be directly used but it is advised
+;   to use the create_copy_flags function
+;
+[box _os_copy_flags [block
+   [var recursive 0]
+   [var update_existing 0]
+   [var directories_only 0]
+]]
+
+; Create and set a copy flags object and return it
+;  - This function is meant to be a helper and the main
+;    interface for the _os_copy_flags box
+;
+;        [os.copy source destination [os.copy_flags 1 1 0]]
+;
+[var copy_flags 
+   [lambda [recursive update_existing directories_only] [block
+      [var flags [os._os_copy_flags]]
+      [set flags.recursive recursive]
+      [set flags.update_existing update_existing]
+      [set flags.directories_only directories_only]
+      [flags]
+]]]
+
 ;  Author: bosley
 ;  About:  An operating system interface library
 
@@ -50,11 +76,43 @@
 ;  Make a directory or series of directories
 ;  - Makes a single direcory if given a string,
 ;     makes multiple if given a list of strings
+;  The result will be a list of lists, with each list being
+;  the result of the command. The first entry of each sublist
+;  will be the name of the target, followed by the result of
+;  its execution (1 success, 0 fail)
 ;
 [var mkdir [lambda [x] [os._pkg_os_mkdir_ x]]]
 
 ;  Delete a directory or series of directories
 ;  - Deletes a single direcory if given a string,
 ;     deletes multiple if given a list of strings
+;  The result will be a list of lists, with each list being
+;  the result of the command. The first entry of each sublist
+;  will be the name of the target, followed by the result of
+;  its execution (1 success, 0 fail)
+;
+;  Note: If the target item is a directory and it is not emtpy,
+;     the deletion will fail
 ;
 [var delete [lambda [x] [os._pkg_os_delete_ x]]]
+
+;  Delete a directory or series of directories
+;  - Deletes a single direcory if given a string,
+;     deletes multiple if given a list of strings
+;  The result will be a list of lists, with each list being
+;  the result of the command. The first entry of each sublist
+;  will be the name of the target, followed by the result of
+;  its execution (1 success, 0 fail)
+;
+;  Note: Removes items recursively so non-empty directories will
+;        be fully removed
+;
+[var delete_all [lambda [x] [os._pkg_os_delete_all_ x]]]
+
+;  Copy an item from source to destination
+;  If the source doesn't exist `false` will be returned
+;  source and destination are expected to be strings, and flags is
+;  expected to be a box type (_os_copy_flags - can use copy_flags to build)
+;  The flag options will set how to handle the copy function
+;
+[var copy [lambda [source destination flags] [os._pkg_os_copy_ source destination flags]]]

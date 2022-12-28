@@ -14,6 +14,8 @@
    "_pkg_os_exists_"
    "_pkg_os_mkdir_"
    "_pkg_os_delete_"
+   "_pkg_os_delete_all_"
+   "_pkg_os_copy_"
 ]]
 
 ; Files to include under the current pkg

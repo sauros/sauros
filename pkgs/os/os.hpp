@@ -90,6 +90,22 @@ API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_delete_(sauros::cells_t &cells,
                      std::shared_ptr<sauros::environment_c> env);
+
+/*
+   Delete one or more files or directories recursively  (string vs list of strings)
+*/
+API_EXPORT
+extern sauros::cell_ptr
+_pkg_os_delete_all_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env);
+
+/*
+   Copy files or directories
+*/
+API_EXPORT
+extern sauros::cell_ptr
+_pkg_os_copy_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env);
 }
 
 #endif
