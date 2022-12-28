@@ -1,0 +1,132 @@
+; An object that represents copy flags
+; - This object can be directly used but it is advised
+;   to use the create_copy_flags function
+;
+[box _os_copy_flags [block
+   [var recursive 0]
+   [var update_existing 0]
+   [var directories_only 0]
+]]
+
+; Create and set a copy flags object and return it
+;  - This function is meant to be a helper and the main
+;    interface for the _os_copy_flags box
+;
+;        [os.copy source destination [os.copy_flags 1 1 0]]
+;
+[var copy_flags 
+   [lambda [recursive update_existing directories_only] [block
+      [var flags [os._os_copy_flags]]
+      [set flags.recursive recursive]
+      [set flags.update_existing update_existing]
+      [set flags.directories_only directories_only]
+      [flags]
+]]]
+
+;  Author: bosley
+;  About:  An operating system interface library
+
+;  Retrieve the current working directory
+;     param: prompt <optional> - A prompt to display to the user
+;
+[var cwd [lambda [] [os._pkg_os_cwd_]]]
+
+;  Get a list of a directory or directories
+;  The result will be a list of lists, with each list being
+;  the result of a specific ls. The first entry of each sublist
+;  will be the name of the directory searched, followed by all of the 
+;  items in the directory. If the given item is not a valid directory
+;  the only entry for that particular list will be a nil cell
+;
+[var ls [lambda [dir] [os._pkg_os_ls_ dir]]]
+
+;  Change the current working directory
+;  Returns true iff the given dir exists and
+;  changing to the directory was a success
+;
+[var chdir [lambda [dir] [os._pkg_os_chdir_ dir]]]
+
+;  Retrieve a string describing the endianess of the system
+;     returns : big, little, or mixed 
+;
+[var endian [lambda [] [os._pkg_os_endian_]]]
+
+;  Retrieve a string describing the os name
+;     returns windows-32, windows-64, mac, linux, free-bsd,
+;             unix, or unknown
+;
+[var os_name [lambda [] [os._pkg_os_os_name_]]]
+
+;  Checks if a given string is a file
+;  returns true iff the item exists as a file
+;
+[var is_file [lambda [x] [os._pkg_os_is_file_ x]]]
+
+;  Checks if a given string is a dir
+;  returns true iff the item exists as a dir
+;
+[var is_dir [lambda [x] [os._pkg_os_is_dir_ x]]]
+
+;  Checks if a given string is a file or dir
+;  returns true iff the item exists as a file or dir
+;
+[var exists [lambda [x] [os._pkg_os_exists_ x]]]
+
+;  Make a directory or series of directories
+;  - Makes a single direcory if given a string,
+;     makes multiple if given a list of strings
+;  The result will be a list of lists, with each list being
+;  the result of the command. The first entry of each sublist
+;  will be the name of the target, followed by the result of
+;  its execution (1 success, 0 fail)
+;
+[var mkdir [lambda [x] [os._pkg_os_mkdir_ x]]]
+
+;  Delete a directory or series of directories
+;  - Deletes a single direcory if given a string,
+;     deletes multiple if given a list of strings
+;  The result will be a list of lists, with each list being
+;  the result of the command. The first entry of each sublist
+;  will be the name of the target, followed by the result of
+;  its execution (1 success, 0 fail)
+;
+;  Note: If the target item is a directory and it is not emtpy,
+;     the deletion will fail
+;
+[var delete [lambda [x] [os._pkg_os_delete_ x]]]
+
+;  Delete a directory or series of directories
+;  - Deletes a single direcory if given a string,
+;     deletes multiple if given a list of strings
+;  The result will be a list of lists, with each list being
+;  the result of the command. The first entry of each sublist
+;  will be the name of the target, followed by the result of
+;  its execution (1 success, 0 fail)
+;
+;  Note: Removes items recursively so non-empty directories will
+;        be fully removed
+;
+[var delete_all [lambda [x] [os._pkg_os_delete_all_ x]]]
+
+;  Copy an item from source to destination
+;  If the source doesn't exist `false` will be returned
+;  source and destination are expected to be strings, and flags is
+;  expected to be a box type (_os_copy_flags - can use copy_flags to build)
+;  The flag options will set how to handle the copy function
+;
+[var copy [lambda [source destination flags] [os._pkg_os_copy_ source destination flags]]]
+
+;  Append a string or list of strings to a given file
+;   - Creates the file if it doesn't exist
+;
+[var file_append [lambda [file data] [os._pkg_os_file_append_ file data]]]
+
+;  Overwrite a file with a string or list of strings
+;   - Creates the file if it doesn't exist
+;
+[var file_write [lambda [file data] [os._pkg_os_file_write_ file data]]]
+
+;  Reads in an entire file line by line into a list.
+;  Each line is a new entry in the returned list
+;
+[var file_read [lambda [file] [os._pkg_os_file_read_ file]]]
