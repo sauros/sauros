@@ -18,6 +18,7 @@
    "_pkg_os_copy_"
    "_pkg_os_file_append_"
    "_pkg_os_file_write_"
+   "_pkg_os_file_read_"
 ]]
 
 ; Files to include under the current pkg

@@ -122,6 +122,14 @@ API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_file_write_(sauros::cells_t &cells,
                      std::shared_ptr<sauros::environment_c> env);
+
+/*
+   Read data from a file
+*/
+API_EXPORT
+extern sauros::cell_ptr
+_pkg_os_file_read_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env);
 }
 
 #endif

@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <functional>
 #include <sauros/capi/capi.hpp>
+#include <fstream>
 
 using command = std::function<bool(std::string)>;
 
@@ -392,4 +393,38 @@ _pkg_os_file_write_(sauros::cells_t &cells,
    out_file.close();
 
    return std::make_shared<sauros::cell_c>(sauros::CELL_TRUE);
+}
+
+sauros::cell_ptr
+_pkg_os_file_read_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env) {
+   auto file = c_api_process_cell(cells[1], env);
+   if (file->type != sauros::cell_type_e::STRING) {
+      throw sauros::processor_c::runtime_exception_c(
+         "file operation expects file name to be a string",
+         cells[1]->location);
+   }
+   
+   std::ifstream in_file;
+   in_file.open(file->data, std::ios::in);
+
+   if (!in_file.is_open()) {
+      return std::make_shared<sauros::cell_c>(sauros::CELL_FALSE);
+   }
+
+   auto result = std::make_shared<sauros::cell_c>(
+      sauros::cell_type_e::LIST
+   );
+
+   std::string line;
+   while (std::getline(in_file, line)) {
+      result->list.push_back(
+         std::make_shared<sauros::cell_c>(
+            sauros::cell_type_e::STRING,
+            line
+         )
+      );
+   }
+   in_file.close();
+   return result;
 }
