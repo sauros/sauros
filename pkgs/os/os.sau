@@ -118,6 +118,15 @@
 
 ;  Append a string or list of strings to a given file
 ;   - Creates the file if it doesn't exist
+;
 [var file_append [lambda [file data] [os._pkg_os_file_append_ file data]]]
+
+;  Overwrite a file with a string or list of strings
+;   - Creates the file if it doesn't exist
+;
 [var file_write [lambda [file data] [os._pkg_os_file_write_ file data]]]
+
+;  Reads in an entire file line by line into a list.
+;  Each line is a new entry in the returned list
+;
 [var file_read [lambda [file] [os._pkg_os_file_read_ file]]]
