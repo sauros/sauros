@@ -17,15 +17,14 @@ extern "C" {
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_cwd_(sauros::cells_t &cells,
-                     std::shared_ptr<sauros::environment_c> env);
+             std::shared_ptr<sauros::environment_c> env);
 
 /*
    List current directory
 */
 API_EXPORT
-extern sauros::cell_ptr
-_pkg_os_ls_(sauros::cells_t &cells,
-                     std::shared_ptr<sauros::environment_c> env);
+extern sauros::cell_ptr _pkg_os_ls_(sauros::cells_t &cells,
+                                    std::shared_ptr<sauros::environment_c> env);
 
 /*
    Change working directory
@@ -33,7 +32,7 @@ _pkg_os_ls_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_chdir_(sauros::cells_t &cells,
-                     std::shared_ptr<sauros::environment_c> env);
+               std::shared_ptr<sauros::environment_c> env);
 
 /*
    Check if system is little endian
@@ -41,7 +40,7 @@ _pkg_os_chdir_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_endian_(sauros::cells_t &cells,
-                     std::shared_ptr<sauros::environment_c> env);
+                std::shared_ptr<sauros::environment_c> env);
 
 /*
    Get the name of the os
@@ -49,7 +48,7 @@ _pkg_os_endian_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_os_name_(sauros::cells_t &cells,
-                     std::shared_ptr<sauros::environment_c> env);
+                 std::shared_ptr<sauros::environment_c> env);
 
 /*
    Check if an item is a file
@@ -57,7 +56,7 @@ _pkg_os_os_name_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_is_file_(sauros::cells_t &cells,
-                     std::shared_ptr<sauros::environment_c> env);
+                 std::shared_ptr<sauros::environment_c> env);
 
 /*
    Check if an item is a directory
@@ -65,7 +64,7 @@ _pkg_os_is_file_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_is_dir_(sauros::cells_t &cells,
-                     std::shared_ptr<sauros::environment_c> env);
+                std::shared_ptr<sauros::environment_c> env);
 
 /*
    Check if a path exists
@@ -73,7 +72,7 @@ _pkg_os_is_dir_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_exists_(sauros::cells_t &cells,
-                     std::shared_ptr<sauros::environment_c> env);
+                std::shared_ptr<sauros::environment_c> env);
 
 /*
    Create one or more dirs (string vs list of strings)
@@ -81,7 +80,7 @@ _pkg_os_exists_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_mkdir_(sauros::cells_t &cells,
-                     std::shared_ptr<sauros::environment_c> env);
+               std::shared_ptr<sauros::environment_c> env);
 
 /*
    Delete one or more files or directories  (string vs list of strings)
@@ -89,15 +88,16 @@ _pkg_os_mkdir_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_delete_(sauros::cells_t &cells,
-                     std::shared_ptr<sauros::environment_c> env);
+                std::shared_ptr<sauros::environment_c> env);
 
 /*
-   Delete one or more files or directories recursively  (string vs list of strings)
+   Delete one or more files or directories recursively  (string vs list of
+   strings)
 */
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_delete_all_(sauros::cells_t &cells,
-                     std::shared_ptr<sauros::environment_c> env);
+                    std::shared_ptr<sauros::environment_c> env);
 
 /*
    Copy files or directories
@@ -105,7 +105,7 @@ _pkg_os_delete_all_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_copy_(sauros::cells_t &cells,
-                     std::shared_ptr<sauros::environment_c> env);
+              std::shared_ptr<sauros::environment_c> env);
 
 /*
    Append data to a file
@@ -121,7 +121,7 @@ _pkg_os_file_append_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_file_write_(sauros::cells_t &cells,
-                     std::shared_ptr<sauros::environment_c> env);
+                    std::shared_ptr<sauros::environment_c> env);
 
 /*
    Read data from a file
@@ -129,7 +129,7 @@ _pkg_os_file_write_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_file_read_(sauros::cells_t &cells,
-                     std::shared_ptr<sauros::environment_c> env);
+                   std::shared_ptr<sauros::environment_c> env);
 }
 
 #endif
