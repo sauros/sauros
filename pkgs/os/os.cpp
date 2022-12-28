@@ -1,5 +1,6 @@
 #include "os.hpp"
 
+#include <bit>
 #include <iostream>
 #include <string>
 #include <filesystem>
@@ -122,3 +123,38 @@ _pkg_os_chdir_(sauros::cells_t &cells,
       sauros::CELL_FALSE
    );
 }
+
+sauros::cell_ptr
+_pkg_os_endian_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env) {
+    if constexpr (std::endian::native == std::endian::big) {
+        return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING, "big");
+    }
+    else if constexpr (std::endian::native == std::endian::little) {
+        return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING, "little");
+    }
+    else { 
+        return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING, "mixed");
+    }
+}
+
+sauros::cell_ptr
+_pkg_os_os_name_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env) {
+#ifdef _WIN32
+return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING, "windows-32");;
+#elif _WIN64
+return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING, "windows-64");
+#elif __APPLE__ || __MACH__
+return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING, "mac");
+#elif __linux__
+return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING, "linux");
+#elif __FreeBSD__
+return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING, "free-bsd");
+#elif __unix || __unix__
+return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING, "unix");
+#else
+return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING, "unknown");
+#endif
+}
+

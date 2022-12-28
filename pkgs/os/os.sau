@@ -18,4 +18,16 @@
 ;  Change the current working directory
 ;  Returns true iff the given dir exists and
 ;  changing to the directory was a success
+;
 [var chdir [lambda [dir] [os._pkg_os_chdir_ dir]]]
+
+;  Retrieve a string describing the endianess of the system
+;     returns : big, little, or mixed 
+;
+[var endian [lambda [] [os._pkg_os_endian_]]]
+
+;  Retrieve a string describing the os name
+;     returns windows-32, windows-64, mac, linux, free-bsd,
+;             unix, or unknown
+;
+[var os_name [lambda [] [os._pkg_os_os_name_]]]
