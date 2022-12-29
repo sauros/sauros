@@ -14,22 +14,22 @@ extern "C" {
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_time_stamp_(sauros::cells_t &cells,
-                     std::shared_ptr<sauros::environment_c> env);
+                 std::shared_ptr<sauros::environment_c> env);
 
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_time_diff_sec_(sauros::cells_t &cells,
-                     std::shared_ptr<sauros::environment_c> env);
+                    std::shared_ptr<sauros::environment_c> env);
 
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_time_stamp_to_utc_(sauros::cells_t &cells,
-                     std::shared_ptr<sauros::environment_c> env);
+                        std::shared_ptr<sauros::environment_c> env);
 
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_time_get_utc_(sauros::cells_t &cells,
-                     std::shared_ptr<sauros::environment_c> env);
+                   std::shared_ptr<sauros::environment_c> env);
 }
 
 #endif
