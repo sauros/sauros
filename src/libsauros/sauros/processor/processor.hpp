@@ -14,16 +14,12 @@
 #include <set>
 #include <vector>
 
-// Forward declaration for RLL library loader
-namespace rll {
-class shared_library;
-}
-
 namespace sauros {
 
 //! \brief A list processor
 class processor_c {
  public:
+
    //!\brief An exception that will be thrown on assertion failure
    class assertion_exception_c : public std::exception {
     public:
@@ -72,7 +68,6 @@ class processor_c {
 
    //! \brief Construct the processor
    processor_c();
-   ~processor_c();
 
    //! \brief Process a cell (generated from parser, or otherwise)
    //! \param cell The cell to process
@@ -92,8 +87,6 @@ class processor_c {
  private:
    sauros::system_c _system;
    std::array<cell_ptr, BUILTIN_ENTRY_COUNT> _builtins;
-   phmap::parallel_node_hash_map<std::string, rll::shared_library *>
-       _loaded_packages;
 
    void populate_standard_builtins();
 

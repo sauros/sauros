@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "cell_map.hpp"
+#include "RLL/rll_wrapper.hpp"
 
 namespace sauros {
 
@@ -81,9 +82,14 @@ class environment_c {
    //! \brief Retrieve a copy of the env map
    cell_map_t get_map() const { return _env; }
 
+   bool package_loaded(const std::string &package);
+
+   void save_package(const std::string &name, std::shared_ptr<rll_wrapper_c> lib);
+
  private:
    std::shared_ptr<environment_c> _parent{nullptr};
    cell_map_t _env;
+   rll_map _loaded_packages;
 };
 
 } // namespace sauros

@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+
 namespace sauros {
 
 bool environment_c::exists(const std::string &item) {
@@ -43,6 +44,20 @@ environment_c *environment_c::find(const std::string &var,
    }
 
    throw unknown_identifier_c(var, location);
+}
+
+bool environment_c::package_loaded(const std::string &package) {
+   if (_loaded_packages.find(package) != _loaded_packages.end()) {
+      return true;
+   }
+   if (_parent) {
+      return _parent->package_loaded(package);
+   }
+   return false;
+}
+
+void environment_c::save_package(const std::string &name, std::shared_ptr<rll_wrapper_c> lib) {
+   _loaded_packages[name] = lib;
 }
 
 } // namespace sauros

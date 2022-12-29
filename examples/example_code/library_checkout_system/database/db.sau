@@ -1,0 +1,18 @@
+;[import "database/entry.sau"]
+
+
+
+ [use "io"]
+
+
+[var db::load [lambda [file] [block 
+   ;[if [not [os.is_file "books.db"]] [[block
+   ;   [putln "Given item is not a file: " file]
+   ;   [exit 1]
+   ;]]]
+   ;[putln [os.os_name]]
+   [io.get_string "$"]
+
+   [putln "Looks like its a file"] 
+
+]]]

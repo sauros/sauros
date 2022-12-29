@@ -19,7 +19,7 @@ class driver_if {
 
    //! \brief Create the driver
    //! \param env The environment
-   driver_if(std::shared_ptr<sauros::environment_c> &env);
+   driver_if(std::shared_ptr<sauros::environment_c> env);
 
  protected:
    void execute(const char *source, const uint64_t line_number,
@@ -31,7 +31,7 @@ class driver_if {
    virtual void except(sauros::environment_c::unknown_identifier_c &e) = 0;
    virtual void parser_error(std::string &e, location_s location) = 0;
 
-   std::shared_ptr<sauros::environment_c> &_env;
+   std::shared_ptr<sauros::environment_c> _env;
    sauros::input_buffer_c *_buffer{nullptr};
    sauros::processor_c _list_processor;
    parser::segment_parser_c _segment_parser;
@@ -45,7 +45,7 @@ class file_executor_c : private driver_if {
 
    //! \brief Create the executor
    //! \param env The environment to use
-   file_executor_c(std::shared_ptr<sauros::environment_c> &env)
+   file_executor_c(std::shared_ptr<sauros::environment_c> env)
        : driver_if(env) {}
 
    //! \brief Load and execute the file
@@ -77,7 +77,7 @@ class repl_c : private driver_if {
 
    //! \brief Create the repl object
    //! \param env The environment to use
-   repl_c(std::shared_ptr<sauros::environment_c> &env) : driver_if(env) {}
+   repl_c(std::shared_ptr<sauros::environment_c> env) : driver_if(env) {}
 
    //! \brief Start the REPL
    void start();
@@ -106,7 +106,7 @@ class eval_c : private driver_if {
    //! \brief Create the repl object
    //! \param env The environment to use
    //! \param cb The callback to issue when the cell is returned
-   eval_c(std::shared_ptr<sauros::environment_c> &env,
+   eval_c(std::shared_ptr<sauros::environment_c> env,
           std::function<void(cell_ptr cell)> cb)
        : driver_if(env), _cb(cb) {}
 

@@ -1,0 +1,14 @@
+;[import "database/db.sau"]
+
+[import "database/db.sau"]
+
+[var x [lambda [] [block
+
+   [db::load "moot"]
+ ;  [var x [io.get_int ">>"]]
+
+]]]
+
+;[var loaded_database [db::load "books.db"]]
+
+[x]

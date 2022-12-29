@@ -127,7 +127,7 @@ std::optional<std::string> input_buffer_c::submit(std::string &line) {
    return {};
 }
 
-driver_if::driver_if(std::shared_ptr<sauros::environment_c> &env) : _env(env) {
+driver_if::driver_if(std::shared_ptr<sauros::environment_c> env) : _env(env) {
    _buffer = new input_buffer_c();
 }
 
