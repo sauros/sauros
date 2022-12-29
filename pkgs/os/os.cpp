@@ -116,8 +116,6 @@ sauros::cell_ptr _pkg_os_chdir_(sauros::cells_t &cells,
 
    auto raw_dest = c_api_process_cell(cells[1], env);
    if (raw_dest->type != sauros::cell_type_e::STRING) {
-
-      std::cout << cells[1]->data << std::endl;
       throw sauros::processor_c::runtime_exception_c(
           "chdir command expects parameter to be a string", cells[0]->location);
    }
@@ -183,8 +181,6 @@ sauros::cell_ptr _pkg_os_is_file_(sauros::cells_t &cells,
 
    auto raw_dest = c_api_process_cell(cells[1], env);
    if (raw_dest->type != sauros::cell_type_e::STRING) {
-
-      std::cout << cells[1]->data << std::endl;
       throw sauros::processor_c::runtime_exception_c(
           "is_file command expects parameter to be a string",
           cells[0]->location);
@@ -203,8 +199,6 @@ sauros::cell_ptr _pkg_os_is_dir_(sauros::cells_t &cells,
 
    auto raw_dest = c_api_process_cell(cells[1], env);
    if (raw_dest->type != sauros::cell_type_e::STRING) {
-
-      std::cout << cells[1]->data << std::endl;
       throw sauros::processor_c::runtime_exception_c(
           "is_file command expects parameter to be a string",
           cells[0]->location);

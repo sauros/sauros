@@ -1,4 +1,5 @@
 import os
+import sys
 import shutil
 import subprocess
 
@@ -120,7 +121,16 @@ def copy_packages(packages):
 
 pre_flight()
 
-dirs = [d for d in os.listdir('.') if os.path.isdir(d)]
+
+# Check if specific dirs are given, otherwise
+# we do all the dirs
+dirs = []
+if len(sys.argv) == 1:
+   dirs = [d for d in os.listdir('.') if os.path.isdir(d)]
+else:
+   dirs = sys.argv[1:]
+
+# Build packages for every dir given
 packages = []
 for pkg in dirs:
    packages.append(build_package(pkg))
@@ -128,5 +138,6 @@ for pkg in dirs:
 for pkg in packages:
    print("-------------")
    pkg.dump()
+
 
 copy_packages(packages)
