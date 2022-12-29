@@ -17,8 +17,8 @@ static bool is_digit(const char c) {
 
 //    Retrieve a list of tokens based on the given string
 //
-std::tuple<std::vector<token_s>, std::shared_ptr<error::error_c>>
-tokenize(size_t line_number, const std::string line) {
+std::vector<token_s> tokenize(size_t line_number, const std::string line,
+                              bracket_track_s &bts) {
 
    std::vector<token_s> tokens;
    for (size_t idx = 0; idx < line.size(); idx++) {
@@ -33,11 +33,19 @@ tokenize(size_t line_number, const std::string line) {
       switch (current) {
       case '[': {
          tokens.push_back({token_e::L_BRACKET, "[", {line_number, idx}});
+         bts.location = {line_number, idx};
+         bts.tracker++;
          continue;
       }
 
       case ']': {
          tokens.push_back({token_e::R_BRACKET, "]", {line_number, idx}});
+         if (bts.tracker > 0) {
+            bts.tracker--;
+         } else {
+            throw parser_exception_c("Unmatched closing bracket",
+                                     {line_number, idx});
+         }
          continue;
       }
 
@@ -64,12 +72,8 @@ tokenize(size_t line_number, const std::string line) {
          }
 
          if (!value.ends_with('"')) {
-
-            auto error = std::make_shared<error::error_c>(
-                location_s(line_number, idx), line.c_str(),
-                "Unterminated string");
-
-            return std::make_tuple(tokens, error);
+            throw parser_exception_c("Unterminated string", {line_number, idx});
+            return tokens;
          }
 
          tokens.push_back({token_e::STRING,
@@ -105,12 +109,10 @@ tokenize(size_t line_number, const std::string line) {
                continue;
             }
          } else {
-            // Some malformed oddity like: 4444.2323.232.4.34.
-            auto error = std::make_shared<error::error_c>(
-                location_s(line_number, start), line.c_str(),
-                "Malformed representation of suspected numerical");
-
-            return std::make_tuple(tokens, error);
+            throw parser_exception_c(
+                "Malformed representaton of suspected numerical",
+                {line_number, start});
+            return tokens;
          }
       }
 
@@ -127,22 +129,21 @@ tokenize(size_t line_number, const std::string line) {
       tokens.push_back({token_e::SYMBOL, value, {line_number, start}});
       idx--;
    }
-   return std::make_tuple(tokens, nullptr);
+   return tokens;
 }
 
 namespace {
-std::shared_ptr<error::error_c> get_no_list_error(token_s current_token) {
-   return std::make_shared<error::error_c>(
-       current_token.location, current_token.data,
-       "attempting to create object prior to list creation");
+void throw_no_list_error(token_s current_token) {
+   throw parser_exception_c(
+       "Attempting to create object priot to list creation",
+       current_token.location);
 }
 } // namespace
 
-std::tuple<cell_ptr, std::shared_ptr<error::error_c>>
-parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
+cell_ptr parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
 
    if (tokens.empty()) {
-      return std::make_tuple(std::make_shared<cell_c>(), nullptr);
+      return {};
    }
 
    auto current_token = tokens[0];
@@ -154,11 +155,7 @@ parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
       cell_ptr new_list = std::make_shared<cell_c>(cell_type_e::LIST);
 
       // Populate the list
-      auto [_, err] = parse(tokens, new_list);
-
-      if (err) {
-         return std::make_tuple(std::make_shared<cell_c>(), err);
-      }
+      parse(tokens, new_list);
 
       // If we had  a list, we add our new list to it
       if (current_list) {
@@ -168,28 +165,27 @@ parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
 
          // otherwise we return the new list
       } else {
-         return std::make_tuple(new_list, nullptr);
+         return new_list;
       }
    }
 
    case token_e::R_BRACKET: {
       // This means we are done building whatever current_list is
       if (!current_list) {
-         auto error = std::make_shared<error::error_c>(
-             current_token.location, current_token.data,
-             "unopened closing bracket `]` located");
-         return std::make_tuple(std::make_shared<cell_c>(), error);
+         throw parser_exception_c("Unopened closing bracket detected",
+                                  current_token.location);
+         return {};
       }
 
       // The cell list being created has been populated recursively so
       // we don't need to return anything here.
-      return std::make_tuple(std::make_shared<cell_c>(), nullptr);
+      return {};
    }
 
    case token_e::SYMBOL: {
       if (!current_list) {
-         return std::make_tuple(std::make_shared<cell_c>(),
-                                get_no_list_error(current_token));
+         throw_no_list_error(current_token);
+         return {};
       }
 
       // Check the encoding map for builtins to see if we need to
@@ -210,8 +206,8 @@ parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
 
    case token_e::STRING: {
       if (!current_list) {
-         return std::make_tuple(std::make_shared<cell_c>(),
-                                get_no_list_error(current_token));
+         throw_no_list_error(current_token);
+         return {};
       }
 
       current_list->list.push_back(std::make_shared<cell_c>(
@@ -221,8 +217,8 @@ parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
 
    case token_e::INTEGER: {
       if (!current_list) {
-         return std::make_tuple(std::make_shared<cell_c>(),
-                                get_no_list_error(current_token));
+         throw_no_list_error(current_token);
+         return {};
       }
 
       current_list->list.push_back(std::make_shared<cell_c>(
@@ -232,8 +228,8 @@ parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
 
    case token_e::DOUBLE: {
       if (!current_list) {
-         return std::make_tuple(std::make_shared<cell_c>(),
-                                get_no_list_error(current_token));
+         throw_no_list_error(current_token);
+         return {};
       }
 
       current_list->list.push_back(std::make_shared<cell_c>(
@@ -242,40 +238,19 @@ parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
    }
    }
 
-   auto error = std::make_shared<error::error_c>(
-       current_token.location, current_token.data,
-       "internal error > unhandled token type");
-   return std::make_tuple(std::make_shared<cell_c>(), error);
+   throw parser_exception_c("internal error > unhandled token type",
+                            current_token.location);
+   return {};
 }
 
-product_s parse_line(const char *source_descrption, std::size_t line_number,
-                     std::string line) {
-
-   product_s resulting_product;
-
-   auto [tokens, token_err] = tokenize(line_number, line);
-
-   if (token_err) {
-      resulting_product.error_info = token_err;
-      resulting_product.result = result_e::ERROR;
-      return resulting_product;
-   }
-
-   auto [cell, parse_err] = parse(tokens);
-
-   if (parse_err) {
-      resulting_product.error_info = parse_err;
-      resulting_product.result = result_e::ERROR;
-      return resulting_product;
-   }
-
-   resulting_product.cell = cell;
-   resulting_product.error_info = nullptr;
-   resulting_product.result = result_e::OKAY;
-   return resulting_product;
+cell_ptr parse_line(const char *source_descrption, std::size_t line_number,
+                    std::string line) {
+   bracket_track_s bts;
+   auto tokens = tokenize(line_number, line, bts);
+   return parse(tokens);
 }
 
-std::optional<product_s>
+std::optional<cell_ptr>
 segment_parser_c::submit(segment_parser_c::segment_s segment) {
 
    std::size_t comment_loc = segment.line.find_first_of(";");
@@ -287,45 +262,19 @@ segment_parser_c::submit(segment_parser_c::segment_s segment) {
       return {};
    }
 
-   product_s resulting_product;
-
-   auto [tokens, token_err] = tokenize(segment.line_number, segment.line);
-
-   if (token_err) {
-      resulting_product.error_info = token_err;
-      resulting_product.result = result_e::ERROR;
-      _tracker = 0;
-      return {resulting_product};
-   }
-
+   auto tokens = tokenize(segment.line_number, segment.line, _bts);
    _tokens.insert(_tokens.end(), tokens.begin(), tokens.end());
 
-   for (auto &c : segment.line) {
-      if (c == '[') {
-         _tracker++;
-      } else if (c == ']') {
-         _tracker--;
-      }
+   if (_bts.tracker == 0 && !_tokens.empty()) {
+      return {parse(_tokens)};
    }
-
-   if (_tracker == 0 && !_tokens.empty()) {
-
-      auto [cell, parse_err] = parse(_tokens);
-
-      if (parse_err) {
-         resulting_product.error_info = parse_err;
-         resulting_product.result = result_e::ERROR;
-         return {resulting_product};
-      }
-
-      resulting_product.cell = cell;
-      resulting_product.error_info = nullptr;
-      resulting_product.result = result_e::OKAY;
-
-      return {resulting_product};
-   }
-
    return {};
+}
+
+void segment_parser_c::indicate_complete() {
+   if (_bts.tracker != 0) {
+      throw parser_exception_c("Unmatched opening bracket", _bts.location);
+   }
 }
 
 } // namespace parser

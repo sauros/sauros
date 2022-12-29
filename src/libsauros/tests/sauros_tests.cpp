@@ -120,13 +120,9 @@ TEST(sauros_tests, piecemeal) {
    sauros::processor_c proc;
 
    for (auto tc : tests) {
-
       auto result = sauros::parser::parse_line("test", line_no++, tc.input);
-
-      CHECK_FALSE(result.error_info);
-
       try {
-         auto cell_result = proc.process_cell(result.cell, env);
+         auto cell_result = proc.process_cell(result, env);
 
          std::string stringed_result;
          proc.cell_to_string(stringed_result, cell_result, env, false);
@@ -140,6 +136,9 @@ TEST(sauros_tests, piecemeal) {
          FAIL("exception");
       } catch (sauros::environment_c::unknown_identifier_c &e) {
          std::cout << e.what() << " : " << e.get_id() << std::endl;
+         FAIL("exception");
+      } catch (sauros::parser::parser_exception_c &e) {
+         std::cout << e.what() << std::endl;
          FAIL("exception");
       }
    }
