@@ -1,0 +1,18 @@
+;  Author: bosley
+;  About:  A simple time library
+
+;  Retrieve a time stamp in milli seconds
+;
+[var stamp [lambda [] [time._pkg_time_stamp_]]]
+
+;  Retrieve a diff from two time stamps (milli sec) in sec
+;
+[var diff_sec [lambda [start end] [time._pkg_time_diff_sec_ start end]]]
+
+;  Convert a time stamp to UTC time
+;
+[var stamp_to_utc [lambda [stamp] [time._pkg_time_stamp_to_utc_ stamp]]]
+
+;  Get the current UTC time
+;
+[var get_utc [lambda [] [time._pkg_time_get_utc_]]]
