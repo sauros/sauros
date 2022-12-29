@@ -26,7 +26,7 @@
         "patterns": [
            {
            "name": "keyword.control.sau",
-           "match": "\\b(use|true|false|nil|is_nil|box|compose|decompose|exit|clear|at|var|front|back|push|pop|list|set|block|len|put|putln|if|assert|loop|type|import|break)\\b"
+           "match": "\\b(iter|use|true|false|nil|is_nil|box|compose|decompose|exit|clear|at|var|front|back|push|pop|list|set|block|len|put|putln|if|assert|loop|type|import|break)\\b"
            },
            {
            "name": "keyword.operator.sau",
