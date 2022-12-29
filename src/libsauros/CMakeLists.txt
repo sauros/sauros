@@ -57,6 +57,7 @@ set(SAUROS_SOURCES
    ${CMAKE_SOURCE_DIR}/sauros/environment.cpp
    ${CMAKE_SOURCE_DIR}/sauros/driver.cpp
    ${CMAKE_SOURCE_DIR}/sauros/capi/capi.cpp
+   ${CMAKE_SOURCE_DIR}/sauros/RLL/rll_wrapper.cpp
    ${CMAKE_SOURCE_DIR}/sauros/system/system.cpp
    ${CMAKE_SOURCE_DIR}/sauros/front/parser.cpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor.cpp
@@ -85,7 +86,8 @@ set(HEADERS
    ${CMAKE_SOURCE_DIR}/sauros/front/parser.hpp
    ${CMAKE_SOURCE_DIR}/sauros/driver.hpp
    ${CMAKE_SOURCE_DIR}/sauros/rang.hpp
-   ${CMAKE_SOURCE_DIR}/sauros/capi/capi.cpp
+   ${CMAKE_SOURCE_DIR}/sauros/capi/capi.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/RLL/rll_wrapper.hpp
    ${CMAKE_SOURCE_DIR}/sauros/system/system.hpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor.hpp
    ${CMAKE_SOURCE_DIR}/sauros/environment.hpp

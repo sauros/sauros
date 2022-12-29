@@ -200,7 +200,7 @@ sauros::cell_ptr _pkg_os_is_dir_(sauros::cells_t &cells,
    auto raw_dest = c_api_process_cell(cells[1], env);
    if (raw_dest->type != sauros::cell_type_e::STRING) {
       throw sauros::processor_c::runtime_exception_c(
-          "is_file command expects parameter to be a string",
+          "is_dir command expects parameter to be a string",
           cells[0]->location);
    }
 

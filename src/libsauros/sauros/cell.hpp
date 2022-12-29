@@ -97,7 +97,7 @@ class cell_c {
    std::string data;
    cell_type_e type{cell_type_e::SYMBOL};
    location_s location;
-   proc_f proc;
+   proc_f proc{nullptr};
    cells_t list;
    bool stop_processing{false};
    std::shared_ptr<environment_c> box_env{nullptr};

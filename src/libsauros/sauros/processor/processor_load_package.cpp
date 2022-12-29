@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <iostream>
 
-#include "../RLL/RLL.h"
+#include <RLL/rll_wrapper.hpp>
 
 namespace sauros {
 
@@ -14,23 +14,15 @@ namespace sauros {
 
 // Investigating the issue is backlogged.
 
-processor_c::~processor_c() {
-   for (auto [key, value] : _loaded_packages) {
-      if (value) {
-         delete value;
-      }
-   }
-}
-
 void processor_c::load_package(const std::string &target, location_s location,
                                std::shared_ptr<environment_c> env) {
 
    // Check to see if its already loaded
-   if (_loaded_packages.find(target) != _loaded_packages.end()) {
+   if (env->package_loaded(target)) {
       return;
    }
 
-   _loaded_packages[target] = new rll::shared_library();
+   auto package_rll = std::make_shared<rll_wrapper_c>();
 
    auto sauros_home = _system.get_sauros_directory();
 
@@ -215,17 +207,13 @@ void processor_c::load_package(const std::string &target, location_s location,
    //
 
    try {
-      _loaded_packages[target]->load(package.library_file.c_str());
-   } catch (rll::exception::library_loading_error &e) {
-      delete _loaded_packages[target];
-      _loaded_packages.erase(target);
+      package_rll->load(package.library_file.c_str());
+   } catch (rll_wrapper_c::library_loading_error_c &e) {
       throw runtime_exception_c("error loading `" + target + "`: " + e.what(),
                                 location);
    }
 
-   if (!_loaded_packages[target]->is_loaded()) {
-      delete _loaded_packages[target];
-      _loaded_packages.erase(target);
+   if (!package_rll->is_loaded()) {
       throw runtime_exception_c(
           "failed to load library: `" + package.library_file + "`", location);
    }
@@ -238,14 +226,14 @@ void processor_c::load_package(const std::string &target, location_s location,
 
       // std::cout << "Loading function : " << f << std::endl;
 
-      if (!_loaded_packages[target]->has_symbol(f)) {
+      if (!package_rll->has_symbol(f)) {
          throw runtime_exception_c(
              "error loading `" + target + "`: listed function `" + f +
                  "` was not found in `" + package.library_file.c_str() + "`",
              location);
       }
 
-      void *fn_ptr = _loaded_packages[target]->get_symbol(f);
+      void *fn_ptr = package_rll->get_symbol(f);
       cell_c::proc_f fn = reinterpret_cast<cell_ptr (*)(
           cells_t &, std::shared_ptr<environment_c>)>(fn_ptr);
 
@@ -271,8 +259,12 @@ void processor_c::load_package(const std::string &target, location_s location,
    //
    //    Add the library to the main enviornment
    //
-
    env->set(package.name, boxed_cell);
+
+   //
+   //    Save the rll object to env
+   //
+   env->save_package(target, package_rll);
 }
 
 } // namespace sauros
