@@ -40,6 +40,29 @@ struct token_s {
    location_s location;
 };
 
+//!\brief An exception that can be thrown during parsing
+class parser_exception_c : public std::exception {
+   public:
+   parser_exception_c() = delete;
+
+   //! \brief Construct the expception
+   //! \param message The message that is to be displayed
+   //! \param location The location (line/col) that the error arose
+   parser_exception_c(std::string message, location_s location)
+         : _msg(message), _loc(location) {}
+
+   //! \brief Retrieve the description of the exception
+   const char *what() const throw() { return _msg.c_str(); }
+
+   //! \brief Retrieve the location (line/col) that caused the exception to
+   //! be thrown
+   const location_s get_location() { return _loc; }
+
+   private:
+   std::string _msg;
+   location_s _loc{0, 0};
+};
+
 //! \brief A parser meant to parse segments of code
 //!        rather than 1 continuous valid line
 class segment_parser_c {
@@ -55,9 +78,14 @@ class segment_parser_c {
    //!          parsing has completed
    std::optional<product_s> submit(segment_s segment);
 
+   //! \brief External indication that there
+   //!        exists no more source
+   void indicate_complete();
+
  private:
    std::vector<token_s> _tokens;
    uint64_t _tracker{0};
+   location_s _last_opened_paren{0, 0};
 };
 
 //! \brief Parse a line

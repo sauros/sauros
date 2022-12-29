@@ -18,7 +18,7 @@ static bool is_digit(const char c) {
 //    Retrieve a list of tokens based on the given string
 //
 std::tuple<std::vector<token_s>, std::shared_ptr<error::error_c>>
-tokenize(size_t line_number, const std::string line) {
+tokenize(size_t line_number, const std::string line, location_s &last_opened_paren) {
 
    std::vector<token_s> tokens;
    for (size_t idx = 0; idx < line.size(); idx++) {
@@ -33,6 +33,7 @@ tokenize(size_t line_number, const std::string line) {
       switch (current) {
       case '[': {
          tokens.push_back({token_e::L_BRACKET, "[", {line_number, idx}});
+         last_opened_paren = {line_number, idx};
          continue;
       }
 
@@ -253,7 +254,8 @@ product_s parse_line(const char *source_descrption, std::size_t line_number,
 
    product_s resulting_product;
 
-   auto [tokens, token_err] = tokenize(line_number, line);
+   location_s last_opened_paren {0,0};
+   auto [tokens, token_err] = tokenize(line_number, line, last_opened_paren);
 
    if (token_err) {
       resulting_product.error_info = token_err;
@@ -289,7 +291,7 @@ segment_parser_c::submit(segment_parser_c::segment_s segment) {
 
    product_s resulting_product;
 
-   auto [tokens, token_err] = tokenize(segment.line_number, segment.line);
+   auto [tokens, token_err] = tokenize(segment.line_number, segment.line, _last_opened_paren);
 
    if (token_err) {
       resulting_product.error_info = token_err;
@@ -324,8 +326,16 @@ segment_parser_c::submit(segment_parser_c::segment_s segment) {
 
       return {resulting_product};
    }
-
    return {};
+}
+
+void segment_parser_c::indicate_complete() {
+   if (_tracker != 0) {
+      throw parser_exception_c(
+         "Program terminated before completion of parsing - Unclosed bracket detected",
+         _last_opened_paren
+      );
+   }
 }
 
 } // namespace parser

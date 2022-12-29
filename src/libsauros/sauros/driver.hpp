@@ -21,6 +21,9 @@ class driver_if {
    //! \param env The environment
    driver_if(std::shared_ptr<sauros::environment_c> env);
 
+   //! \brief Mark that fact that no more source is coming in
+   void indicate_complete();
+
  protected:
    void execute(const char *source, const uint64_t line_number,
                 std::string &line);
@@ -29,6 +32,7 @@ class driver_if {
    virtual void except(sauros::processor_c::runtime_exception_c &e) = 0;
    virtual void except(sauros::processor_c::assertion_exception_c &e) = 0;
    virtual void except(sauros::environment_c::unknown_identifier_c &e) = 0;
+   virtual void except(sauros::parser::parser_exception_c &e) = 0;
    virtual void parser_error(std::string &e, location_s location) = 0;
 
    std::shared_ptr<sauros::environment_c> _env;
@@ -62,7 +66,7 @@ class file_executor_c : private driver_if {
    except(sauros::environment_c::unknown_identifier_c &e) override final;
    virtual void parser_error(std::string &e,
                              location_s location) override final;
-
+   virtual void except(sauros::parser::parser_exception_c &e) override final;
    std::fstream _fs;
    std::string _file;
 };
@@ -96,6 +100,7 @@ class repl_c : private driver_if {
    except(sauros::environment_c::unknown_identifier_c &e) override final;
    virtual void parser_error(std::string &e,
                              location_s location) override final;
+   virtual void except(sauros::parser::parser_exception_c &e) override final;
 };
 
 //! \brief REPL
@@ -123,6 +128,7 @@ class eval_c : private driver_if {
    except(sauros::environment_c::unknown_identifier_c &e) override final;
    virtual void parser_error(std::string &e,
                              location_s location) override final;
+   virtual void except(sauros::parser::parser_exception_c &e) override final;
 };
 } // namespace sauros
 

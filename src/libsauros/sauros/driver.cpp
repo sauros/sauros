@@ -38,7 +38,6 @@ void display_error_from_file(std::fstream &fs, std::string file,
 
    // Build a window of source code to display
    while (std::getline(fs, line_data)) {
-
       line_number++;
       if ((line_number >= lower_bound && lower_bound < location.line) ||
           location.line == line_number ||
@@ -133,6 +132,14 @@ driver_if::driver_if(std::shared_ptr<sauros::environment_c> env) : _env(env) {
 
 driver_if::~driver_if() { delete _buffer; }
 
+void driver_if::indicate_complete() {
+   try {
+      _segment_parser.indicate_complete();
+   } catch (sauros::parser::parser_exception_c &e) {
+      except(e);
+   }
+}
+
 void driver_if::execute(parser::segment_parser_c::segment_s segment) {
 
    auto parser_result = _segment_parser.submit(segment);
@@ -156,6 +163,8 @@ void driver_if::execute(parser::segment_parser_c::segment_s segment) {
       except(e);
    } catch (sauros::environment_c::unknown_identifier_c &e) {
       except(e);
+   } catch (sauros::parser::parser_exception_c &e) {
+      except(e);
    }
 }
 
@@ -169,7 +178,6 @@ void driver_if::execute(const char *source, uint64_t line_number,
                    parser_result.error_info->location);
       return;
    }
-
    try {
       auto result = _list_processor.process_cell(parser_result.cell, _env);
       cell_returned(result);
@@ -204,10 +212,20 @@ int file_executor_c::run(const std::string &file) {
       line_number++;
       execute(parser::segment_parser_c::segment_s{line, line_number});
    }
+
+   _fs.clear();
+   indicate_complete();
+   _fs.close();
    return 0;
 }
 
 void file_executor_c::cell_returned(cell_ptr cell) { /* Not needed */
+}
+
+void file_executor_c::except(sauros::parser::parser_exception_c &e) {
+   std::cout << rang::fg::red << e.what() << rang::fg::reset << std::endl;
+   display_error_from_file(_fs, _file, e.get_location());
+   std::exit(1);
 }
 
 void file_executor_c::except(sauros::processor_c::runtime_exception_c &e) {
@@ -343,6 +361,10 @@ void repl_c::cell_returned(cell_ptr cell) {
    std::cout << s_cell << std::endl;
 }
 
+void repl_c::except(sauros::parser::parser_exception_c &e) {
+   std::cout << rang::fg::red << e.what() << rang::fg::reset << std::endl;
+}
+
 void repl_c::except(sauros::processor_c::runtime_exception_c &e) {
    std::cout << rang::fg::red << e.what() << rang::fg::reset << std::endl;
 }
@@ -362,6 +384,12 @@ void repl_c::parser_error(std::string &e, location_s location) {
 }
 
 void eval_c::cell_returned(cell_ptr cell) { _cb(cell); }
+
+void eval_c::except(sauros::parser::parser_exception_c &e) {
+   std::cout << rang::fg::yellow << "[decomposed item] : " << rang::fg::red
+             << e.what() << rang::fg::reset << std::endl;
+   std::exit(1);
+}
 
 void eval_c::except(sauros::processor_c::runtime_exception_c &e) {
    std::cout << rang::fg::yellow << "[decomposed item] : " << rang::fg::red
