@@ -20,25 +20,6 @@ struct location_s {
    std::size_t line{0};
    std::size_t col{0};
 };
-
-namespace error {
-
-//! \brief A general error representation
-class error_c {
- public:
-   //! \brief Construct the error
-   //! \param loc The location that the error arose from
-   //! \param source The source description (file/ REPL/ etc)
-   //! \param message The message generated for the error
-   error_c(location_s loc, std::string source, std::string message)
-       : location(loc.line, loc.col), source(source), message(message) {}
-
-   location_s location{0, 0};
-   std::string source;
-   std::string message;
-};
-
-} // namespace error
 } // namespace sauros
 
 #endif

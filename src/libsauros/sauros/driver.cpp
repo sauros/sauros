@@ -148,14 +148,8 @@ void driver_if::execute(parser::segment_parser_c::segment_s segment) {
       return;
    }
 
-   if ((*parser_result).result == sauros::parser::result_e::ERROR) {
-      parser_error((*parser_result).error_info->message,
-                   (*parser_result).error_info->location);
-      return;
-   }
-
    try {
-      auto result = _list_processor.process_cell((*parser_result).cell, _env);
+      auto result = _list_processor.process_cell((*parser_result), _env);
       cell_returned(result);
    } catch (sauros::processor_c::runtime_exception_c &e) {
       except(e);
@@ -170,16 +164,9 @@ void driver_if::execute(parser::segment_parser_c::segment_s segment) {
 
 void driver_if::execute(const char *source, uint64_t line_number,
                         std::string &line) {
-
    auto parser_result = sauros::parser::parse_line(source, line_number, line);
-
-   if (parser_result.result == sauros::parser::result_e::ERROR) {
-      parser_error(parser_result.error_info->message,
-                   parser_result.error_info->location);
-      return;
-   }
    try {
-      auto result = _list_processor.process_cell(parser_result.cell, _env);
+      auto result = _list_processor.process_cell(parser_result, _env);
       cell_returned(result);
    } catch (sauros::processor_c::runtime_exception_c &e) {
       except(e);
@@ -244,12 +231,6 @@ void file_executor_c::except(sauros::environment_c::unknown_identifier_c &e) {
    std::cout << rang::fg::red << e.what() << rang::fg::reset << ": "
              << e.get_id() << std::endl;
    display_error_from_file(_fs, _file, e.get_location());
-   std::exit(1);
-}
-
-void file_executor_c::parser_error(std::string &e, location_s location) {
-   std::cout << rang::fg::red << e << rang::fg::reset << std::endl;
-   display_error_from_file(_fs, _file, location);
    std::exit(1);
 }
 
@@ -379,10 +360,6 @@ void repl_c::except(sauros::environment_c::unknown_identifier_c &e) {
              << e.get_id() << std::endl;
 }
 
-void repl_c::parser_error(std::string &e, location_s location) {
-   std::cout << rang::fg::red << e << rang::fg::reset << std::endl;
-}
-
 void eval_c::cell_returned(cell_ptr cell) { _cb(cell); }
 
 void eval_c::except(sauros::parser::parser_exception_c &e) {
@@ -406,12 +383,6 @@ void eval_c::except(sauros::processor_c::assertion_exception_c &e) {
 void eval_c::except(sauros::environment_c::unknown_identifier_c &e) {
    std::cout << rang::fg::yellow << "[decomposed item] : " << rang::fg::red
              << e.what() << rang::fg::reset << ": " << e.get_id() << std::endl;
-   std::exit(1);
-}
-
-void eval_c::parser_error(std::string &e, location_s location) {
-   std::cout << rang::fg::yellow << "[decomposed item] : " << rang::fg::red << e
-             << rang::fg::reset << std::endl;
    std::exit(1);
 }
 
