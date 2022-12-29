@@ -17,8 +17,8 @@ static bool is_digit(const char c) {
 
 //    Retrieve a list of tokens based on the given string
 //
-std::vector<token_s>
-tokenize(size_t line_number, const std::string line, bracket_track_s &bts) {
+std::vector<token_s> tokenize(size_t line_number, const std::string line,
+                              bracket_track_s &bts) {
 
    std::vector<token_s> tokens;
    for (size_t idx = 0; idx < line.size(); idx++) {
@@ -43,10 +43,8 @@ tokenize(size_t line_number, const std::string line, bracket_track_s &bts) {
          if (bts.tracker > 0) {
             bts.tracker--;
          } else {
-            throw parser_exception_c(
-               "Unmatched closing bracket",
-               {line_number, idx}
-            );
+            throw parser_exception_c("Unmatched closing bracket",
+                                     {line_number, idx});
          }
          continue;
       }
@@ -74,10 +72,7 @@ tokenize(size_t line_number, const std::string line, bracket_track_s &bts) {
          }
 
          if (!value.ends_with('"')) {
-            throw parser_exception_c(
-               "Unterminated string",
-               {line_number, idx}
-            );
+            throw parser_exception_c("Unterminated string", {line_number, idx});
             return tokens;
          }
 
@@ -115,9 +110,8 @@ tokenize(size_t line_number, const std::string line, bracket_track_s &bts) {
             }
          } else {
             throw parser_exception_c(
-               "Malformed representaton of suspected numerical",
-               {line_number, start}
-            );
+                "Malformed representaton of suspected numerical",
+                {line_number, start});
             return tokens;
          }
       }
@@ -141,14 +135,12 @@ tokenize(size_t line_number, const std::string line, bracket_track_s &bts) {
 namespace {
 void throw_no_list_error(token_s current_token) {
    throw parser_exception_c(
-      "Attempting to create object priot to list creation",
-      current_token.location
-   );
+       "Attempting to create object priot to list creation",
+       current_token.location);
 }
 } // namespace
 
-cell_ptr
-parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
+cell_ptr parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
 
    if (tokens.empty()) {
       return {};
@@ -180,10 +172,8 @@ parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
    case token_e::R_BRACKET: {
       // This means we are done building whatever current_list is
       if (!current_list) {
-         throw parser_exception_c(
-            "Unopened closing bracket detected",
-            current_token.location
-         );
+         throw parser_exception_c("Unopened closing bracket detected",
+                                  current_token.location);
          return {};
       }
 
@@ -248,15 +238,13 @@ parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
    }
    }
 
-   throw parser_exception_c(
-      "internal error > unhandled token type",
-      current_token.location
-   );
+   throw parser_exception_c("internal error > unhandled token type",
+                            current_token.location);
    return {};
 }
 
 cell_ptr parse_line(const char *source_descrption, std::size_t line_number,
-                     std::string line) {
+                    std::string line) {
    bracket_track_s bts;
    auto tokens = tokenize(line_number, line, bts);
    return parse(tokens);
@@ -285,10 +273,9 @@ segment_parser_c::submit(segment_parser_c::segment_s segment) {
 
 void segment_parser_c::indicate_complete() {
    if (_bts.tracker != 0) {
-      throw parser_exception_c(
-         "Program terminated before completion of parsing - Unclosed bracket detected",
-         _bts.location
-      );
+      throw parser_exception_c("Program terminated before completion of "
+                               "parsing - Unclosed bracket detected",
+                               _bts.location);
    }
 }
 

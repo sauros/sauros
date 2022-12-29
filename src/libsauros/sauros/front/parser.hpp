@@ -26,7 +26,7 @@ struct token_s {
    location_s location;
 };
 
-//! \brief A struct to track brackets 
+//! \brief A struct to track brackets
 struct bracket_track_s {
    location_s location;
    uint64_t tracker{0};
@@ -34,14 +34,14 @@ struct bracket_track_s {
 
 //!\brief An exception that can be thrown during parsing
 class parser_exception_c : public std::exception {
-   public:
+ public:
    parser_exception_c() = delete;
 
    //! \brief Construct the expception
    //! \param message The message that is to be displayed
    //! \param location The location (line/col) that the error arose
    parser_exception_c(std::string message, location_s location)
-         : _msg(message), _loc(location) {}
+       : _msg(message), _loc(location) {}
 
    //! \brief Retrieve the description of the exception
    const char *what() const throw() { return _msg.c_str(); }
@@ -50,7 +50,7 @@ class parser_exception_c : public std::exception {
    //! be thrown
    const location_s get_location() { return _loc; }
 
-   private:
+ private:
    std::string _msg;
    location_s _loc{0, 0};
 };
