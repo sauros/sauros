@@ -19,7 +19,6 @@ namespace sauros {
 //! \brief A list processor
 class processor_c {
  public:
-
    //!\brief An exception that will be thrown on assertion failure
    class assertion_exception_c : public std::exception {
     public:

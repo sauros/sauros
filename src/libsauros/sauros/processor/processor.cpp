@@ -112,9 +112,7 @@ void processor_c::quote_cell(std::string &out, cell_ptr cell,
    }
 }
 
-processor_c::processor_c() { 
-   populate_standard_builtins(); 
-}
+processor_c::processor_c() { populate_standard_builtins(); }
 
 cell_ptr processor_c::process_list(cells_t &cells,
                                    std::shared_ptr<environment_c> env) {
@@ -231,9 +229,8 @@ cell_ptr processor_c::process_cell(cell_ptr cell,
       break;
    }
 
-   throw runtime_exception_c(
-      "internal error -> no processable cell", cell->location
-   );
+   throw runtime_exception_c("internal error -> no processable cell",
+                             cell->location);
 }
 
 cell_ptr processor_c::process_lambda(cell_ptr cell, cells_t &cells,

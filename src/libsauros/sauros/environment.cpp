@@ -2,7 +2,6 @@
 
 #include <iostream>
 
-
 namespace sauros {
 
 bool environment_c::exists(const std::string &item) {
@@ -56,7 +55,8 @@ bool environment_c::package_loaded(const std::string &package) {
    return false;
 }
 
-void environment_c::save_package(const std::string &name, std::shared_ptr<rll_wrapper_c> lib) {
+void environment_c::save_package(const std::string &name,
+                                 std::shared_ptr<rll_wrapper_c> lib) {
    _loaded_packages[name] = lib;
 }
 
