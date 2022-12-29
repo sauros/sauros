@@ -455,6 +455,47 @@ void processor_c::populate_standard_builtins() {
           return {lambda};
        });
 
+   _builtins[BUILTIN_ITER] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          if (cells.size() != 4) {
+             throw runtime_exception_c(
+                 "iter command expects 3 parameters, but " +
+                     std::to_string(cells.size() - 1) + " were given",
+                 cells[0]->location);
+          }
+
+          if (cells[1]->type != cell_type_e::SYMBOL) {
+             throw runtime_exception_c(
+                 "first parameter to iter needs to be a symbol",
+                 cells[1]->location);
+          }
+          auto iter_var = cells[1]->data;
+
+          auto processed_list = process_cell(cells[2], env);
+          if (processed_list->type != cell_type_e::LIST) {
+             throw runtime_exception_c(
+                 "second parameter to iter needs to be a list to iterate over",
+                 cells[2]->location);
+          }
+
+          auto body = &cells[3];
+          for (auto &c : processed_list->list) {
+             // This will store the iter value for the user to access
+             auto temp_iter_env = std::make_shared<environment_c>(env);
+
+             // Put the cell in the env as the iter_val
+             temp_iter_env->set(iter_var, c);
+
+             // Execute the body
+             auto r = process_cell(*body, temp_iter_env);
+             c = temp_iter_env->get(iter_var)->clone();
+             if (r->stop_processing) {
+                break;
+             }
+          }
+          return std::make_shared<cell_c>(CELL_NIL);
+       });
+
    _builtins[BUILTIN_LOOP] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 3 && cells.size() != 4) {
