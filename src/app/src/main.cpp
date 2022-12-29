@@ -15,38 +15,6 @@ sauros::file_executor_c *file_executor{nullptr};
 
 } // namespace
 
-// Add some environment variables to the system
-//    - This serves as a good example of how to externally extend the language
-//
-void setup_env() {
-
-   env->set(
-       "@version",
-       std::make_shared<sauros::cell_c>(
-           [=](sauros::cells_t &cells,
-               std::shared_ptr<sauros::environment_c> env) -> sauros::cell_ptr {
-              if (cells.size() != 1) {
-                 throw sauros::processor_c::runtime_exception_c(
-                     "`@version` expects no arguments, but " +
-                         std::to_string(cells.size() - 1) + " were given",
-                     cells[0]->location);
-              }
-              return std::make_shared<sauros::cell_c>(
-                  sauros::cell_type_e::STRING, std::string(LIBSAUROS_VERSION),
-                  cells[0]->location);
-           }));
-
-   env->set(
-       "@build",
-       std::make_shared<sauros::cell_c>(
-           [=](sauros::cells_t &cells,
-               std::shared_ptr<sauros::environment_c> env) -> sauros::cell_ptr {
-              return std::make_shared<sauros::cell_c>(
-                  sauros::cell_type_e::STRING, std::string(get_build_hash()),
-                  cells[0]->location);
-           }));
-}
-
 void run_file(const std::string &file) {
    if (!std::filesystem::is_regular_file(file)) {
       std::cerr << "Given item `" << file << "` is not a file" << std::endl;
@@ -172,8 +140,6 @@ int main(int argc, char **argv) {
    signal(SIGTRAP, handle_signal); /* Trace trap. */
    signal(SIGABRT, handle_signal); /* Abort. */
 
-   setup_env();
-
    for (size_t i = 0; i < args.size(); i++) {
       if (args[i] == "--help" || args[i] == "-h") {
          show_help();
@@ -191,15 +157,31 @@ int main(int argc, char **argv) {
       }
    }
 
+   env->set("@version",
+            std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING,
+                                             std::string(LIBSAUROS_VERSION)));
+   env->set("@build",
+            std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING,
+                                             std::string(get_build_hash())));
+
    if (args.empty()) {
       repl = new sauros::repl_c(env);
       repl->start();
       delete repl;
    }
 
-   for (auto arg : args) {
-      run_file(arg);
+   // Create the arguments cell
+   std::vector<std::string> program_args(args.begin() + 1, args.end());
+   auto args_cell = std::make_shared<sauros::cell_c>(sauros::cell_type_e::LIST);
+   for (auto &a : program_args) {
+      args_cell->list.push_back(
+          std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING, a));
    }
+   env->set("@args", args_cell);
+   env->set("@entry_file", std::make_shared<sauros::cell_c>(
+                               sauros::cell_type_e::STRING, args[0]));
+
+   run_file(args[0]);
 
    return 0;
 }
