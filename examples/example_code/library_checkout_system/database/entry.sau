@@ -6,15 +6,16 @@
    [var status]
 ]]
 
-[var database::new_entry [lambda [title description status] [
+[var database::new_entry [lambda [title description status] [block 
    [var new_item [database::entry]]
    [set new_item.title title]
    [set new_item.description description]
    [set new_item.status status]
+
    [new_item]
 ]]]
 
-[var database::print_entry [lambda [entry] [block
+[var database::entry_to_string [lambda [entry] [block
    [use "fmt"]
    [var formatted_entry 
       [fmt.encode "Title: %\nDescription: %\nStatus: %\n" 

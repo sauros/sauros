@@ -1,18 +1,36 @@
-;[import "database/entry.sau"]
-
-
-
- [use "io"]
-
+[use "os"]
+[import "database/entry.sau"]
 
 [var db::load [lambda [file] [block 
-   ;[if [not [os.is_file "books.db"]] [[block
-   ;   [putln "Given item is not a file: " file]
-   ;   [exit 1]
-   ;]]]
-   ;[putln [os.os_name]]
-   [io.get_string "$"]
+   [if [not [os.is_file file]] [[block
+      [putln "Given item is not a file: " file]
+      [exit 1]
+   ]]]
 
-   [putln "Looks like its a file"] 
+   [var file_data [os.file_read file]]
 
+   [if [is_nil file_data] [block 
+      [putln "Unable to read file: " file]
+      [exit 1]
+   ]]
+
+   [var books]
+   [if [ > [len file_data] 0 ] [block
+      [var i 0]
+      [var j 0]
+      [var temp_list]
+      [loop [> [len file_data] i] [set i [+ 1 i]] [block
+         [push temp_list [at i file_data]]
+         [set j [+ 1 j]]
+         [if [== 3 j] [block
+            [set j 0]
+            [push books [database::new_entry [at 0 temp_list] [at 1 temp_list] [at 2 temp_list]]]
+            [clear temp_list]
+         ]]
+      ]] ; end loop
+
+   ; Else
+   ][putln "Empty database file"]]
+
+   [books]
 ]]]

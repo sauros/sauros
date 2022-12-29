@@ -1,14 +1,50 @@
-;[import "database/db.sau"]
-
+[use "io"]
+[use "fmt"]
 [import "database/db.sau"]
+[import "database/entry.sau"]
 
-[var x [lambda [] [block
+[var loaded_database [db::load "books.db"] ] ;[db::load file]]
 
-   [db::load "moot"]
- ;  [var x [io.get_int ">>"]]
-
+[var show_help [lambda [] [block
+   [putln "help      Show this message"]
+   [putln "new       Add a new book"]
+   [putln "checkout  Check out a book"]
+   [putln "return    Return a book"]
+   [putln "list      List the available books"]
+   [putln "exit      Close the program"]
 ]]]
 
-;[var loaded_database [db::load "books.db"]]
+[var list_books [lambda [] [block
+   [putln [fmt.encode "There are % books in the database\n"  [len loaded_database]]]
+   [var i 0]
+   [loop [> [len loaded_database] i] [set i [+ 1 i]] [block 
+      [putln [database::entry_to_string [at i loaded_database]]]
+   ]]
+]]]
 
-[x]
+[var new_book [lambda [] [block
+   [putln ">>> Not yet completed"]
+]]]
+
+[var checkout_book [lambda [] [block
+   [putln ">>> Not yet completed"]
+]]]
+
+[var return_book [lambda [] [block
+   [putln ">>> Not yet completed"]
+]]]
+
+[loop [true] [block
+   [var cmd [io.get_string "$: "]]
+
+   [if [seq cmd "help"] [show_help]]
+   [if [seq cmd "new"]  [new_book]]
+   [if [seq cmd "checkout"]  [checkout_book]]
+   [if [seq cmd "return"]  [return_book]]
+   [if [seq cmd "checkout"]  [checkout_book]]
+   [if [seq cmd "list"]  [list_books]]
+   [if [seq cmd "exit"]  [block 
+      [putln "Goodbye"] 
+      [exit 0]
+   ]]
+]]

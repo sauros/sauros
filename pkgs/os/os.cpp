@@ -393,7 +393,7 @@ _pkg_os_file_read_(sauros::cells_t &cells,
    in_file.open(file->data, std::ios::in);
 
    if (!in_file.is_open()) {
-      return std::make_shared<sauros::cell_c>(sauros::CELL_FALSE);
+      return std::make_shared<sauros::cell_c>(sauros::CELL_NIL);
    }
 
    auto result = std::make_shared<sauros::cell_c>(sauros::cell_type_e::LIST);
