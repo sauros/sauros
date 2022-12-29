@@ -273,9 +273,7 @@ segment_parser_c::submit(segment_parser_c::segment_s segment) {
 
 void segment_parser_c::indicate_complete() {
    if (_bts.tracker != 0) {
-      throw parser_exception_c("Program terminated before completion of "
-                               "parsing - Unclosed bracket detected",
-                               _bts.location);
+      throw parser_exception_c("Unmatched opening bracket", _bts.location);
    }
 }
 

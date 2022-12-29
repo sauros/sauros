@@ -141,14 +141,11 @@ void driver_if::indicate_complete() {
 }
 
 void driver_if::execute(parser::segment_parser_c::segment_s segment) {
-
-   auto parser_result = _segment_parser.submit(segment);
-
-   if (!parser_result.has_value()) {
-      return;
-   }
-
    try {
+      auto parser_result = _segment_parser.submit(segment);
+      if (!parser_result.has_value()) {
+         return;
+      }
       auto result = _list_processor.process_cell((*parser_result), _env);
       cell_returned(result);
    } catch (sauros::processor_c::runtime_exception_c &e) {
@@ -164,9 +161,9 @@ void driver_if::execute(parser::segment_parser_c::segment_s segment) {
 
 void driver_if::execute(const char *source, uint64_t line_number,
                         std::string &line) {
-   auto parser_result = sauros::parser::parse_line(source, line_number, line);
    try {
-      auto result = _list_processor.process_cell(parser_result, _env);
+      auto result = _list_processor.process_cell(
+          sauros::parser::parse_line(source, line_number, line), _env);
       cell_returned(result);
    } catch (sauros::processor_c::runtime_exception_c &e) {
       except(e);
