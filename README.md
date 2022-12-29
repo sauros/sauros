@@ -28,7 +28,7 @@ Building Sauros is simple - there are no external dependencies aside from he lib
 ### Building Sauros
 
 ```
-git clone git@github.com:bosley/sauros.git
+git clone https://github.com/bosley/sauros.git
 
 cd sauros/src
 
