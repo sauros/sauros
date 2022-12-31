@@ -121,6 +121,8 @@ class processor_c {
 
    void load_package(const std::string &target, location_s location,
                      std::shared_ptr<environment_c> env);
+
+   cell_ptr _yield_cell{nullptr};
 };
 
 } // namespace sauros

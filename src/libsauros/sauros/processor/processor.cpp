@@ -115,7 +115,11 @@ void processor_c::quote_cell(std::string &out, cell_ptr cell,
 processor_c::processor_c() { populate_standard_builtins(); }
 
 cell_ptr processor_c::process_list(cells_t &cells,
-                                   std::shared_ptr<environment_c> env) {
+                                   std::shared_ptr<environment_c> env) {   
+   if (_yield_cell) {
+      return _yield_cell;
+   }
+
    if (cells.empty()) {
       return std::make_shared<cell_c>(CELL_NIL);
    }
@@ -176,6 +180,10 @@ processor_c::retrieve_accessors(const std::string &value) {
 
 cell_ptr processor_c::process_cell(cell_ptr cell,
                                    std::shared_ptr<environment_c> env) {
+
+   if (_yield_cell) {
+      return _yield_cell;
+   }
 
    switch (cell->type) {
    case cell_type_e::SYMBOL: {
@@ -259,7 +267,13 @@ cell_ptr processor_c::process_lambda(cell_ptr cell, cells_t &cells,
    auto lambda_env = std::make_shared<environment_c>(
        environment_c(cell->list[0]->list, exps, env));
 
-   return process_cell(lambda_cell, lambda_env);
+   // Create a new processor whos sole reason for being is to
+   // execute the lambda. This will ensure that a yield cell
+   // doesn't kill the main processor, but rather, the child
+   auto proc = new processor_c();
+   auto result = proc->process_cell(lambda_cell, lambda_env);
+   delete proc;
+   return result;
 }
 
 cell_ptr processor_c::clone_box(cell_ptr cell) {
