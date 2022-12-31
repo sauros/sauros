@@ -5,6 +5,14 @@
 
 namespace sauros {
 
+processor_c::processor_c() { populate_standard_builtins(); }
+
+processor_c::~processor_c() {
+   if (_sub_processor) {
+      delete _sub_processor;
+   }
+}
+
 void processor_c::cell_to_string(std::string &out, cell_ptr cell,
                                  std::shared_ptr<environment_c> env,
                                  bool show_space) {
@@ -111,8 +119,6 @@ void processor_c::quote_cell(std::string &out, cell_ptr cell,
    }
    }
 }
-
-processor_c::processor_c() { populate_standard_builtins(); }
 
 cell_ptr processor_c::process_list(cells_t &cells,
                                    std::shared_ptr<environment_c> env) {
@@ -267,14 +273,16 @@ cell_ptr processor_c::process_lambda(cell_ptr cell, cells_t &cells,
    auto lambda_env = std::make_shared<environment_c>(
        environment_c(cell->list[0]->list, exps, env));
 
-   // Create a new processor whos sole reason for being is to
-   // execute the lambda. This will ensure that a yield cell
-   // doesn't kill the main processor, but rather, the child
-   auto proc = new processor_c();
-   auto result = proc->process_cell(lambda_cell, lambda_env);
-   delete proc;
+   if (!_sub_processor) {
+      _sub_processor = new processor_c();
+   }
+
+   auto result = _sub_processor->process_cell(lambda_cell, lambda_env);
+   _sub_processor->reset();
    return result;
 }
+
+void processor_c::reset() { _yield_cell = nullptr; }
 
 cell_ptr processor_c::clone_box(cell_ptr cell) {
 

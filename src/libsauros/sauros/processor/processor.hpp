@@ -78,6 +78,9 @@ class processor_c {
    //! \brief Construct the processor
    processor_c();
 
+   //! \brief Destruct the processor
+   ~processor_c();
+
    //! \brief Process a cell (generated from parser, or otherwise)
    //! \param cell The cell to process
    //! \param global_env The environment to use
@@ -92,6 +95,9 @@ class processor_c {
    void cell_to_string(std::string &out, cell_ptr cell,
                        std::shared_ptr<environment_c> env,
                        bool show_space = true);
+
+   //! \brief Reset the processor
+   void reset();
 
  private:
    sauros::system_c _system;
@@ -123,6 +129,7 @@ class processor_c {
                      std::shared_ptr<environment_c> env);
 
    cell_ptr _yield_cell{nullptr};
+   processor_c *_sub_processor{nullptr};
 };
 
 } // namespace sauros
