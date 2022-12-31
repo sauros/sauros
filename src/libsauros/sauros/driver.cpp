@@ -8,9 +8,12 @@
 
 namespace sauros {
 
-void display_error_from_file(std::fstream &fs, std::string file,
+void display_error_from_file(std::shared_ptr<std::string> file,
                              location_s location) {
-   std::cout << rang::fg::magenta << file << rang::fg::reset << " : ("
+
+   std::string file_actual = (file) ? (*file) : "unknown";
+
+   std::cout << rang::fg::magenta << file_actual << rang::fg::reset << " : ("
              << rang::fg::blue << location.line << rang::fg::reset << ","
              << rang::fg::blue << location.col << rang::fg::reset << ")\n";
 
@@ -19,8 +22,12 @@ void display_error_from_file(std::fstream &fs, std::string file,
       std::string data;
    };
 
-   // Bring the file back to the beginning
-   fs.seekg(0, std::ios::beg);
+   std::ifstream fs;
+   fs.open(file_actual);
+
+   if (!fs.is_open()) {
+      return;
+   }
 
    // A window of source
    std::vector<line_data_pair_s> window;
@@ -81,6 +88,7 @@ void display_error_from_file(std::fstream &fs, std::string file,
                    << line_data.data << std::endl;
       }
    }
+   fs.close();
 }
 
 class input_buffer_c {
@@ -184,6 +192,8 @@ inline bool blank(std::string &s) {
 
 int file_executor_c::run(const std::string &file) {
 
+   _segment_parser.set_origin(file);
+
    _file = file;
    _fs.open(_file, std::fstream::in);
    if (!_fs.is_open()) {
@@ -208,26 +218,26 @@ void file_executor_c::cell_returned(cell_ptr cell) { /* Not needed */
 
 void file_executor_c::except(sauros::parser::parser_exception_c &e) {
    std::cout << rang::fg::red << e.what() << rang::fg::reset << std::endl;
-   display_error_from_file(_fs, _file, e.get_location());
+   display_error_from_file(e.get_origin(), e.get_location());
    std::exit(1);
 }
 
 void file_executor_c::except(sauros::processor_c::runtime_exception_c &e) {
    std::cout << rang::fg::red << e.what() << rang::fg::reset << std::endl;
-   display_error_from_file(_fs, _file, e.get_location());
+   display_error_from_file(e.get_origin(), e.get_location());
    std::exit(1);
 }
 
 void file_executor_c::except(sauros::processor_c::assertion_exception_c &e) {
    std::cout << rang::fg::red << e.what() << rang::fg::reset << std::endl;
-   display_error_from_file(_fs, _file, e.get_location());
+   display_error_from_file(e.get_origin(), e.get_location());
    std::exit(1);
 }
 
 void file_executor_c::except(sauros::environment_c::unknown_identifier_c &e) {
    std::cout << rang::fg::red << e.what() << rang::fg::reset << ": "
              << e.get_id() << std::endl;
-   display_error_from_file(_fs, _file, e.get_location());
+   display_error_from_file(e.get_origin(), e.get_location());
    std::exit(1);
 }
 

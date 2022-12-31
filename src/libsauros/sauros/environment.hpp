@@ -23,19 +23,24 @@ class environment_c {
 
       //! \brief Create the exception
       //! \param identifier The identifier that was unknown
-      unknown_identifier_c(std::string identifier, location_s location)
-          : _id(identifier), _location(location) {}
+      unknown_identifier_c(std::string identifier, cell_ptr cell)
+          : _id(identifier), _cell(cell) {}
       const char *what() const throw() { return "Unknown identifier"; }
 
       //! \brief Retrieve the identifier that was requested
-      std::string get_id() const { return _id; }
+      const std::string get_id() const { return _id; }
 
       //! \brief Retrieve the location
-      location_s get_location() const { return _location; }
+      const location_s get_location() const { return _cell->location; }
+
+      //! \brief Retrieve the origin
+      const std::shared_ptr<std::string> get_origin() const {
+         return _cell->origin;
+      }
 
     private:
       std::string _id;
-      location_s _location;
+      cell_ptr _cell;
    };
 
    //! \brief Construct an environment
@@ -58,11 +63,14 @@ class environment_c {
    bool exists(const std::string &item);
 
    //! \brief Find the environment that contains the item (current item or a
-   //! parent super scope) \param item The item to find \returns environment
-   //! pointer that the item can be safely retrieved from using `get` \note If
-   //! the item is not reachable within the current, or parent scope(s)
+   //!        parent super scope)
+   //! \param item The item to find
+   //! \param origin_cell Cell with origin information
+   //! \returns environment pointer that the item can be safely retrieved from
+   //! using `get` \note If the item is not reachable within the current, or
+   //! parent scope(s)
    //!       then the exception `unknown_identifier_c` will be thrown
-   environment_c *find(const std::string &item, location_s location);
+   environment_c *find(const std::string &item, cell_ptr origin_cell);
 
    //! \brief Get an item
    //! \param item the item to get

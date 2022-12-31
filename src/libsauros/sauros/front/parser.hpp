@@ -39,20 +39,26 @@ class parser_exception_c : public std::exception {
 
    //! \brief Construct the expception
    //! \param message The message that is to be displayed
+   //! \param origin The origin file of the error
    //! \param location The location (line/col) that the error arose
-   parser_exception_c(std::string message, location_s location)
-       : _msg(message), _loc(location) {}
+   parser_exception_c(std::string message, std::shared_ptr<std::string> origin,
+                      location_s location)
+       : _msg(message), _origin(origin), _loc(location) {}
 
    //! \brief Retrieve the description of the exception
    const char *what() const throw() { return _msg.c_str(); }
 
    //! \brief Retrieve the location (line/col) that caused the exception to
    //! be thrown
-   const location_s get_location() { return _loc; }
+   const location_s get_location() const { return _loc; }
+
+   //! \brief Retrieve the origin of the exception
+   const std::shared_ptr<std::string> get_origin() const { return _origin; }
 
  private:
    std::string _msg;
    location_s _loc{0, 0};
+   std::shared_ptr<std::string> _origin;
 };
 
 //! \brief A parser meant to parse segments of code
@@ -73,9 +79,15 @@ class segment_parser_c {
    //!        exists no more source
    void indicate_complete();
 
+   //! \brief Set the origin file the source so
+   //!        it can be encoded into the cells
+   //! \param origin THe origin of the cells
+   void set_origin(const std::string &origin);
+
  private:
    std::vector<token_s> _tokens;
    bracket_track_s _bts;
+   std::shared_ptr<std::string> _origin{nullptr};
 };
 
 //! \brief Parse a line

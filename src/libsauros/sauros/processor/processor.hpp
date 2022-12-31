@@ -27,19 +27,24 @@ class processor_c {
       //! \brief Construct the expception
       //! \param message The message that is to be displayed
       //! \param location The location (line/col) that the error arose
-      assertion_exception_c(std::string label, location_s location)
-          : _label(label), _loc(location) {}
+      assertion_exception_c(std::string label, cell_ptr cell)
+          : _label(label), _cell(cell) {}
 
       //! \brief Retrieve the description of the exception
       const char *what() const throw() { return _label.c_str(); }
 
       //! \brief Retrieve the location (line/col) that caused the exception to
       //! be thrown
-      const location_s get_location() { return _loc; }
+      const location_s get_location() const { return _cell->location; }
+
+      //! \brief Retrieve the origin
+      const std::shared_ptr<std::string> get_origin() const {
+         return _cell->origin;
+      }
 
     private:
       std::string _label;
-      location_s _loc{0, 0};
+      cell_ptr _cell;
    };
 
    //!\brief An exception that can be thrown during processing
@@ -49,20 +54,25 @@ class processor_c {
 
       //! \brief Construct the expception
       //! \param message The message that is to be displayed
-      //! \param location The location (line/col) that the error arose
-      runtime_exception_c(std::string message, location_s location)
-          : _msg(message), _loc(location) {}
+      runtime_exception_c(std::string message, cell_ptr cell)
+          : _msg(message), _cell(cell) {}
 
       //! \brief Retrieve the description of the exception
       const char *what() const throw() { return _msg.c_str(); }
 
       //! \brief Retrieve the location (line/col) that caused the exception to
       //! be thrown
-      const location_s get_location() { return _loc; }
+      const location_s get_location() const { return _cell->location; }
+
+      //! \brief Retrieve the origin (file) that caused the exception to
+      //! be thrown - may be null
+      const std::shared_ptr<std::string> get_origin() const {
+         return _cell->origin;
+      }
 
     private:
       std::string _msg;
-      location_s _loc{0, 0};
+      cell_ptr _cell;
    };
 
    //! \brief Construct the processor
