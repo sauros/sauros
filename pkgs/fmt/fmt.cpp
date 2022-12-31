@@ -55,8 +55,7 @@ _pkg_fmt_format_encode_(sauros::cells_t &cells,
 
    if (raw_target->type != sauros::cell_type_e::STRING) {
       throw sauros::processor_c::runtime_exception_c(
-          "format string expects source cell to be a string",
-          raw_target->location);
+          "format string expects source cell to be a string", raw_target);
    }
 
    auto target = raw_target->data;
@@ -84,8 +83,7 @@ _pkg_fmt_format_encode_(sauros::cells_t &cells,
       if (c == '\\') {
          if (i == target.size() - 1) {
             throw sauros::processor_c::runtime_exception_c(
-                "formated string ends with escape character",
-                cells[1]->location);
+                "formated string ends with escape character", cells[1]);
          }
          check_buffer(buffer, target[i + 1]);
          i++;
@@ -95,8 +93,7 @@ _pkg_fmt_format_encode_(sauros::cells_t &cells,
       if (c == '%') {
          if (emplaced >= source_cells.size()) {
             throw sauros::processor_c::runtime_exception_c(
-                "not enough source cells given to format string",
-                cells[1]->location);
+                "not enough source cells given to format string", cells[1]);
          }
 
          auto result = c_api_cell_to_string(source_cells[emplaced++], env);
@@ -119,8 +116,7 @@ _pkg_fmt_format_string_(sauros::cells_t &cells,
 
    if (raw_target->type != sauros::cell_type_e::STRING) {
       throw sauros::processor_c::runtime_exception_c(
-          "format string expects source cell to be a string",
-          raw_target->location);
+          "format string expects source cell to be a string", raw_target);
    }
 
    auto target = raw_target->data;
@@ -133,8 +129,7 @@ _pkg_fmt_format_string_(sauros::cells_t &cells,
       if (c == '\\') {
          if (i == target.size() - 1) {
             throw sauros::processor_c::runtime_exception_c(
-                "formated string ends with escape character",
-                cells[1]->location);
+                "formated string ends with escape character", cells[1]);
          }
          check_buffer(buffer, target[i + 1]);
          i++;

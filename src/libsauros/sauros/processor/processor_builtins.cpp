@@ -27,10 +27,12 @@ static inline bool eval_truthy(cell_ptr cell, location_s &location) {
          return (v > 0.0);
       } catch (const std::invalid_argument &) {
          throw processor_c::runtime_exception_c(
-             "Invalid data type given for operand", location);
+             "Invalid data type given for operand",
+             std::make_shared<cell_c>(cell_type_e::STRING, "", location));
       } catch (const std::out_of_range &) {
          throw processor_c::runtime_exception_c(
-             "Item caused out of range exception", location);
+             "Item caused out of range exception",
+             std::make_shared<cell_c>(cell_type_e::STRING, "", location));
       }
       break;
    }
@@ -47,15 +49,14 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "import command expects at least 1 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
+                 cells[0]);
           }
 
           file_executor_c loader(env);
           for (auto i = cells.begin() + 1; i < cells.end(); i++) {
              if ((*i)->type != sauros::cell_type_e::STRING) {
                 throw sauros::processor_c::runtime_exception_c(
-                    "Import objects are expected to be raw strings",
-                    (*i)->location);
+                    "Import objects are expected to be raw strings", (*i));
              }
              if (0 != loader.run((*i)->data)) {
                 bool success{false};
@@ -68,7 +69,7 @@ void processor_c::populate_standard_builtins() {
 
                 if (!success) {
                    throw sauros::processor_c::runtime_exception_c(
-                       "Unable to load import: " + (*i)->data, (*i)->location);
+                       "Unable to load import: " + (*i)->data, (*i));
                 }
              }
           }
@@ -81,14 +82,13 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "use command expects at least 1 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
+                 cells[0]);
           }
 
           for (auto i = cells.begin() + 1; i < cells.end(); i++) {
              if ((*i)->type != sauros::cell_type_e::STRING) {
                 throw sauros::processor_c::runtime_exception_c(
-                    "use command expects parameters to be raw strings",
-                    (*i)->location);
+                    "use command expects parameters to be raw strings", (*i));
              }
 
              load_package((*i)->data, (*i)->location, env);
@@ -103,7 +103,7 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "exit command expects 1 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
+                 cells[0]);
           }
 
           std::exit(std::stoull(process_cell(cells[1], env)->data));
@@ -115,7 +115,7 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "break command expects 0 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
+                 cells[0]);
           }
 
           auto return_value = std::make_shared<cell_c>(CELL_NIL);
@@ -129,7 +129,7 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "type command expects 1 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
+                 cells[0]);
           }
 
           auto target = process_cell(cells[1], env);
@@ -145,14 +145,14 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "front command expects 1 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
+                 cells[0]);
           }
 
           auto target = process_cell(cells[1], env);
 
           if (!(target->type == cell_type_e::LIST)) {
              throw runtime_exception_c("Expected list parameter for front",
-                                       cells[1]->location);
+                                       cells[1]);
           }
 
           if (target->list.empty()) {
@@ -168,14 +168,14 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "back command expects 1 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
+                 cells[0]);
           }
 
           auto target = process_cell(cells[1], env);
 
           if (!(target->type == cell_type_e::LIST)) {
              throw runtime_exception_c("Expected list parameter for back",
-                                       cells[1]->location);
+                                       cells[1]);
           }
 
           if (target->list.empty()) {
@@ -191,28 +191,26 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c("at command expects 2 parameters, but " +
                                            std::to_string(cells.size() - 1) +
                                            " were given",
-                                       cells[0]->location);
+                                       cells[0]);
           }
 
           auto index = process_cell(cells[1], env);
           if (index->type != cell_type_e::INTEGER) {
              throw runtime_exception_c(
-                 "at command index must me an integer type",
-                 cells[0]->location);
+                 "at command index must me an integer type", cells[0]);
           }
 
           uint64_t idx = std::stoull(index->data);
 
           if (cells[2]->type != cell_type_e::SYMBOL) {
              throw runtime_exception_c(
-                 "Second parameter of at must be a variable",
-                 cells[2]->location);
+                 "Second parameter of at must be a variable", cells[2]);
           }
 
           auto &variable_name = cells[2]->data;
 
           // If this isn't found it will throw :)
-          auto containing_env = env->find(variable_name, cells[1]->location);
+          auto containing_env = env->find(variable_name, cells[1]);
           cell_ptr target = containing_env->get(variable_name);
 
           if (target->list.size() <= idx) {
@@ -227,19 +225,18 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "clear command expects 1 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
+                 cells[0]);
           }
 
           if (cells[1]->type != cell_type_e::SYMBOL) {
              throw runtime_exception_c(
-                 "First parameter of clear must be a variable",
-                 cells[1]->location);
+                 "First parameter of clear must be a variable", cells[1]);
           }
 
           auto &variable_name = cells[1]->data;
 
           // If this isn't found it will throw :)
-          auto containing_env = env->find(variable_name, cells[1]->location);
+          auto containing_env = env->find(variable_name, cells[1]);
           cell_ptr target = containing_env->get(variable_name);
           target->list.clear();
           return std::make_shared<cell_c>(CELL_TRUE);
@@ -251,19 +248,18 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "pop command expects 1 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
+                 cells[0]);
           }
 
           if (cells[1]->type != cell_type_e::SYMBOL) {
              throw runtime_exception_c(
-                 "First parameter of pop must be a variable",
-                 cells[1]->location);
+                 "First parameter of pop must be a variable", cells[1]);
           }
 
           auto &variable_name = cells[1]->data;
 
           // If this isn't found it will throw :)
-          auto containing_env = env->find(variable_name, cells[1]->location);
+          auto containing_env = env->find(variable_name, cells[1]);
           cell_ptr target = containing_env->get(variable_name);
           if (!target->list.empty()) {
              target->list.pop_back();
@@ -277,24 +273,23 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "push command expects 2 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
+                 cells[0]);
           }
 
           if (cells[1]->type != cell_type_e::SYMBOL) {
              throw runtime_exception_c(
-                 "First parameter of push must be a variable",
-                 cells[1]->location);
+                 "First parameter of push must be a variable", cells[1]);
           }
 
           auto &variable_name = cells[1]->data;
 
           // If this isn't found it will throw :)
-          auto containing_env = env->find(variable_name, cells[1]->location);
+          auto containing_env = env->find(variable_name, cells[1]);
           auto value = process_cell(cells[2], env);
 
           if (value->type == cell_type_e::SYMBOL) {
              throw runtime_exception_c("Expected list or datum value (push)",
-                                       cells[2]->location);
+                                       cells[2]);
           }
 
           cell_ptr target = containing_env->get(variable_name);
@@ -309,7 +304,7 @@ void processor_c::populate_standard_builtins() {
          throw runtime_exception_c("not command expects 1 parameters, but " +
                                        std::to_string(cells.size() - 1) +
                                        " were given",
-                                   cells[0]->location);
+                                   cells[0]);
       }
 
       auto target = process_cell(cells[1], env);
@@ -318,7 +313,7 @@ void processor_c::populate_standard_builtins() {
           target->type != cell_type_e::DOUBLE) {
          throw runtime_exception_c(
              "not command expects parameter to evaluate to a numerical type",
-             cells[1]->location);
+             cells[1]);
       }
 
       if (std::stod(target->data) > 0.0) {
@@ -334,12 +329,12 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "assert command expects at least 3 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
+                 cells[0]);
           }
 
           if (cells[1]->type != cell_type_e::STRING) {
              throw runtime_exception_c("assertion label bust be a raw string",
-                                       cells[1]->location);
+                                       cells[1]);
           }
 
           for (auto c = cells.begin() + 2; c != cells.end(); c++) {
@@ -351,20 +346,20 @@ void processor_c::populate_standard_builtins() {
                 throw runtime_exception_c(
                     "assertion condition did not evaluate to a direectly "
                     "comparable type (string, int, double)",
-                    (*c)->location);
+                    (*c));
              }
 
              if (cell_type_e::STRING == result->type && result->data.empty()) {
                 throw assertion_exception_c(
-                    "assertion failure: " + cells[1]->data, (*c)->location);
+                    "assertion failure: " + cells[1]->data, (*c));
              } else if (cell_type_e::INTEGER == result->type &&
                         std::stoull(result->data) < 1) {
                 throw assertion_exception_c(
-                    "assertion failure: " + cells[1]->data, (*c)->location);
+                    "assertion failure: " + cells[1]->data, (*c));
              } else if (cell_type_e::DOUBLE == result->type &&
                         std::stod(result->data) <= 0.0) {
                 throw assertion_exception_c(
-                    "assertion failure: " + cells[1]->data, (*c)->location);
+                    "assertion failure: " + cells[1]->data, (*c));
              }
           }
           return std::make_shared<cell_c>(CELL_TRUE);
@@ -374,7 +369,7 @@ void processor_c::populate_standard_builtins() {
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() < 2) {
              throw runtime_exception_c("Nothing given to var command",
-                                       cells[0]->location);
+                                       cells[0]);
           }
 
           auto &variable_name = cells[1]->data;
@@ -383,13 +378,13 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "Attempting to directly define a variable accessor " +
                      variable_name,
-                 cells[1]->location);
+                 cells[1]);
           }
 
           if (cells[1]->builtin_encoding != BUILTIN_DEFAULT_VAL) {
              throw runtime_exception_c("Attempting to define a key symbol: " +
                                            variable_name,
-                                       cells[1]->location);
+                                       cells[1]);
           }
 
           if (cells.size() == 2) {
@@ -402,14 +397,14 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "var command expects 2 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
+                 cells[0]);
           }
 
           auto value = process_cell(cells[2], env);
 
           if (value->type == cell_type_e::SYMBOL) {
              throw runtime_exception_c("Expected list or datum value (var)",
-                                       cells[2]->location);
+                                       cells[2]);
           }
 
           env->set(variable_name, value);
@@ -461,13 +456,12 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "iter command expects 3 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
+                 cells[0]);
           }
 
           if (cells[1]->type != cell_type_e::SYMBOL) {
              throw runtime_exception_c(
-                 "first parameter to iter needs to be a symbol",
-                 cells[1]->location);
+                 "first parameter to iter needs to be a symbol", cells[1]);
           }
           auto iter_var = cells[1]->data;
 
@@ -475,7 +469,7 @@ void processor_c::populate_standard_builtins() {
           if (processed_list->type != cell_type_e::LIST) {
              throw runtime_exception_c(
                  "second parameter to iter needs to be a list to iterate over",
-                 cells[2]->location);
+                 cells[2]);
           }
 
           auto body = &cells[3];
@@ -502,7 +496,7 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "loop command expects 3 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
+                 cells[0]);
           }
 
           auto &conditional_cell = cells[1];
@@ -549,7 +543,7 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "set command expects 2 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
+                 cells[0]);
           }
 
           auto &variable_name = cells[1]->data;
@@ -563,8 +557,7 @@ void processor_c::populate_standard_builtins() {
              for (std::size_t i = 0; i < accessors.size(); i++) {
 
                 // Get the item from the accessor
-                auto containing_env =
-                    target_env->find(accessors[i], cells[1]->location);
+                auto containing_env = target_env->find(accessors[i], cells[1]);
                 result = containing_env->get(accessors[i]);
 
                 // Check if we need to move the environment "in" to the next
@@ -578,7 +571,7 @@ void processor_c::populate_standard_builtins() {
 
              if (value->type == cell_type_e::SYMBOL) {
                 throw runtime_exception_c("Expected list or datum value (set)",
-                                          cells[2]->location);
+                                          cells[2]);
              }
 
              target_env->set(accessors.back(), value);
@@ -586,12 +579,12 @@ void processor_c::populate_standard_builtins() {
 
           } else {
              // If this isn't found it will throw :)
-             auto containing_env = env->find(variable_name, cells[1]->location);
+             auto containing_env = env->find(variable_name, cells[1]);
              auto value = process_cell(cells[2], env);
 
              if (value->type == cell_type_e::SYMBOL) {
                 throw runtime_exception_c("Expected list or datum value (set)",
-                                          cells[2]->location);
+                                          cells[2]);
              }
 
              containing_env->set(variable_name, value);
@@ -635,7 +628,7 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "compose command expects 1 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
+                 cells[0]);
           }
 
           std::string value;
@@ -652,7 +645,7 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "decompose command expects 1 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
+                 cells[0]);
           }
 
           auto target = process_cell(cells[1], env);
@@ -670,7 +663,7 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "object command expectes 3 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
+                 cells[0]);
           }
 
           auto &variable_name = cells[1]->data;
@@ -678,7 +671,7 @@ void processor_c::populate_standard_builtins() {
           if (cells[1]->builtin_encoding != BUILTIN_DEFAULT_VAL) {
              throw runtime_exception_c("Attempting to define a key symbol: " +
                                            variable_name,
-                                       cells[1]->location);
+                                       cells[1]);
           }
 
           auto object_cell = std::make_shared<cell_c>(cell_type_e::BOX);
@@ -710,8 +703,7 @@ void processor_c::populate_standard_builtins() {
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 2) {
              throw runtime_exception_c(
-                 "is_null expects only one parameter to evaluate",
-                 cells[0]->location);
+                 "is_null expects only one parameter to evaluate", cells[0]);
           }
 
           return (process_cell(cells[1], env)->data == CELL_NIL.data)
@@ -725,7 +717,7 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "len command expects 2 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
+                 cells[0]);
           }
 
           return {std::make_shared<cell_c>(
@@ -740,7 +732,7 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "if command expects 2-3 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
+                 cells[0]);
           }
 
           auto eval = process_cell(cells[1], env);
@@ -759,7 +751,7 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "seq command expects 3 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
+                 cells[0]);
           }
 
           auto lhs = process_cell(cells[1], env);
@@ -776,7 +768,7 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "sneq command expects 3 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
-                 cells[0]->location);
+                 cells[0]);
           }
 
           auto lhs = process_cell(cells[1], env);

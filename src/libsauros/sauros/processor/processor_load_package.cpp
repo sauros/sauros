@@ -27,9 +27,10 @@ void processor_c::load_package(const std::string &target, location_s location,
    auto sauros_home = _system.get_sauros_directory();
 
    if (!sauros_home.has_value()) {
-      throw runtime_exception_c("sauros home directory not found. please set "
-                                "SAUROS_HOME environment variable.",
-                                location);
+      throw runtime_exception_c(
+          "sauros home directory not found. please set "
+          "SAUROS_HOME environment variable.",
+          std::make_shared<cell_c>(cell_type_e::STRING, "", location));
    }
 
    std::filesystem::path target_manifest_file = (*sauros_home);
@@ -46,7 +47,7 @@ void processor_c::load_package(const std::string &target, location_s location,
    if (!std::filesystem::is_regular_file(target_manifest_file)) {
       throw runtime_exception_c(
           "unable to locate package file for given package: " + target,
-          location);
+          std::make_shared<cell_c>(cell_type_e::STRING, "", location));
    }
 
    // Now we load the manifest in a new processor and environment
@@ -56,9 +57,9 @@ void processor_c::load_package(const std::string &target, location_s location,
    {
       sauros::file_executor_c file_executor(package_load_env);
       if (0 != file_executor.run(target_manifest_file.c_str())) {
-         throw runtime_exception_c("unable to open file " +
-                                       std::string(target_manifest_file),
-                                   location);
+         throw runtime_exception_c(
+             "unable to open file " + std::string(target_manifest_file),
+             std::make_shared<cell_c>(cell_type_e::STRING, "", location));
       }
    }
 
@@ -78,14 +79,15 @@ void processor_c::load_package(const std::string &target, location_s location,
    {
       if (!package_load_env->exists("pkg_name")) {
          throw runtime_exception_c(
-             " target: " + target + " does not contain a pkg_name", location);
+             " target: " + target + " does not contain a pkg_name",
+             std::make_shared<cell_c>(cell_type_e::STRING, "", location));
       }
 
       auto package_name_cell = package_load_env->get("pkg_name");
       if (package_name_cell->type != cell_type_e::STRING) {
-         throw runtime_exception_c("pkg_name in pkg.sau for " + target +
-                                       " is not of type `STRING`",
-                                   location);
+         throw runtime_exception_c(
+             "pkg_name in pkg.sau for " + target + " is not of type `STRING`",
+             std::make_shared<cell_c>(cell_type_e::STRING, "", location));
       }
       package.name = package_name_cell->data;
 
@@ -98,7 +100,8 @@ void processor_c::load_package(const std::string &target, location_s location,
          sauros::file_executor_c file_executor(package.env);
          if (0 != file_executor.run(package_file.c_str())) {
             throw runtime_exception_c(
-                "unable to open file " + std::string(package_file), location);
+                "unable to open file " + std::string(package_file),
+                std::make_shared<cell_c>(cell_type_e::STRING, "", location));
          }
       }
 
@@ -109,9 +112,10 @@ void processor_c::load_package(const std::string &target, location_s location,
 
          auto library_file_cell = package.env->get("library_file");
          if (library_file_cell->type != cell_type_e::STRING) {
-            throw runtime_exception_c("library_file in package.sau for " +
-                                          target + " is not of type `STRING`",
-                                      location);
+            throw runtime_exception_c(
+                "library_file in package.sau for " + target +
+                    " is not of type `STRING`",
+                std::make_shared<cell_c>(cell_type_e::STRING, "", location));
          }
 
          // std::cout << "\t[library file] " << library_file_cell->data
@@ -124,7 +128,7 @@ void processor_c::load_package(const std::string &target, location_s location,
                throw runtime_exception_c(
                    "library file:" + library_file_actual.string() +
                        " for package: " + target + " does not exist",
-                   location);
+                   std::make_shared<cell_c>(cell_type_e::STRING, "", location));
             }
             package.library_file = library_file_actual.string();
          }
@@ -135,14 +139,15 @@ void processor_c::load_package(const std::string &target, location_s location,
                     " does not contain a library_functions list for library "
                     "listed as: " +
                     package.library_file,
-                location);
+                std::make_shared<cell_c>(cell_type_e::STRING, "", location));
          }
 
          auto library_functions_cell = package.env->get("library_functions");
          if (library_functions_cell->type != cell_type_e::LIST) {
-            throw runtime_exception_c("library_functions in package.sau for " +
-                                          target + " is not of type `LIST`",
-                                      location);
+            throw runtime_exception_c(
+                "library_functions in package.sau for " + target +
+                    " is not of type `LIST`",
+                std::make_shared<cell_c>(cell_type_e::STRING, "", location));
          }
 
          // Load teh functions
@@ -151,7 +156,7 @@ void processor_c::load_package(const std::string &target, location_s location,
                throw runtime_exception_c(
                    "function name listed in package.sau for " + target +
                        " is not of type `STRING`",
-                   location);
+                   std::make_shared<cell_c>(cell_type_e::STRING, "", location));
             }
             package.library_function_list.push_back(function_name_cell->data);
 
@@ -165,9 +170,10 @@ void processor_c::load_package(const std::string &target, location_s location,
       if (package.env->exists("source_files")) {
          auto source_files_cell = package.env->get("source_files");
          if (source_files_cell->type != cell_type_e::LIST) {
-            throw runtime_exception_c("source_files in package.sau for " +
-                                          target + " is not of type `LIST`",
-                                      location);
+            throw runtime_exception_c(
+                "source_files in package.sau for " + target +
+                    " is not of type `LIST`",
+                std::make_shared<cell_c>(cell_type_e::STRING, "", location));
          }
 
          // Load teh functions
@@ -176,7 +182,7 @@ void processor_c::load_package(const std::string &target, location_s location,
                throw runtime_exception_c(
                    "file name listed in package.sau for " + target +
                        " is not of type `STRING`",
-                   location);
+                   std::make_shared<cell_c>(cell_type_e::STRING, "", location));
             }
 
             {
@@ -186,7 +192,8 @@ void processor_c::load_package(const std::string &target, location_s location,
                   throw runtime_exception_c(
                       "source file:" + file_actual.string() +
                           " for package: " + package.name + " does not exist",
-                      location);
+                      std::make_shared<cell_c>(cell_type_e::STRING, "",
+                                               location));
                }
                package.source_file_list.push_back(file_actual);
             }
@@ -209,13 +216,15 @@ void processor_c::load_package(const std::string &target, location_s location,
    try {
       package_rll->load(package.library_file.c_str());
    } catch (rll_wrapper_c::library_loading_error_c &e) {
-      throw runtime_exception_c("error loading `" + target + "`: " + e.what(),
-                                location);
+      throw runtime_exception_c(
+          "error loading `" + target + "`: " + e.what(),
+          std::make_shared<cell_c>(cell_type_e::STRING, "", location));
    }
 
    if (!package_rll->is_loaded()) {
       throw runtime_exception_c(
-          "failed to load library: `" + package.library_file + "`", location);
+          "failed to load library: `" + package.library_file + "`",
+          std::make_shared<cell_c>(cell_type_e::STRING, "", location));
    }
 
    ;
@@ -230,7 +239,7 @@ void processor_c::load_package(const std::string &target, location_s location,
          throw runtime_exception_c(
              "error loading `" + target + "`: listed function `" + f +
                  "` was not found in `" + package.library_file.c_str() + "`",
-             location);
+             std::make_shared<cell_c>(cell_type_e::STRING, "", location));
       }
 
       void *fn_ptr = package_rll->get_symbol(f);
@@ -251,8 +260,9 @@ void processor_c::load_package(const std::string &target, location_s location,
 
       sauros::file_executor_c file_executor(boxed_cell->box_env);
       if (0 != file_executor.run(f)) {
-         throw runtime_exception_c("unable to open file " + std::string(f),
-                                   location);
+         throw runtime_exception_c(
+             "unable to open file " + std::string(f),
+             std::make_shared<cell_c>(cell_type_e::STRING, "", location));
       }
    }
 

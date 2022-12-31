@@ -78,6 +78,14 @@ class cell_c {
    cell_c(cell_type_e type, const std::string &data, location_s location)
        : type(type), data(data), location(location) {}
 
+   //! \brief Create a standard cell
+   //! \param type The type to set
+   //! \param data The data to set
+   //! \param location The location in source that the cell originated from
+   cell_c(cell_type_e type, const std::string data, location_s location,
+          std::shared_ptr<std::string> origin)
+       : type(type), data(data), location(location), origin(origin) {}
+
    //! \brief Create a process cell
    //! \param proc The process function to set
    //! \note Process cells are declared as SYMBOL to reduce number of
@@ -102,6 +110,7 @@ class cell_c {
    bool stop_processing{false};
    std::shared_ptr<environment_c> box_env{nullptr};
    uint8_t builtin_encoding{BUILTIN_DEFAULT_VAL};
+   std::shared_ptr<std::string> origin{nullptr};
 };
 
 static const cell_c CELL_TRUE =

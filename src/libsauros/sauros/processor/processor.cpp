@@ -89,7 +89,7 @@ void processor_c::quote_cell(std::string &out, cell_ptr cell,
       out += lambda_name + "[ ";
 
       auto target_lambda =
-          env->find(cells[0]->data, cells[0]->location)->get(cells[0]->data);
+          env->find(cells[0]->data, cells[0])->get(cells[0]->data);
 
       for (auto param = target_lambda->list[0]->list.begin() + 1;
            param != target_lambda->list[0]->list.end(); ++param) {
@@ -160,7 +160,7 @@ cell_ptr processor_c::process_list(cells_t &cells,
    default:
       break;
    }
-   throw runtime_exception_c("Unknown cell type", cells[0]->location);
+   throw runtime_exception_c("Unknown cell type", cells[0]);
 }
 
 std::vector<std::string>
@@ -191,7 +191,7 @@ cell_ptr processor_c::process_cell(cell_ptr cell,
 
       // If not built in maybe it is in the environment
       //
-      auto env_with_data = env->find(cell->data, cell->location);
+      auto env_with_data = env->find(cell->data, cell);
       auto r = env_with_data->get(cell->data);
 
       if (r->type == cell_type_e::BOX) {
@@ -204,7 +204,7 @@ cell_ptr processor_c::process_cell(cell_ptr cell,
       if (cell->builtin_encoding == BUILTIN_DEFAULT_VAL ||
           cell->builtin_encoding >= BUILTIN_ENTRY_COUNT) {
          throw runtime_exception_c("Invalid encoded symbol for : " + cell->data,
-                                   cell->location);
+                                   cell);
       }
 
       // Direct access - no more mapping
@@ -229,8 +229,7 @@ cell_ptr processor_c::process_cell(cell_ptr cell,
       break;
    }
 
-   throw runtime_exception_c("internal error -> no processable cell",
-                             cell->location);
+   throw runtime_exception_c("internal error -> no processable cell", cell);
 }
 
 cell_ptr processor_c::process_lambda(cell_ptr cell, cells_t &cells,
@@ -247,7 +246,7 @@ cell_ptr processor_c::process_lambda(cell_ptr cell, cells_t &cells,
           "Invalid number of paramters given to lambda: " + cells[0]->data +
               ". " + std::to_string(exps.size()) + " parameters given, but " +
               std::to_string(cell->list[0]->list.size()) + " were expected.",
-          cells[0]->location);
+          cells[0]);
    }
 
    // Create the lambda cell
@@ -279,7 +278,7 @@ cell_ptr processor_c::access_box_member(cell_ptr cell,
    auto accessors = retrieve_accessors(cell->data);
 
    if (accessors.size() <= 1) {
-      throw runtime_exception_c("Malformed accessor", cell->location);
+      throw runtime_exception_c("Malformed accessor", cell);
    }
 
    cell_ptr result;
@@ -287,7 +286,7 @@ cell_ptr processor_c::access_box_member(cell_ptr cell,
    for (std::size_t i = 0; i < accessors.size(); i++) {
 
       // Get the item from the accessor
-      auto containing_env = moving_env->find(accessors[i], cell->location);
+      auto containing_env = moving_env->find(accessors[i], cell);
       result = containing_env->get(accessors[i]);
 
       // Check if we need to move the environment "in" to the next box

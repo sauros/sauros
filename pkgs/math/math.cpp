@@ -11,7 +11,7 @@ sauros::cell_ptr single_arithmetic(sauros::cells_t &cells,
       throw sauros::processor_c::runtime_exception_c(
           "given math function expects 1 parameter, but " +
               std::to_string(cells.size() - 1) + " were given",
-          cells[0]->location);
+          cells[0]);
    }
 
    auto op = [=](sauros::cell_ptr cell,
@@ -21,7 +21,7 @@ sauros::cell_ptr single_arithmetic(sauros::cells_t &cells,
           item->type != sauros::cell_type_e::INTEGER) {
          throw sauros::processor_c::runtime_exception_c(
              "math operation expects parameter to be an integer or a double",
-             cell->location);
+             cell);
       }
 
       return fn(std::stod(item->data));
@@ -187,7 +187,7 @@ _sauros_pkg_math_pow_(sauros::cells_t &cells,
       throw sauros::processor_c::runtime_exception_c(
           "given math function expects 3 parameter, but " +
               std::to_string(cells.size()) + " were given",
-          cells[0]->location);
+          cells[0]);
    }
 
    auto op = [=](sauros::cell_ptr &lhs_, sauros::cell_ptr &rhs_,
@@ -197,7 +197,7 @@ _sauros_pkg_math_pow_(sauros::cells_t &cells,
           lhs->type != sauros::cell_type_e::INTEGER) {
          throw sauros::processor_c::runtime_exception_c(
              "math operation expects parameter to be an integer or a double",
-             lhs->location);
+             lhs);
       }
 
       auto rhs = c_api_process_cell(rhs_, env);
@@ -205,7 +205,7 @@ _sauros_pkg_math_pow_(sauros::cells_t &cells,
           rhs->type != sauros::cell_type_e::INTEGER) {
          throw sauros::processor_c::runtime_exception_c(
              "math operation expects parameter to be an integer or a double",
-             rhs->location);
+             rhs);
       }
       return pow(std::stod(lhs->data), std::stod(rhs->data));
    };

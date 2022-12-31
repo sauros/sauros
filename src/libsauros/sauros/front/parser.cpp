@@ -18,7 +18,8 @@ static bool is_digit(const char c) {
 //    Retrieve a list of tokens based on the given string
 //
 std::vector<token_s> tokenize(size_t line_number, const std::string line,
-                              bracket_track_s &bts) {
+                              bracket_track_s &bts,
+                              std::shared_ptr<std::string> origin) {
 
    std::vector<token_s> tokens;
    for (size_t idx = 0; idx < line.size(); idx++) {
@@ -43,7 +44,7 @@ std::vector<token_s> tokenize(size_t line_number, const std::string line,
          if (bts.tracker > 0) {
             bts.tracker--;
          } else {
-            throw parser_exception_c("Unmatched closing bracket",
+            throw parser_exception_c("Unmatched closing bracket", origin,
                                      {line_number, idx});
          }
          continue;
@@ -72,7 +73,8 @@ std::vector<token_s> tokenize(size_t line_number, const std::string line,
          }
 
          if (!value.ends_with('"')) {
-            throw parser_exception_c("Unterminated string", {line_number, idx});
+            throw parser_exception_c("Unterminated string", origin,
+                                     {line_number, idx});
             return tokens;
          }
 
@@ -110,7 +112,7 @@ std::vector<token_s> tokenize(size_t line_number, const std::string line,
             }
          } else {
             throw parser_exception_c(
-                "Malformed representaton of suspected numerical",
+                "Malformed representaton of suspected numerical", origin,
                 {line_number, start});
             return tokens;
          }
@@ -133,14 +135,17 @@ std::vector<token_s> tokenize(size_t line_number, const std::string line,
 }
 
 namespace {
-void throw_no_list_error(token_s current_token) {
+void throw_no_list_error(token_s current_token,
+                         std::shared_ptr<std::string> origin) {
    throw parser_exception_c(
-       "Attempting to create object priot to list creation",
+       "Attempting to create object prior to list creation", origin,
        current_token.location);
 }
 } // namespace
 
-cell_ptr parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
+cell_ptr parse(std::vector<token_s> &tokens,
+               std::shared_ptr<std::string> origin,
+               cell_ptr current_list = nullptr) {
 
    if (tokens.empty()) {
       return {};
@@ -153,15 +158,16 @@ cell_ptr parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
 
    case token_e::L_BRACKET: {
       cell_ptr new_list = std::make_shared<cell_c>(cell_type_e::LIST);
+      new_list->origin = origin;
 
       // Populate the list
-      parse(tokens, new_list);
+      parse(tokens, origin, new_list);
 
       // If we had  a list, we add our new list to it
       if (current_list) {
          current_list->list.push_back(new_list);
 
-         return parse(tokens, current_list);
+         return parse(tokens, origin, current_list);
 
          // otherwise we return the new list
       } else {
@@ -172,7 +178,7 @@ cell_ptr parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
    case token_e::R_BRACKET: {
       // This means we are done building whatever current_list is
       if (!current_list) {
-         throw parser_exception_c("Unopened closing bracket detected",
+         throw parser_exception_c("Unopened closing bracket detected", origin,
                                   current_token.location);
          return {};
       }
@@ -184,7 +190,7 @@ cell_ptr parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
 
    case token_e::SYMBOL: {
       if (!current_list) {
-         throw_no_list_error(current_token);
+         throw_no_list_error(current_token, origin);
          return {};
       }
 
@@ -193,52 +199,56 @@ cell_ptr parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
           BUILTIN_STRING_TO_ENCODING.end()) {
          cell_ptr builtin_translation_cell = std::make_shared<cell_c>(
              cell_type_e::ENCODED_SYMBOL, current_token.data,
-             current_token.location);
+             current_token.location, origin);
          builtin_translation_cell->builtin_encoding =
              BUILTIN_STRING_TO_ENCODING[current_token.data];
          current_list->list.push_back(builtin_translation_cell);
       } else {
-         current_list->list.push_back(std::make_shared<cell_c>(
-             cell_type_e::SYMBOL, current_token.data, current_token.location));
+         current_list->list.push_back(
+             std::make_shared<cell_c>(cell_type_e::SYMBOL, current_token.data,
+                                      current_token.location, origin));
       }
-      return parse(tokens, current_list);
+      return parse(tokens, origin, current_list);
    }
 
    case token_e::STRING: {
       if (!current_list) {
-         throw_no_list_error(current_token);
+         throw_no_list_error(current_token, origin);
          return {};
       }
 
-      current_list->list.push_back(std::make_shared<cell_c>(
-          cell_type_e::STRING, current_token.data, current_token.location));
-      return parse(tokens, current_list);
+      current_list->list.push_back(
+          std::make_shared<cell_c>(cell_type_e::STRING, current_token.data,
+                                   current_token.location, origin));
+      return parse(tokens, origin, current_list);
    }
 
    case token_e::INTEGER: {
       if (!current_list) {
-         throw_no_list_error(current_token);
+         throw_no_list_error(current_token, origin);
          return {};
       }
 
-      current_list->list.push_back(std::make_shared<cell_c>(
-          cell_type_e::INTEGER, current_token.data, current_token.location));
-      return parse(tokens, current_list);
+      current_list->list.push_back(
+          std::make_shared<cell_c>(cell_type_e::INTEGER, current_token.data,
+                                   current_token.location, origin));
+      return parse(tokens, origin, current_list);
    }
 
    case token_e::DOUBLE: {
       if (!current_list) {
-         throw_no_list_error(current_token);
+         throw_no_list_error(current_token, origin);
          return {};
       }
 
-      current_list->list.push_back(std::make_shared<cell_c>(
-          cell_type_e::DOUBLE, current_token.data, current_token.location));
-      return parse(tokens, current_list);
+      current_list->list.push_back(
+          std::make_shared<cell_c>(cell_type_e::DOUBLE, current_token.data,
+                                   current_token.location, origin));
+      return parse(tokens, origin, current_list);
    }
    }
 
-   throw parser_exception_c("internal error > unhandled token type",
+   throw parser_exception_c("internal error > unhandled token type", origin,
                             current_token.location);
    return {};
 }
@@ -246,8 +256,12 @@ cell_ptr parse(std::vector<token_s> &tokens, cell_ptr current_list = nullptr) {
 cell_ptr parse_line(const char *source_descrption, std::size_t line_number,
                     std::string line) {
    bracket_track_s bts;
-   auto tokens = tokenize(line_number, line, bts);
-   return parse(tokens);
+   auto tokens = tokenize(line_number, line, bts, nullptr);
+   return parse(tokens, nullptr);
+}
+
+void segment_parser_c::set_origin(const std::string &origin) {
+   _origin = std::make_shared<std::string>(origin);
 }
 
 std::optional<cell_ptr>
@@ -262,18 +276,19 @@ segment_parser_c::submit(segment_parser_c::segment_s segment) {
       return {};
    }
 
-   auto tokens = tokenize(segment.line_number, segment.line, _bts);
+   auto tokens = tokenize(segment.line_number, segment.line, _bts, _origin);
    _tokens.insert(_tokens.end(), tokens.begin(), tokens.end());
 
    if (_bts.tracker == 0 && !_tokens.empty()) {
-      return {parse(_tokens)};
+      return {parse(_tokens, _origin)};
    }
    return {};
 }
 
 void segment_parser_c::indicate_complete() {
    if (_bts.tracker != 0) {
-      throw parser_exception_c("Unmatched opening bracket", _bts.location);
+      throw parser_exception_c("Unmatched opening bracket", _origin,
+                               _bts.location);
    }
 }
 

@@ -46,8 +46,7 @@ sauros::cell_ptr execute_commands(sauros::cells_t &cells,
 
       if (s->type != sauros::cell_type_e::STRING) {
          throw sauros::processor_c::runtime_exception_c(
-             cmd_name + " command expectes strings for all items",
-             cells[0]->location);
+             cmd_name + " command expectes strings for all items", cells[0]);
       }
       // Indicate the path being listed
       current_dir->list.push_back(s);
@@ -87,8 +86,7 @@ sauros::cell_ptr _pkg_os_ls_(sauros::cells_t &cells,
 
       if (s->type != sauros::cell_type_e::STRING) {
          throw sauros::processor_c::runtime_exception_c(
-             "ls command expectes strings for all sources to list",
-             cells[0]->location);
+             "ls command expectes strings for all sources to list", cells[0]);
       }
       // Indicate the path being listed
       current_dir->list.push_back(s);
@@ -117,7 +115,7 @@ sauros::cell_ptr _pkg_os_chdir_(sauros::cells_t &cells,
    auto raw_dest = c_api_process_cell(cells[1], env);
    if (raw_dest->type != sauros::cell_type_e::STRING) {
       throw sauros::processor_c::runtime_exception_c(
-          "chdir command expects parameter to be a string", cells[0]->location);
+          "chdir command expects parameter to be a string", cells[0]);
    }
 
    if (!std::filesystem::is_directory(raw_dest->data)) {
@@ -182,8 +180,7 @@ sauros::cell_ptr _pkg_os_is_file_(sauros::cells_t &cells,
    auto raw_dest = c_api_process_cell(cells[1], env);
    if (raw_dest->type != sauros::cell_type_e::STRING) {
       throw sauros::processor_c::runtime_exception_c(
-          "is_file command expects parameter to be a string",
-          cells[0]->location);
+          "is_file command expects parameter to be a string", cells[0]);
    }
 
    if (std::filesystem::is_block_file(raw_dest->data) ||
@@ -200,8 +197,7 @@ sauros::cell_ptr _pkg_os_is_dir_(sauros::cells_t &cells,
    auto raw_dest = c_api_process_cell(cells[1], env);
    if (raw_dest->type != sauros::cell_type_e::STRING) {
       throw sauros::processor_c::runtime_exception_c(
-          "is_dir command expects parameter to be a string",
-          cells[0]->location);
+          "is_dir command expects parameter to be a string", cells[0]);
    }
 
    if (std::filesystem::is_directory(raw_dest->data)) {
@@ -216,8 +212,7 @@ sauros::cell_ptr _pkg_os_exists_(sauros::cells_t &cells,
    auto raw_dest = c_api_process_cell(cells[1], env);
    if (raw_dest->type != sauros::cell_type_e::STRING) {
       throw sauros::processor_c::runtime_exception_c(
-          "is_file command expects parameter to be a string",
-          cells[0]->location);
+          "is_file command expects parameter to be a string", cells[0]);
    }
 
    if (std::filesystem::exists(raw_dest->data)) {
@@ -260,8 +255,7 @@ sauros::cell_ptr _pkg_os_copy_(sauros::cells_t &cells,
    auto source = c_api_process_cell(cells[1], env);
    if (source->type != sauros::cell_type_e::STRING) {
       throw sauros::processor_c::runtime_exception_c(
-          "copy command expects source parameter to be a string",
-          cells[1]->location);
+          "copy command expects source parameter to be a string", cells[1]);
    }
 
    if (!std::filesystem::exists(source->data)) {
@@ -272,14 +266,13 @@ sauros::cell_ptr _pkg_os_copy_(sauros::cells_t &cells,
    if (dest->type != sauros::cell_type_e::STRING) {
       throw sauros::processor_c::runtime_exception_c(
           "copy command expects destination parameter to be a string",
-          cells[2]->location);
+          cells[2]);
    }
 
    auto flags = c_api_process_cell(cells[3], env);
    if (flags->type != sauros::cell_type_e::BOX) {
       throw sauros::processor_c::runtime_exception_c(
-          "copy command expects flags parameter to be a box",
-          cells[3]->location);
+          "copy command expects flags parameter to be a box", cells[3]);
    }
 
    if (!flags->box_env->exists("recursive") ||
@@ -288,7 +281,7 @@ sauros::cell_ptr _pkg_os_copy_(sauros::cells_t &cells,
       throw sauros::processor_c::runtime_exception_c(
           "flags box missing required members (recursive, update_existing, "
           "directories_only)",
-          cells[3]->location);
+          cells[3]);
    }
 
    auto recursion_cell = flags->box_env->get("recursive");
@@ -304,7 +297,7 @@ sauros::cell_ptr _pkg_os_copy_(sauros::cells_t &cells,
        update_processed->type != sauros::cell_type_e::INTEGER ||
        dir_processed->type != sauros::cell_type_e::INTEGER) {
       throw sauros::processor_c::runtime_exception_c(
-          "all copy flags must be an integer type", cells[3]->location);
+          "all copy flags must be an integer type", cells[3]);
    }
 
    std::filesystem::copy_options options;
@@ -329,8 +322,7 @@ _pkg_os_file_append_(sauros::cells_t &cells,
    auto file = c_api_process_cell(cells[1], env);
    if (file->type != sauros::cell_type_e::STRING) {
       throw sauros::processor_c::runtime_exception_c(
-          "file operation expects file name to be a string",
-          cells[1]->location);
+          "file operation expects file name to be a string", cells[1]);
    }
 
    std::ofstream out_file;
@@ -357,8 +349,7 @@ _pkg_os_file_write_(sauros::cells_t &cells,
    auto file = c_api_process_cell(cells[1], env);
    if (file->type != sauros::cell_type_e::STRING) {
       throw sauros::processor_c::runtime_exception_c(
-          "file operation expects file name to be a string",
-          cells[1]->location);
+          "file operation expects file name to be a string", cells[1]);
    }
 
    std::ofstream out_file;
@@ -385,8 +376,7 @@ _pkg_os_file_read_(sauros::cells_t &cells,
    auto file = c_api_process_cell(cells[1], env);
    if (file->type != sauros::cell_type_e::STRING) {
       throw sauros::processor_c::runtime_exception_c(
-          "file operation expects file name to be a string",
-          cells[1]->location);
+          "file operation expects file name to be a string", cells[1]);
    }
 
    std::ifstream in_file;

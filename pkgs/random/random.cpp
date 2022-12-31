@@ -38,15 +38,14 @@ _pkg_random_string_(sauros::cells_t &cells,
       throw sauros::processor_c::runtime_exception_c(
           "random::string function expects 1 parameters (length), but " +
               std::to_string(cells.size() - 1) + " were given",
-          cells[0]->location);
+          cells[0]);
    }
 
    auto len = c_api_process_cell(cells[1], env);
    if (len->type != sauros::cell_type_e::DOUBLE &&
        len->type != sauros::cell_type_e::INTEGER) {
       throw sauros::processor_c::runtime_exception_c(
-          "random::string expects parameter `len` to be numerical",
-          cells[1]->location);
+          "random::string expects parameter `len` to be numerical", cells[1]);
    }
 
    int len_int = 0;
@@ -55,7 +54,7 @@ _pkg_random_string_(sauros::cells_t &cells,
    } catch (...) {
       throw sauros::processor_c::runtime_exception_c(
           "random::string failed to convert parameter to integer (stoi)",
-          cells[1]->location);
+          cells[1]);
    }
    return std::make_shared<sauros::cell_c>(
        sauros::cell_type_e::STRING, generate_random_string(ALL_CHARS, len_int));
@@ -68,7 +67,7 @@ _pkg_random_alpha_string_(sauros::cells_t &cells,
       throw sauros::processor_c::runtime_exception_c(
           "random::alpha_string function expects 1 parameters (length), but " +
               std::to_string(cells.size() - 1) + " were given",
-          cells[0]->location);
+          cells[0]);
    }
 
    auto len = c_api_process_cell(cells[1], env);
@@ -76,7 +75,7 @@ _pkg_random_alpha_string_(sauros::cells_t &cells,
        len->type != sauros::cell_type_e::INTEGER) {
       throw sauros::processor_c::runtime_exception_c(
           "random::alpha_string expects parameter `len` to be numerical",
-          cells[1]->location);
+          cells[1]);
    }
 
    int len_int = 0;
@@ -85,7 +84,7 @@ _pkg_random_alpha_string_(sauros::cells_t &cells,
    } catch (...) {
       throw sauros::processor_c::runtime_exception_c(
           "random::alpha_string failed to convert parameter to integer (stoi)",
-          cells[1]->location);
+          cells[1]);
    }
    return std::make_shared<sauros::cell_c>(
        sauros::cell_type_e::STRING, generate_random_string(ALPHA_NUM, len_int));
@@ -100,7 +99,7 @@ _pkg_random_sourced_string_(sauros::cells_t &cells,
           "(source_string, "
           "length), but " +
               std::to_string(cells.size() - 1) + " were given",
-          cells[0]->location);
+          cells[0]);
    }
 
    auto src = c_api_process_cell(cells[1], env);
@@ -108,7 +107,7 @@ _pkg_random_sourced_string_(sauros::cells_t &cells,
       throw sauros::processor_c::runtime_exception_c(
           "random::sourced_string expects parameter `source_string` to be a "
           "string",
-          cells[1]->location);
+          cells[1]);
    }
 
    auto len = c_api_process_cell(cells[2], env);
@@ -116,7 +115,7 @@ _pkg_random_sourced_string_(sauros::cells_t &cells,
        len->type != sauros::cell_type_e::INTEGER) {
       throw sauros::processor_c::runtime_exception_c(
           "random::sourced_string expects parameter `len` to be numerical",
-          cells[2]->location);
+          cells[2]);
    }
 
    int len_int = 0;
@@ -126,7 +125,7 @@ _pkg_random_sourced_string_(sauros::cells_t &cells,
       throw sauros::processor_c::runtime_exception_c(
           "random::sourced_string failed to convert parameter to integer "
           "(stoi)",
-          cells[2]->location);
+          cells[2]);
    }
    return std::make_shared<sauros::cell_c>(
        sauros::cell_type_e::STRING, generate_random_string(src->data, len_int));
@@ -140,7 +139,7 @@ _pkg_random_uniform_int_(sauros::cells_t &cells,
           "random::uniform_int function expects 2 parameters (min, "
           "max), but " +
               std::to_string(cells.size() - 1) + " were given",
-          cells[0]->location);
+          cells[0]);
    }
 
    auto min = c_api_process_cell(cells[1], env);
@@ -148,7 +147,7 @@ _pkg_random_uniform_int_(sauros::cells_t &cells,
        min->type != sauros::cell_type_e::INTEGER) {
       throw sauros::processor_c::runtime_exception_c(
           "random::uniform_int expects parameter `min` to be numerical",
-          cells[1]->location);
+          cells[1]);
    }
 
    auto max = c_api_process_cell(cells[2], env);
@@ -156,7 +155,7 @@ _pkg_random_uniform_int_(sauros::cells_t &cells,
        max->type != sauros::cell_type_e::INTEGER) {
       throw sauros::processor_c::runtime_exception_c(
           "random::uniform_int expects parameter `max` to be numerical",
-          cells[2]->location);
+          cells[2]);
    }
 
    int min_int = 0;
@@ -168,14 +167,14 @@ _pkg_random_uniform_int_(sauros::cells_t &cells,
       throw sauros::processor_c::runtime_exception_c(
           "random::uniform_int failed to convert parameters to integers "
           "(stoi)",
-          cells[2]->location);
+          cells[2]);
    }
 
    if (min_int >= max_int) {
       throw sauros::processor_c::runtime_exception_c(
           "random::uniform_int minimum value must be less than maximum "
           "value",
-          cells[2]->location);
+          cells[2]);
    }
 
    std::random_device rd;
@@ -194,7 +193,7 @@ _pkg_random_uniform_real_(sauros::cells_t &cells,
           "random::uniform_real function expects 2 parameters (min, "
           "max), but " +
               std::to_string(cells.size() - 1) + " were given",
-          cells[0]->location);
+          cells[0]);
    }
 
    auto min = c_api_process_cell(cells[1], env);
@@ -202,7 +201,7 @@ _pkg_random_uniform_real_(sauros::cells_t &cells,
        min->type != sauros::cell_type_e::INTEGER) {
       throw sauros::processor_c::runtime_exception_c(
           "random::uniform_real expects parameter `min` to be numerical",
-          cells[1]->location);
+          cells[1]);
    }
 
    auto max = c_api_process_cell(cells[2], env);
@@ -210,7 +209,7 @@ _pkg_random_uniform_real_(sauros::cells_t &cells,
        max->type != sauros::cell_type_e::INTEGER) {
       throw sauros::processor_c::runtime_exception_c(
           "random::uniform_real expects parameter `max` to be numerical",
-          cells[2]->location);
+          cells[2]);
    }
 
    double min_int = 0;
@@ -222,14 +221,14 @@ _pkg_random_uniform_real_(sauros::cells_t &cells,
       throw sauros::processor_c::runtime_exception_c(
           "random::uniform_real failed to convert parameters to "
           "integers (stoi)",
-          cells[2]->location);
+          cells[2]);
    }
 
    if (min_int >= max_int) {
       throw sauros::processor_c::runtime_exception_c(
           "random::uniform_real minimum value must be less than maximum "
           "value",
-          cells[2]->location);
+          cells[2]);
    }
 
    std::random_device rd;
