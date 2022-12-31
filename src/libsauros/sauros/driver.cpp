@@ -179,6 +179,8 @@ void driver_if::execute(const char *source, uint64_t line_number,
       except(e);
    } catch (sauros::environment_c::unknown_identifier_c &e) {
       except(e);
+   } catch (sauros::parser::parser_exception_c &e) {
+      except(e);
    }
 }
 
@@ -246,7 +248,10 @@ void repl_c::start() {
    std::unordered_map<std::string, std::vector<std::string>> completion_map = {
        {"[u", {"[use "}},
        {"[v", {"[var "}},
-       {"[i", {"[import ", "[is_nil ", "[if "}},
+       {"[i", {"[import ", "[is_nil ", "[if ", "[iter "}},
+       {"[it", {"[iter "}},
+       {"[im", {"[import "}},
+       {"[is", {"[is_nil "}},
        {"[p", {"[put ", "[putln ", "[push ", "[pop "}},
        {"[c", {"[compose ", "[clear "}},
        {"[co", {"[compose "}},
