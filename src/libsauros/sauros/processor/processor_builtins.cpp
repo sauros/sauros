@@ -351,15 +351,15 @@ void processor_c::populate_standard_builtins() {
 
              if (cell_type_e::STRING == result->type && result->data.empty()) {
                 throw assertion_exception_c(
-                    "assertion failure: " + cells[1]->data, (*c));
+                    "assertion failure: " + cells[1]->data, cells[0]);
              } else if (cell_type_e::INTEGER == result->type &&
                         std::stoull(result->data) < 1) {
                 throw assertion_exception_c(
-                    "assertion failure: " + cells[1]->data, (*c));
+                    "assertion failure: " + cells[1]->data, cells[0]);
              } else if (cell_type_e::DOUBLE == result->type &&
                         std::stod(result->data) <= 0.0) {
                 throw assertion_exception_c(
-                    "assertion failure: " + cells[1]->data, (*c));
+                    "assertion failure: " + cells[1]->data, cells[0]);
              }
           }
           return std::make_shared<cell_c>(CELL_TRUE);
@@ -422,6 +422,16 @@ void processor_c::populate_standard_builtins() {
              std::cout << stringed;
           }
 
+          return std::make_shared<cell_c>(CELL_TRUE);
+       });
+
+   _builtins[BUILTIN_YIELD] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          if (cells.size() != 2) {
+             throw runtime_exception_c(
+                 "Yield command expects only one parameter", cells[0]);
+          }
+          _yield_cell = process_cell(cells[1], env);
           return std::make_shared<cell_c>(CELL_TRUE);
        });
 

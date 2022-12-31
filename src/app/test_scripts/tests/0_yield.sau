@@ -1,0 +1,22 @@
+[var callable_one [lambda [] [block
+   [var a 10]
+   [var b 100]
+   [yield [+ a b]]   ; Execution of this lambda should cease before [a]
+   [assert "yield.sau > callable_one > Lambda failed to yield processing post-yiled command" [== 1 0]]
+]]]
+
+[var callable_two [lambda [] [block
+
+   [var inner_callable [lambda [] [block
+      [yield 33]
+      [assert "yield.sau > inner_callable > Lambda failed to yield processing post-yiled command" [== 1 0]]
+   ]]]
+
+   [var result [inner_callable]]
+   [assert "yield.sau > inner_callable > failed to provide proper response" [== 33 result]]
+
+   [+ result 7]
+]]]
+
+[assert "yield.sau > callable_one failed to provide proper response" [== 110 [callable_one]]]
+[assert "yield.sau > callable_two failed to provide proper response" [== 40 [callable_two]]]
