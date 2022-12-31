@@ -425,12 +425,11 @@ void processor_c::populate_standard_builtins() {
           return std::make_shared<cell_c>(CELL_TRUE);
        });
 
-
    _builtins[BUILTIN_YIELD] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 2) {
-             throw runtime_exception_c("Yield command expects only one parameter",
-                                       cells[0]);
+             throw runtime_exception_c(
+                 "Yield command expects only one parameter", cells[0]);
           }
           _yield_cell = process_cell(cells[1], env);
           return std::make_shared<cell_c>(CELL_TRUE);

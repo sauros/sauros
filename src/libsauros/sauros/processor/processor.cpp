@@ -115,7 +115,7 @@ void processor_c::quote_cell(std::string &out, cell_ptr cell,
 processor_c::processor_c() { populate_standard_builtins(); }
 
 cell_ptr processor_c::process_list(cells_t &cells,
-                                   std::shared_ptr<environment_c> env) {   
+                                   std::shared_ptr<environment_c> env) {
    if (_yield_cell) {
       return _yield_cell;
    }
