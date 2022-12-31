@@ -3,7 +3,9 @@
 [import "database/db.sau"]
 [import "database/entry.sau"]
 
-[var loaded_database [db::load "books.db"] ] ;[db::load file]]
+[var database_file "books.db"]
+
+[var loaded_database [database::load database_file] ]
 
 [var show_help [lambda [] [block
    [putln "help      Show this message"]
@@ -15,7 +17,7 @@
 ]]]
 
 [var list_books [lambda [] [block
-   [putln [fmt.encode "There are % books in the database\n"  [len loaded_database]]]
+   [putln [fmt.string "There are % books in the database\n"  [len loaded_database]]]
    [var i 0]
    [loop [> [len loaded_database] i] [set i [+ 1 i]] [block 
       [putln [database::entry_to_string [at i loaded_database]]]
@@ -23,7 +25,16 @@
 ]]]
 
 [var new_book [lambda [] [block
-   [putln ">>> Not yet completed"]
+   [putln [fmt.string "\n\t[ NEW BOOK ]"]]
+   [var title [io.get_string "title > "]]
+   [var desc [io.get_string "description > "]]
+   [push loaded_database 
+      [database::new_entry title desc database::entry::AVAILABLE]
+   ]
+
+   [put "Saving..."]
+   [database::save database_file loaded_database]
+   [putln "COMPLETE"]
 ]]]
 
 [var checkout_book [lambda [] [block

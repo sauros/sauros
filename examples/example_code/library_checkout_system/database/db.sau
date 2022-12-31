@@ -1,7 +1,9 @@
 [use "os"]
 [import "database/entry.sau"]
 
-[var db::load [lambda [file] [block 
+[var database::temp_db_file "tmp.db"]
+
+[var database::load [lambda [file] [block 
    [if [not [os.is_file file]] [[block
       [putln "Given item is not a file: " file]
       [exit 1]
@@ -33,4 +35,16 @@
    ][putln "Empty database file"]]
 
    [books]
+]]]
+
+[var database::save [lambda [file data] [block
+   [os.file_write database::temp_db_file ""]
+   [iter x data
+      [os.file_append database::temp_db_file
+         [fmt.encode "%\n%\n%\n" [list x.title x.description x.status]]
+      ]
+   ]
+   [if [os.exists file] [os.delete file]]
+   [os.copy database::temp_db_file file [os.copy_flags 0 1 0]]
+   [os.delete database::temp_db_file]
 ]]]
