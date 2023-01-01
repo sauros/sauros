@@ -37,7 +37,7 @@ _pkg_io_getline_real_(sauros::cells_t &cells,
    std::getline(std::cin, line);
    try {
       x = std::stod(line);
-      return std::make_shared<sauros::cell_c>(sauros::cell_type_e::DOUBLE,
+      return std::make_shared<sauros::cell_c>(sauros::cell_type_e::REAL,
                                               std::to_string(x));
    } catch (std::invalid_argument) {
       return std::make_shared<sauros::cell_c>(sauros::CELL_NIL);

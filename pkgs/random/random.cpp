@@ -42,7 +42,7 @@ _pkg_random_string_(sauros::cells_t &cells,
    }
 
    auto len = c_api_process_cell(cells[1], env);
-   if (len->type != sauros::cell_type_e::DOUBLE &&
+   if (len->type != sauros::cell_type_e::REAL &&
        len->type != sauros::cell_type_e::INTEGER) {
       throw sauros::processor_c::runtime_exception_c(
           "random::string expects parameter `len` to be numerical", cells[1]);
@@ -71,7 +71,7 @@ _pkg_random_alpha_string_(sauros::cells_t &cells,
    }
 
    auto len = c_api_process_cell(cells[1], env);
-   if (len->type != sauros::cell_type_e::DOUBLE &&
+   if (len->type != sauros::cell_type_e::REAL &&
        len->type != sauros::cell_type_e::INTEGER) {
       throw sauros::processor_c::runtime_exception_c(
           "random::alpha_string expects parameter `len` to be numerical",
@@ -111,7 +111,7 @@ _pkg_random_sourced_string_(sauros::cells_t &cells,
    }
 
    auto len = c_api_process_cell(cells[2], env);
-   if (len->type != sauros::cell_type_e::DOUBLE &&
+   if (len->type != sauros::cell_type_e::REAL &&
        len->type != sauros::cell_type_e::INTEGER) {
       throw sauros::processor_c::runtime_exception_c(
           "random::sourced_string expects parameter `len` to be numerical",
@@ -143,7 +143,7 @@ _pkg_random_uniform_int_(sauros::cells_t &cells,
    }
 
    auto min = c_api_process_cell(cells[1], env);
-   if (min->type != sauros::cell_type_e::DOUBLE &&
+   if (min->type != sauros::cell_type_e::REAL &&
        min->type != sauros::cell_type_e::INTEGER) {
       throw sauros::processor_c::runtime_exception_c(
           "random::uniform_int expects parameter `min` to be numerical",
@@ -151,7 +151,7 @@ _pkg_random_uniform_int_(sauros::cells_t &cells,
    }
 
    auto max = c_api_process_cell(cells[2], env);
-   if (max->type != sauros::cell_type_e::DOUBLE &&
+   if (max->type != sauros::cell_type_e::REAL &&
        max->type != sauros::cell_type_e::INTEGER) {
       throw sauros::processor_c::runtime_exception_c(
           "random::uniform_int expects parameter `max` to be numerical",
@@ -197,7 +197,7 @@ _pkg_random_uniform_real_(sauros::cells_t &cells,
    }
 
    auto min = c_api_process_cell(cells[1], env);
-   if (min->type != sauros::cell_type_e::DOUBLE &&
+   if (min->type != sauros::cell_type_e::REAL &&
        min->type != sauros::cell_type_e::INTEGER) {
       throw sauros::processor_c::runtime_exception_c(
           "random::uniform_real expects parameter `min` to be numerical",
@@ -205,7 +205,7 @@ _pkg_random_uniform_real_(sauros::cells_t &cells,
    }
 
    auto max = c_api_process_cell(cells[2], env);
-   if (max->type != sauros::cell_type_e::DOUBLE &&
+   if (max->type != sauros::cell_type_e::REAL &&
        max->type != sauros::cell_type_e::INTEGER) {
       throw sauros::processor_c::runtime_exception_c(
           "random::uniform_real expects parameter `max` to be numerical",
@@ -235,6 +235,6 @@ _pkg_random_uniform_real_(sauros::cells_t &cells,
    std::mt19937 mt(rd());
    std::uniform_real_distribution<double> dist(min_int, max_int);
 
-   return std::make_shared<sauros::cell_c>(sauros::cell_type_e::DOUBLE,
+   return std::make_shared<sauros::cell_c>(sauros::cell_type_e::REAL,
                                            std::to_string(dist(mt)));
 }
