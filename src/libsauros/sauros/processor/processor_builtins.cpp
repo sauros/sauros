@@ -952,10 +952,10 @@ void processor_c::populate_standard_builtins() {
 
    auto conversion_fn =
        [this](cell_ptr target, std::shared_ptr<environment_c> env,
-              std::function<cell_ptr(std::string)> fn) -> cell_ptr {
+              std::function<cell_ptr(cell_ptr source)> fn) -> cell_ptr {
       auto item = process_cell(target, env);
       try {
-         return fn(item->data);
+         return fn(item);
       } catch (const std::invalid_argument &) {
          throw runtime_exception_c("Invalid data type given for conversion",
                                    target);
@@ -974,12 +974,11 @@ void processor_c::populate_standard_builtins() {
                      std::to_string(cells.size() - 1) + " were given",
                  cells[0]);
           }
-          return conversion_fn(cells[1], env,
-                               [](std::string target_data) -> cell_ptr {
-                                  return std::make_shared<cell_c>(
-                                      cell_type_e::INTEGER,
-                                      std::to_string(std::stoull(target_data)));
-                               });
+          return conversion_fn(cells[1], env, [](cell_ptr target) -> cell_ptr {
+             return std::make_shared<cell_c>(
+                 cell_type_e::INTEGER,
+                 std::to_string(std::stoull(target->data)));
+          });
        });
 
    _builtins[BUILTIN_AS_STR] = std::make_shared<cell_c>(
@@ -991,11 +990,12 @@ void processor_c::populate_standard_builtins() {
                      std::to_string(cells.size() - 1) + " were given",
                  cells[0]);
           }
-          return conversion_fn(cells[1], env,
-                               [](std::string target_data) -> cell_ptr {
-                                  return std::make_shared<cell_c>(
-                                      cell_type_e::STRING, target_data);
-                               });
+          return conversion_fn(
+              cells[1], env, [this, env](cell_ptr target) -> cell_ptr {
+                 std::string result;
+                 cell_to_string(result, target, env);
+                 return std::make_shared<cell_c>(cell_type_e::STRING, result);
+              });
        });
 
    _builtins[BUILTIN_AS_REAL] = std::make_shared<cell_c>(
@@ -1007,11 +1007,10 @@ void processor_c::populate_standard_builtins() {
                      std::to_string(cells.size() - 1) + " were given",
                  cells[0]);
           }
-          return conversion_fn(
-              cells[1], env, [](std::string target_data) -> cell_ptr {
-                 return std::make_shared<cell_c>(
-                     cell_type_e::REAL, std::to_string(std::stod(target_data)));
-              });
+          return conversion_fn(cells[1], env, [](cell_ptr target) -> cell_ptr {
+             return std::make_shared<cell_c>(
+                 cell_type_e::REAL, std::to_string(std::stod(target->data)));
+          });
        });
 }
 
