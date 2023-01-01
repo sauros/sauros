@@ -632,6 +632,34 @@ void processor_c::populate_standard_builtins() {
           return {list};
        });
 
+   _builtins[BUILTIN_TRY] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          if (cells.size() != 3) {
+             throw runtime_exception_c(
+                 "try command expects 2 parameters, but " +
+                     std::to_string(cells.size() - 1) + " were given",
+                 cells[0]);
+          }
+
+         auto make_error = [this, cells, env](const char* message) -> cell_ptr {
+            auto temp_env = std::make_shared<environment_c>(env);
+            temp_env->set("$", std::make_shared<cell_c>(cell_type_e::STRING, message));
+            return process_cell(cells[2], temp_env);
+         };
+
+         try {
+            return process_cell(cells[1], env);
+         } catch (sauros::processor_c::runtime_exception_c &e) {
+            return make_error(e.what());
+         } catch (sauros::processor_c::assertion_exception_c &e) {
+            return make_error(e.what());
+         } catch (sauros::environment_c::unknown_identifier_c &e) {
+            return make_error(e.what());
+         } catch (sauros::parser::parser_exception_c &e) {
+            return make_error(e.what());
+         }
+       });
+
    _builtins[BUILTIN_COMPOSE] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 2) {
