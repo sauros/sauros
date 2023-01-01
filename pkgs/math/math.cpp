@@ -17,7 +17,7 @@ sauros::cell_ptr single_arithmetic(sauros::cells_t &cells,
    auto op = [=](sauros::cell_ptr cell,
                  std::shared_ptr<sauros::environment_c> env) -> double {
       auto item = c_api_process_cell(cell, env);
-      if (item->type != sauros::cell_type_e::DOUBLE &&
+      if (item->type != sauros::cell_type_e::REAL &&
           item->type != sauros::cell_type_e::INTEGER) {
          throw sauros::processor_c::runtime_exception_c(
              "math operation expects parameter to be an integer or a double",
@@ -29,13 +29,13 @@ sauros::cell_ptr single_arithmetic(sauros::cells_t &cells,
 
    if (cells.size() == 2) {
       return std::make_shared<sauros::cell_c>(
-          sauros::cell_type_e::DOUBLE, std::to_string(op(cells[1], env)));
+          sauros::cell_type_e::REAL, std::to_string(op(cells[1], env)));
    }
 
    auto result = std::make_shared<sauros::cell_c>(sauros::cell_type_e::LIST);
    for (auto c = cells.begin() + 1; c < cells.end(); ++c) {
       result->list.push_back(std::make_shared<sauros::cell_c>(
-          sauros::cell_type_e::DOUBLE, std::to_string(op((*c), env))));
+          sauros::cell_type_e::REAL, std::to_string(op((*c), env))));
    }
    return result;
 }
@@ -193,7 +193,7 @@ _sauros_pkg_math_pow_(sauros::cells_t &cells,
    auto op = [=](sauros::cell_ptr &lhs_, sauros::cell_ptr &rhs_,
                  std::shared_ptr<sauros::environment_c> env) -> double {
       auto lhs = c_api_process_cell(lhs_, env);
-      if (lhs->type != sauros::cell_type_e::DOUBLE &&
+      if (lhs->type != sauros::cell_type_e::REAL &&
           lhs->type != sauros::cell_type_e::INTEGER) {
          throw sauros::processor_c::runtime_exception_c(
              "math operation expects parameter to be an integer or a double",
@@ -201,7 +201,7 @@ _sauros_pkg_math_pow_(sauros::cells_t &cells,
       }
 
       auto rhs = c_api_process_cell(rhs_, env);
-      if (rhs->type != sauros::cell_type_e::DOUBLE &&
+      if (rhs->type != sauros::cell_type_e::REAL &&
           rhs->type != sauros::cell_type_e::INTEGER) {
          throw sauros::processor_c::runtime_exception_c(
              "math operation expects parameter to be an integer or a double",
@@ -211,6 +211,6 @@ _sauros_pkg_math_pow_(sauros::cells_t &cells,
    };
 
    return std::make_shared<sauros::cell_c>(
-       sauros::cell_type_e::DOUBLE,
+       sauros::cell_type_e::REAL,
        std::to_string(op(cells[1], cells[2], env)));
 }

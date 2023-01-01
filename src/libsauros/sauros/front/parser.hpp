@@ -15,7 +15,7 @@ enum class token_e {
    R_BRACKET,
    SYMBOL,
    INTEGER,
-   DOUBLE,
+   REAL,
    STRING,
 };
 

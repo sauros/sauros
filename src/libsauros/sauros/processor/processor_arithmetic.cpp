@@ -28,7 +28,7 @@ cell_ptr processor_c::perform_arithmetic(
    for (auto i = cells.begin() + 2; i != cells.end(); ++i) {
 
       auto cell_value = process_cell((*i), env);
-      if (cell_value->type == cell_type_e::DOUBLE) {
+      if (cell_value->type == cell_type_e::REAL) {
          store_as_double = true;
       } else if (cell_value->type != cell_type_e::INTEGER) {
          throw runtime_exception_c("Invalid type for operand", cell_value);
@@ -46,8 +46,8 @@ cell_ptr processor_c::perform_arithmetic(
    }
 
    if (force_double || store_as_double) {
-      return std::make_shared<cell_c>(
-          cell_type_e::DOUBLE, std::to_string(result), cells[0]->location);
+      return std::make_shared<cell_c>(cell_type_e::REAL, std::to_string(result),
+                                      cells[0]->location);
    } else {
       return std::make_shared<cell_c>(
           cell_type_e::INTEGER, std::to_string(static_cast<int64_t>(result)),

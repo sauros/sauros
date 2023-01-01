@@ -1,0 +1,12 @@
+
+[var x [as_int "3"]]
+[assert "type_conversion.sau > as_int" [seq "integer" [type x]]]
+
+[var y [as_real "3.14159"]]
+[assert "type_conversion.sau > as_real" [seq "real" [type y]]]
+
+[var z [as_str 44]]
+[assert "type_conversion.sau > as_str - z" [seq "string" [type z]]]
+
+[var a [as_str 3.14159]]
+[assert "type_conversion.sau > as_str - a" [seq "string" [type a]]]

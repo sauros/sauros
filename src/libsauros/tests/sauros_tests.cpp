@@ -97,7 +97,7 @@ TEST(sauros_tests, piecemeal) {
         "10"},
        {"[block [var x \"A string!\"] [type x] ]", "string"},
        {"[block [var x 42] [type x] ]", "integer"},
-       {"[block [var x 2.1828] [type x] ]", "double"},
+       {"[block [var x 2.1828] [type x] ]", "real"},
        {"[block [var x [list 1 2 3]] [type x] ]", "list"},
        {"[block [var x [lambda [x] [x]] ] [type x] ]", "lambda"},
        {"[block [var lhs 1] [var rhs 0] [if [or lhs rhs] [1] [0] ]]", "1"},

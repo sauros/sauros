@@ -19,7 +19,7 @@ static inline bool eval_truthy(cell_ptr cell, location_s &location) {
    case cell_type_e::LAMBDA:
       return true;
       break;
-   case cell_type_e::DOUBLE:
+   case cell_type_e::REAL:
       [[fallthrough]];
    case cell_type_e::INTEGER: {
       try {
@@ -310,7 +310,7 @@ void processor_c::populate_standard_builtins() {
       auto target = process_cell(cells[1], env);
 
       if (target->type != cell_type_e::INTEGER &&
-          target->type != cell_type_e::DOUBLE) {
+          target->type != cell_type_e::REAL) {
          throw runtime_exception_c(
              "not command expects parameter to evaluate to a numerical type",
              cells[1]);
@@ -356,7 +356,7 @@ void processor_c::populate_standard_builtins() {
                         std::stoull(result->data) < 1) {
                 throw assertion_exception_c(
                     "assertion failure: " + cells[1]->data, cells[0]);
-             } else if (cell_type_e::DOUBLE == result->type &&
+             } else if (cell_type_e::REAL == result->type &&
                         std::stod(result->data) <= 0.0) {
                 throw assertion_exception_c(
                     "assertion failure: " + cells[1]->data, cells[0]);
@@ -630,6 +630,36 @@ void processor_c::populate_standard_builtins() {
           list->type = cell_type_e::LIST;
           list->data = "<list>";
           return {list};
+       });
+
+   _builtins[BUILTIN_TRY] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          if (cells.size() != 3) {
+             throw runtime_exception_c(
+                 "try command expects 2 parameters, but " +
+                     std::to_string(cells.size() - 1) + " were given",
+                 cells[0]);
+          }
+
+          auto make_error = [this, cells,
+                             env](const char *message) -> cell_ptr {
+             auto temp_env = std::make_shared<environment_c>(env);
+             temp_env->set(
+                 "$", std::make_shared<cell_c>(cell_type_e::STRING, message));
+             return process_cell(cells[2], temp_env);
+          };
+
+          try {
+             return process_cell(cells[1], env);
+          } catch (sauros::processor_c::runtime_exception_c &e) {
+             return make_error(e.what());
+          } catch (sauros::processor_c::assertion_exception_c &e) {
+             return make_error(e.what());
+          } catch (sauros::environment_c::unknown_identifier_c &e) {
+             return make_error(e.what());
+          } catch (sauros::parser::parser_exception_c &e) {
+             return make_error(e.what());
+          }
        });
 
    _builtins[BUILTIN_COMPOSE] = std::make_shared<cell_c>(
@@ -918,6 +948,69 @@ void processor_c::populate_standard_builtins() {
                  return result;
               },
               env)};
+       });
+
+   auto conversion_fn =
+       [this](cell_ptr target, std::shared_ptr<environment_c> env,
+              std::function<cell_ptr(cell_ptr source)> fn) -> cell_ptr {
+      auto item = process_cell(target, env);
+      try {
+         return fn(item);
+      } catch (const std::invalid_argument &) {
+         throw runtime_exception_c("Invalid data type given for conversion",
+                                   target);
+      } catch (const std::out_of_range &) {
+         throw runtime_exception_c("Item caused out of range exception",
+                                   target);
+      }
+   };
+
+   _builtins[BUILTIN_AS_INT] = std::make_shared<cell_c>(
+       [this, conversion_fn](cells_t &cells,
+                             std::shared_ptr<environment_c> env) -> cell_ptr {
+          if (cells.size() != 2) {
+             throw runtime_exception_c(
+                 "as_int command expects 1 parameters, but " +
+                     std::to_string(cells.size() - 1) + " were given",
+                 cells[0]);
+          }
+          return conversion_fn(cells[1], env, [](cell_ptr target) -> cell_ptr {
+             return std::make_shared<cell_c>(
+                 cell_type_e::INTEGER,
+                 std::to_string(std::stoull(target->data)));
+          });
+       });
+
+   _builtins[BUILTIN_AS_STR] = std::make_shared<cell_c>(
+       [this, conversion_fn](cells_t &cells,
+                             std::shared_ptr<environment_c> env) -> cell_ptr {
+          if (cells.size() != 2) {
+             throw runtime_exception_c(
+                 "as_str command expects 1 parameters, but " +
+                     std::to_string(cells.size() - 1) + " were given",
+                 cells[0]);
+          }
+          return conversion_fn(
+              cells[1], env, [this, env](cell_ptr target) -> cell_ptr {
+                 std::string result;
+                 cell_to_string(result, target, env);
+                 return std::make_shared<cell_c>(cell_type_e::STRING, result);
+              });
+       });
+
+   _builtins[BUILTIN_AS_REAL] = std::make_shared<cell_c>(
+       [this, conversion_fn](cells_t &cells,
+                             std::shared_ptr<environment_c> env) -> cell_ptr {
+          if (cells.size() != 2) {
+             throw runtime_exception_c(
+                 "as_real command expects 1 parameters, but " +
+                     std::to_string(cells.size() - 1) + " were given",
+                 cells[0]);
+          }
+          return conversion_fn(cells[1], env, [](cell_ptr target) -> cell_ptr {
+             return std::make_shared<cell_c>(
+                 cell_type_e::REAL, std::to_string(std::stod(target->data)));
+          });
        });
 }
 
