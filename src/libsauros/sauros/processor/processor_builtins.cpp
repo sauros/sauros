@@ -233,12 +233,8 @@ void processor_c::populate_standard_builtins() {
                  "First parameter of clear must be a variable", cells[1]);
           }
 
-          auto &variable_name = cells[1]->data;
-
-          // If this isn't found it will throw :)
-          auto containing_env = env->find(variable_name, cells[1]);
-          cell_ptr target = containing_env->get(variable_name);
-          target->list.clear();
+          auto variable = process_cell(cells[1], env);
+          variable->list.clear();
           return std::make_shared<cell_c>(CELL_TRUE);
        });
 
@@ -256,13 +252,9 @@ void processor_c::populate_standard_builtins() {
                  "First parameter of pop must be a variable", cells[1]);
           }
 
-          auto &variable_name = cells[1]->data;
-
-          // If this isn't found it will throw :)
-          auto containing_env = env->find(variable_name, cells[1]);
-          cell_ptr target = containing_env->get(variable_name);
-          if (!target->list.empty()) {
-             target->list.pop_back();
+          auto variable = process_cell(cells[1], env);
+          if (!variable->list.empty()) {
+             variable->list.pop_back();
           }
           return std::make_shared<cell_c>(CELL_TRUE);
        });
@@ -281,20 +273,31 @@ void processor_c::populate_standard_builtins() {
                  "First parameter of push must be a variable", cells[1]);
           }
 
-          auto &variable_name = cells[1]->data;
-
-          // If this isn't found it will throw :)
-          auto containing_env = env->find(variable_name, cells[1]);
+          auto variable = process_cell(cells[1], env);
           auto value = process_cell(cells[2], env);
 
-          if (value->type == cell_type_e::SYMBOL) {
-             throw runtime_exception_c("Expected list or datum value (push)",
-                                       cells[2]);
+          variable->list.push_back(value);
+          return std::make_shared<cell_c>(CELL_TRUE);
+       });
+
+   _builtins[BUILTIN_THROW] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          if (cells.size() != 2) {
+             throw runtime_exception_c(
+                 "throw command expects 1 parameters, but " +
+                     std::to_string(cells.size() - 1) + " were given",
+                 cells[0]);
           }
 
-          cell_ptr target = containing_env->get(variable_name);
-          target->list.push_back(value);
-          return std::make_shared<cell_c>(CELL_TRUE);
+          auto message = process_cell(cells[1], env);
+
+          if (message->type != cell_type_e::STRING) {
+             throw runtime_exception_c(
+                 "throw command expects second parameter to be a string type",
+                 cells[0]);
+          }
+
+          throw runtime_exception_c(message->data, cells[0]);
        });
 
    _builtins[BUILTIN_NOT] = std::make_shared<

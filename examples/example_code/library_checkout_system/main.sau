@@ -2,6 +2,7 @@
 [use "fmt"]
 [import "database/db.sau"]
 [import "database/entry.sau"]
+[import "std/switch"]
 
 [var database_file "books.db"]
 
@@ -17,7 +18,7 @@
 ]]]
 
 [var list_books [lambda [] [block
-   [putln [fmt.string "There are % books in the database\n"  [len loaded_database]]]
+   [putln [fmt.encode "There are % books in the database\n"  [len loaded_database]]]
    [var i 0]
    [loop [> [len loaded_database] i] [set i [+ 1 i]] [block 
       [putln [database::entry_to_string [at i loaded_database]]]
@@ -46,16 +47,17 @@
 ]]]
 
 [loop [true] [block
-   [var cmd [io.get_string "$: "]]
-
-   [if [seq cmd "help"] [show_help]]
-   [if [seq cmd "new"]  [new_book]]
-   [if [seq cmd "checkout"]  [checkout_book]]
-   [if [seq cmd "return"]  [return_book]]
-   [if [seq cmd "checkout"]  [checkout_book]]
-   [if [seq cmd "list"]  [list_books]]
-   [if [seq cmd "exit"]  [block 
-      [putln "Goodbye"] 
-      [exit 0]
-   ]]
+   [std::switch [io.get_string "$: "] [list
+      [std::case "help" show_help]
+      [std::case "new" new_book]
+      [std::case "checkout" checkout_book]
+      [std::case "return" return_book]
+      [std::case "list" list_books]
+      [std::case "exit" [lambda [] [block
+         [putln "Goodbye"]
+         [exit 0]
+      ]]]
+   ] [lambda [] [
+      putln "use `help` to get a list of commands"
+   ]]]
 ]]

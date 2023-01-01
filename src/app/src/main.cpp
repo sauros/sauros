@@ -119,6 +119,7 @@ void system_report() {
 }
 
 void handle_signal(int signal) {
+
    if (repl) {
       repl->stop();
    }
@@ -126,7 +127,6 @@ void handle_signal(int signal) {
    if (file_executor) {
       delete file_executor;
    }
-
    std::exit(0);
 }
 
@@ -165,9 +165,9 @@ int main(int argc, char **argv) {
                                              std::string(get_build_hash())));
 
    if (args.empty()) {
-      repl = new sauros::repl_c(env);
-      repl->start();
-      delete repl;
+      auto repl = sauros::repl_c(env);
+      repl.start();
+      return 0;
    }
 
    // Create the arguments cell
@@ -182,6 +182,5 @@ int main(int argc, char **argv) {
                                sauros::cell_type_e::STRING, args[0]));
 
    run_file(args[0]);
-
    return 0;
 }

@@ -94,7 +94,7 @@ class processor_c {
    //! show_space Defaults to true, inserts spaces between items
    void cell_to_string(std::string &out, cell_ptr cell,
                        std::shared_ptr<environment_c> env,
-                       bool show_space = true);
+                       bool show_space = false);
 
    //! \brief Reset the processor
    void reset();
