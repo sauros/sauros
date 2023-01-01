@@ -63,11 +63,3 @@ target_link_libraries(sauros
 #
 install (TARGETS sauros
     DESTINATION bin)
-
-#
-# Copy stdlib to build dir
-#
-#add_custom_target(copy_assets
-#    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/test_scripts/importable ${CMAKE_CURRENT_BINARY_DIR}/importable
-#)
-#add_dependencies(sauros copy_assets)

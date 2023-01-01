@@ -1,5 +1,6 @@
 #include "driver.hpp"
 #include "rang.hpp"
+#include <csignal>
 #include <filesystem>
 #include <iostream>
 #include <sauros/linenoise/linenoise.hpp>
@@ -318,8 +319,7 @@ void repl_c::start() {
       }
 
       std::string line;
-      auto quit = linenoise::Readline(prompt.c_str(), line);
-      if (quit) {
+      if (linenoise::Readline(prompt.c_str(), line)) {
          _do = false;
          continue;
       }
