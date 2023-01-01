@@ -1,0 +1,15 @@
+[var x [try [+ "x" 3] [
+   [assert "try.sau > expected failure" [seq $ "Invalid data type given for operand"]]
+]]]
+
+[var y [try [+ 1 2 3] [
+   [assert "try.sau > expected success" [== 0 1]]
+]]]
+
+[assert "try.sau > success value returned" [== 6 y]]
+
+[var z [try [+ "some string" 90] [
+   [-1]
+]]]
+
+[assert "try.sau > failure value returned" [== -1 z]]

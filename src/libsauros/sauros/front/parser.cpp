@@ -103,7 +103,7 @@ std::vector<token_s> tokenize(size_t line_number, const std::string line,
          if (std::regex_match(current_data, is_number)) {
             if (current_data.find('.') != std::string::npos) {
                tokens.push_back(
-                   {token_e::DOUBLE, current_data, {line_number, start}});
+                   {token_e::REAL, current_data, {line_number, start}});
                continue;
             } else {
                tokens.push_back(
@@ -235,14 +235,14 @@ cell_ptr parse(std::vector<token_s> &tokens,
       return parse(tokens, origin, current_list);
    }
 
-   case token_e::DOUBLE: {
+   case token_e::REAL: {
       if (!current_list) {
          throw_no_list_error(current_token, origin);
          return {};
       }
 
       current_list->list.push_back(
-          std::make_shared<cell_c>(cell_type_e::DOUBLE, current_token.data,
+          std::make_shared<cell_c>(cell_type_e::REAL, current_token.data,
                                    current_token.location, origin));
       return parse(tokens, origin, current_list);
    }

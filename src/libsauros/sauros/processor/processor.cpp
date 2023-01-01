@@ -17,7 +17,7 @@ void processor_c::cell_to_string(std::string &out, cell_ptr cell,
                                  std::shared_ptr<environment_c> env,
                                  bool show_space) {
    switch (cell->type) {
-   case cell_type_e::DOUBLE:
+   case cell_type_e::REAL:
       [[fallthrough]];
    case cell_type_e::STRING:
       [[fallthrough]];
@@ -64,7 +64,7 @@ void processor_c::cell_to_string(std::string &out, cell_ptr cell,
 void processor_c::quote_cell(std::string &out, cell_ptr cell,
                              std::shared_ptr<environment_c> env) {
    switch (cell->type) {
-   case cell_type_e::DOUBLE:
+   case cell_type_e::REAL:
       [[fallthrough]];
    case cell_type_e::INTEGER:
       [[fallthrough]];
@@ -155,7 +155,7 @@ cell_ptr processor_c::process_list(cells_t &cells,
    case cell_type_e::LIST:
       return process_list(suspect_cell->list, env);
 
-   case cell_type_e::DOUBLE:
+   case cell_type_e::REAL:
       [[fallthrough]];
    case cell_type_e::STRING:
       [[fallthrough]];
@@ -227,7 +227,7 @@ cell_ptr processor_c::process_cell(cell_ptr cell,
 
    case cell_type_e::LIST:
       return process_list(cell->list, env);
-   case cell_type_e::DOUBLE:
+   case cell_type_e::REAL:
       [[fallthrough]];
    case cell_type_e::STRING:
       [[fallthrough]];

@@ -18,7 +18,7 @@ enum class cell_type_e {
    LAMBDA,
    STRING,
    INTEGER,
-   DOUBLE,
+   REAL,
    BOX,
    ENCODED_SYMBOL
 };
@@ -36,8 +36,8 @@ static const char *cell_type_to_string(const cell_type_e type) {
       return "string";
    case cell_type_e::INTEGER:
       return "integer";
-   case cell_type_e::DOUBLE:
-      return "double";
+   case cell_type_e::REAL:
+      return "real";
    case cell_type_e::BOX:
       return "box";
    case cell_type_e::ENCODED_SYMBOL:
