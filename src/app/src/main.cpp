@@ -120,17 +120,13 @@ void system_report() {
 
 void handle_signal(int signal) {
 
-   try {
-      if (repl) {
-         repl->stop();
-      }
-
-      if (file_executor) {
-         delete file_executor;
-      }
-   } catch (...) {
+   if (repl) {
+      repl->stop();
    }
 
+   if (file_executor) {
+      delete file_executor;
+   }
    std::exit(0);
 }
 
