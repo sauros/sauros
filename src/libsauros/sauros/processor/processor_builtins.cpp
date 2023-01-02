@@ -957,6 +957,83 @@ void processor_c::populate_standard_builtins() {
               env)};
        });
 
+   _builtins[BUILTIN_BITWISE_AND] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          return {perform_arithmetic(
+              "%", cells,
+              [](double lhs, double rhs) -> double {
+                 return static_cast<uint64_t>(lhs) & static_cast<uint64_t>(rhs);
+              },
+              env)};
+       });
+
+   _builtins[BUILTIN_BITWISE_OR] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          return {perform_arithmetic(
+              "%", cells,
+              [](double lhs, double rhs) -> double {
+                 return static_cast<uint64_t>(lhs) | static_cast<uint64_t>(rhs);
+              },
+              env)};
+       });
+
+   _builtins[BUILTIN_BITWISE_LSH] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          return {perform_arithmetic(
+              "%", cells,
+              [](double lhs, double rhs) -> double {
+                 return static_cast<uint64_t>(lhs)
+                        << static_cast<uint64_t>(rhs);
+              },
+              env)};
+       });
+
+   _builtins[BUILTIN_BITWISE_RSH] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          return {perform_arithmetic(
+              "%", cells,
+              [](double lhs, double rhs) -> double {
+                 return static_cast<uint64_t>(lhs) >>
+                        static_cast<uint64_t>(rhs);
+              },
+              env)};
+       });
+   ;
+
+   _builtins[BUILTIN_BITWISE_XOR] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          return {perform_arithmetic(
+              "%", cells,
+              [](double lhs, double rhs) -> double {
+                 return static_cast<uint64_t>(lhs) ^ static_cast<uint64_t>(rhs);
+              },
+              env)};
+       });
+
+   _builtins[BUILTIN_BITWISE_NOT] = std::make_shared<
+       cell_c>([this](cells_t &cells,
+                      std::shared_ptr<environment_c> env) -> cell_ptr {
+      if (cells.size() != 2) {
+         throw runtime_exception_c("bw_not command expects 1 parameters, but " +
+                                       std::to_string(cells.size() - 1) +
+                                       " were given",
+                                   cells[0]);
+      }
+
+      auto target = process_cell(cells[1], env);
+
+      if (target->type != cell_type_e::INTEGER &&
+          target->type != cell_type_e::REAL) {
+         throw runtime_exception_c(
+             "not command expects parameter to evaluate to a numerical type",
+             cells[1]);
+      }
+
+      auto val = static_cast<uint64_t>(std::stod(target->data));
+      return std::make_shared<cell_c>(cell_type_e::INTEGER,
+                                      std::to_string(~val));
+   });
+
    auto conversion_fn =
        [this](cell_ptr target, std::shared_ptr<environment_c> env,
               std::function<cell_ptr(cell_ptr source)> fn) -> cell_ptr {
