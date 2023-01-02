@@ -4,6 +4,7 @@
 ;
 
 [use "io"]
+[use "os"]
 [use "fmt"]
 [import "database/db.sau"]
 [import "database/entry.sau"]
@@ -64,6 +65,7 @@
    [putln "return    Return a book"]
    [putln "list      List the available books"]
    [putln "exit      Close the program"]
+   [putln "clear     Clear the screen"]
 ]]]
 
 ;  List all books
@@ -125,6 +127,7 @@
       [std::case "checkout" checkout_book]
       [std::case "return" return_book]
       [std::case "list" list_books]
+      [std::case "clear" os.clear_screen]
       [std::case "exit" [lambda [] [block
          [putln "Goodbye"]
          [exit 0]

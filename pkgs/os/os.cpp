@@ -251,12 +251,6 @@ _pkg_os_delete_all_(sauros::cells_t &cells,
 
 sauros::cell_ptr _pkg_os_copy_(sauros::cells_t &cells,
                                std::shared_ptr<sauros::environment_c> env) {
-
-   if (cells.size() != 3) {
-      throw sauros::processor_c::runtime_exception_c(
-          "copy command expects 2 parameters (source, dest)", cells[0]);
-   }
-
    auto source = c_api_process_cell(cells[1], env);
    if (source->type != sauros::cell_type_e::STRING) {
       throw sauros::processor_c::runtime_exception_c(
@@ -360,4 +354,18 @@ _pkg_os_file_read_(sauros::cells_t &cells,
    }
    in_file.close();
    return result;
+}
+
+sauros::cell_ptr
+_pkg_os_clear_screen_(sauros::cells_t &cells,
+                      std::shared_ptr<sauros::environment_c> env) {
+#if _WIN32 || _WIN64
+   const char *command = "cls";
+#elif __APPLE__ || __MACH__ || __linux__ || __FreeBSD__ || __unix || __unix__
+   const char *command = "clear";
+#else
+   return std::make_shared<sauros::cell_c>(sauros::CELL_NIL);
+#endif
+   return std::make_shared<sauros::cell_c>(
+       sauros::cell_type_e::INTEGER, std::to_string(std::system(command)));
 }

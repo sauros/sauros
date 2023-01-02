@@ -103,3 +103,7 @@
 ;  Each line is a new entry in the returned list
 ;
 [var file_read [lambda [file] [os._pkg_os_file_read_ file]]]
+
+;  Clear the screen
+;
+[var clear_screen [lambda [] [os._pkg_os_clear_screen_]]]
