@@ -1,28 +1,3 @@
-; An object that represents copy flags
-; - This object can be directly used but it is advised
-;   to use the create_copy_flags function
-;
-[box _os_copy_flags [block
-   [var recursive 0]
-   [var update_existing 0]
-   [var directories_only 0]
-]]
-
-; Create and set a copy flags object and return it
-;  - This function is meant to be a helper and the main
-;    interface for the _os_copy_flags box
-;
-;        [os.copy source destination [os.copy_flags 1 1 0]]
-;
-[var copy_flags 
-   [lambda [recursive update_existing directories_only] [block
-      [var flags [os._os_copy_flags]]
-      [set flags.recursive recursive]
-      [set flags.update_existing update_existing]
-      [set flags.directories_only directories_only]
-      [flags]
-]]]
-
 ;  Author: bosley
 ;  About:  An operating system interface library
 
