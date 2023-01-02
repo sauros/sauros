@@ -117,10 +117,8 @@ void processor_c::populate_standard_builtins() {
                      std::to_string(cells.size() - 1) + " were given",
                  cells[0]);
           }
-
-          auto return_value = std::make_shared<cell_c>(CELL_NIL);
-          return_value->stop_processing = true;
-          return return_value;
+          _break_loop = true;
+          return std::make_shared<cell_c>(CELL_NIL);
        });
 
    _builtins[BUILTIN_TYPE] = std::make_shared<cell_c>(
@@ -496,7 +494,8 @@ void processor_c::populate_standard_builtins() {
              // Execute the body
              auto r = process_cell(*body, temp_iter_env);
              c = temp_iter_env->get(iter_var)->clone();
-             if (r->stop_processing) {
+             if (_break_loop) {
+                _break_loop = false;
                 break;
              }
           }
@@ -538,8 +537,13 @@ void processor_c::populate_standard_builtins() {
 
              // Execute the body
              auto r = process_cell(*body, loop_environment);
-             if (r->stop_processing) {
+             if (_break_loop) {
+                _break_loop = false;
                 break;
+             }
+
+             if (_yield_cell) {
+                return _yield_cell;
              }
 
              if (post) {
@@ -612,9 +616,9 @@ void processor_c::populate_standard_builtins() {
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           for (size_t i = 1; i < cells.size() - 1; i++) {
              auto r = process_cell(cells[i], env);
-             if (r->stop_processing) {
-                // We want to pass the stop flag up
-                return r;
+             if (_break_loop) {
+                // Don't reset _break_loop so it is passed up
+                return std::make_shared<cell_c>(CELL_NIL);
              }
           }
 
