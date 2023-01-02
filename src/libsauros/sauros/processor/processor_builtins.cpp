@@ -1,6 +1,6 @@
 #include "processor.hpp"
 #include "sauros/driver.hpp"
-
+#include <algorithm>
 #include <filesystem>
 #include <iostream>
 
@@ -773,6 +773,27 @@ void processor_c::populate_standard_builtins() {
               cells[1]->location)};
        });
 
+   _builtins[BUILTIN_REV] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          if (cells.size() != 2) {
+             throw runtime_exception_c("rev command expects 1 parameter, but " +
+                                           std::to_string(cells.size() - 1) +
+                                           " were given",
+                                       cells[0]);
+          }
+
+          auto target = process_cell(cells[1], env);
+          if (target->type != cell_type_e::LIST) {
+             throw runtime_exception_c("rev expects parameter to be a list",
+                                       cells[1]);
+          }
+
+          auto result = std::make_shared<cell_c>(cell_type_e::LIST);
+          result->list = target->list;
+          std::reverse(result->list.begin(), result->list.end());
+          return result;
+       });
+
    _builtins[BUILTIN_IF] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           if (cells.size() != 3 && cells.size() != 4) {
@@ -1029,7 +1050,7 @@ void processor_c::populate_standard_builtins() {
              cells[1]);
       }
 
-      auto val = static_cast<uint64_t>(std::stod(target->data));
+      auto val = static_cast<int64_t>(std::stod(target->data));
       return std::make_shared<cell_c>(cell_type_e::INTEGER,
                                       std::to_string(~val));
    });

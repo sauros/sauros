@@ -11,7 +11,7 @@
 
 namespace sauros {
 constexpr uint8_t BUILTIN_DEFAULT_VAL = 0xFF;
-constexpr uint8_t BUILTIN_ENTRY_COUNT = 59;
+constexpr uint8_t BUILTIN_ENTRY_COUNT = 60;
 
 constexpr uint8_t BUILTIN_FRONT = 0;
 constexpr uint8_t BUILTIN_BACK = 1;
@@ -72,6 +72,7 @@ constexpr uint8_t BUILTIN_BITWISE_LSH = 55;
 constexpr uint8_t BUILTIN_BITWISE_RSH = 56;
 constexpr uint8_t BUILTIN_BITWISE_XOR = 57;
 constexpr uint8_t BUILTIN_BITWISE_NOT = 58;
+constexpr uint8_t BUILTIN_REV = 59;
 
 // A map that ties a string representation ot the encoding
 // that the parser can leverage to ensure that all translations
@@ -136,7 +137,8 @@ static std::unordered_map<std::string, uint8_t> BUILTIN_STRING_TO_ENCODING{
     {"bw_lsh", BUILTIN_BITWISE_LSH},
     {"bw_rsh", BUILTIN_BITWISE_RSH},
     {"bw_xor", BUILTIN_BITWISE_XOR},
-    {"bw_not", BUILTIN_BITWISE_NOT}};
+    {"bw_not", BUILTIN_BITWISE_NOT},
+    {"rev", BUILTIN_REV}};
 } // namespace sauros
 
 #endif
