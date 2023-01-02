@@ -273,7 +273,8 @@ sauros::cell_ptr _pkg_os_copy_(sauros::cells_t &cells,
           cells[2]);
    }
 
-   std::filesystem::copy(source->data, dest->data, std::filesystem::copy_options::overwrite_existing);
+   std::filesystem::copy(source->data, dest->data,
+                         std::filesystem::copy_options::overwrite_existing);
    if (std::filesystem::exists(dest->data)) {
       return std::make_shared<sauros::cell_c>(sauros::CELL_TRUE);
    }

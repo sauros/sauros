@@ -85,11 +85,9 @@
 
 ;  Copy an item from source to destination
 ;  If the source doesn't exist `false` will be returned
-;  source and destination are expected to be strings, and flags is
-;  expected to be a box type (_os_copy_flags - can use copy_flags to build)
-;  The flag options will set how to handle the copy function
+;  source and destination are expected to be strings
 ;
-[var copy [lambda [source destination flags] [os._pkg_os_copy_ source destination flags]]]
+[var copy [lambda [source destination] [os._pkg_os_copy_ source destination]]]
 
 ;  Append a string or list of strings to a given file
 ;   - Creates the file if it doesn't exist

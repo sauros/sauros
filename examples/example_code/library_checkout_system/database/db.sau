@@ -1,8 +1,8 @@
 [use "os"]
 [import "database/entry.sau"]
 
-[var database::temp_db_file "tmp.db"]
-
+;  Load a database file
+;
 [var database::load [lambda [file] [block 
    [if [not [os.is_file file]] [[block
       [putln "Given item is not a file: " file]
@@ -37,14 +37,14 @@
    [books]
 ]]]
 
+;  Save the database
+;
 [var database::save [lambda [file data] [block
-   [os.file_write database::temp_db_file ""]
+   [if [os.exists file] [os.delete file]]
+   [os.file_write file ""]
    [iter x data
-      [os.file_append database::temp_db_file
+      [os.file_append file
          [fmt.encode "%\n%\n%\n" [list x.title x.description x.status]]
       ]
    ]
-   [if [os.exists file] [os.delete file]]
-   [os.copy database::temp_db_file file]
-   [os.delete database::temp_db_file]
 ]]]

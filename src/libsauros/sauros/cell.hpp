@@ -107,7 +107,6 @@ class cell_c {
    location_s location;
    proc_f proc{nullptr};
    cells_t list;
-   bool stop_processing{false};
    std::shared_ptr<environment_c> box_env{nullptr};
    uint8_t builtin_encoding{BUILTIN_DEFAULT_VAL};
    std::shared_ptr<std::string> origin{nullptr};
