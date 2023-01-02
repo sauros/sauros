@@ -252,6 +252,11 @@ _pkg_os_delete_all_(sauros::cells_t &cells,
 sauros::cell_ptr _pkg_os_copy_(sauros::cells_t &cells,
                                std::shared_ptr<sauros::environment_c> env) {
 
+   if (cells.size() != 3) {
+      throw sauros::processor_c::runtime_exception_c(
+          "copy command expects 2 parameters (source, dest)", cells[0]);
+   }
+
    auto source = c_api_process_cell(cells[1], env);
    if (source->type != sauros::cell_type_e::STRING) {
       throw sauros::processor_c::runtime_exception_c(
@@ -261,7 +266,6 @@ sauros::cell_ptr _pkg_os_copy_(sauros::cells_t &cells,
    if (!std::filesystem::exists(source->data)) {
       return std::make_shared<sauros::cell_c>(sauros::CELL_FALSE);
    }
-
    auto dest = c_api_process_cell(cells[2], env);
    if (dest->type != sauros::cell_type_e::STRING) {
       throw sauros::processor_c::runtime_exception_c(
@@ -269,51 +273,11 @@ sauros::cell_ptr _pkg_os_copy_(sauros::cells_t &cells,
           cells[2]);
    }
 
-   auto flags = c_api_process_cell(cells[3], env);
-   if (flags->type != sauros::cell_type_e::BOX) {
-      throw sauros::processor_c::runtime_exception_c(
-          "copy command expects flags parameter to be a box", cells[3]);
+   std::filesystem::copy(source->data, dest->data, std::filesystem::copy_options::overwrite_existing);
+   if (std::filesystem::exists(dest->data)) {
+      return std::make_shared<sauros::cell_c>(sauros::CELL_TRUE);
    }
-
-   if (!flags->box_env->exists("recursive") ||
-       !flags->box_env->exists("update_existing") ||
-       !flags->box_env->exists("directories_only")) {
-      throw sauros::processor_c::runtime_exception_c(
-          "flags box missing required members (recursive, update_existing, "
-          "directories_only)",
-          cells[3]);
-   }
-
-   auto recursion_cell = flags->box_env->get("recursive");
-   auto update_cell = flags->box_env->get("update_existing");
-   auto dir_cell = flags->box_env->get("directories_only");
-
-   auto recursion_processed =
-       c_api_process_cell(recursion_cell, flags->box_env);
-   auto update_processed = c_api_process_cell(update_cell, flags->box_env);
-   auto dir_processed = c_api_process_cell(dir_cell, flags->box_env);
-
-   if (recursion_processed->type != sauros::cell_type_e::INTEGER ||
-       update_processed->type != sauros::cell_type_e::INTEGER ||
-       dir_processed->type != sauros::cell_type_e::INTEGER) {
-      throw sauros::processor_c::runtime_exception_c(
-          "all copy flags must be an integer type", cells[3]);
-   }
-
-   std::filesystem::copy_options options;
-   if (recursion_processed->data != "0") {
-      options |= std::filesystem::copy_options::recursive;
-   }
-   if (update_processed->data != "0") {
-      options |= std::filesystem::copy_options::update_existing;
-   }
-   if (dir_processed->data != "0") {
-      options |= std::filesystem::copy_options::directories_only;
-   }
-
-   std::filesystem::copy(source->data, dest->data, options);
-
-   return std::make_shared<sauros::cell_c>(sauros::CELL_TRUE);
+   return std::make_shared<sauros::cell_c>(sauros::CELL_FALSE);
 }
 
 sauros::cell_ptr

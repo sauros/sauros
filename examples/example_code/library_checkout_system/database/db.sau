@@ -45,6 +45,6 @@
       ]
    ]
    [if [os.exists file] [os.delete file]]
-   [os.copy database::temp_db_file file [os.copy_flags 0 1 0]]
+   [os.copy database::temp_db_file file]
    [os.delete database::temp_db_file]
 ]]]
