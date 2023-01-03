@@ -1,0 +1,42 @@
+;
+;  nsieve
+;  modeled after:
+;      https://github.com/hanabi1224/Programming-Language-Benchmarks/blob/main/bench/algorithm/nsieve/1.cpp
+;
+;  This takes quite some time to run for any n > 6
+;
+
+[use "fmt"]
+[use "list_ext"]
+
+[if [!= 1 [len @args]] [block
+   [putln "Missing `n` argument (integer) for nsieve"]
+   [exit 1]
+]]
+
+[var n [at 0 @args]]
+
+[try [set n [as_int n]] [block
+   [putln "Error converting parameter to integer: " $]
+]]
+
+[var nsieve [lambda [max] [block
+   [var count 0]
+   [var value 2]
+   [var flags [list_ext.make_assigned 0 max]]
+   [loop [< value max] [set value [+ 1 value]] [block
+      [if [not [at value flags]] [block
+         [set count [+ 1 count]]
+         [var multiple [* 2 value]]
+         [loop [< multiple max] [set multiple [+ value multiple]] [block
+            [set_at multiple flags 1]
+         ]]
+      ]]
+   ]]
+   [putln [fmt.encode "primes up to % : %" [list max count]]]
+]]]
+
+[var i 0]
+[loop [< i 3] [set i [+ 1 i]] [block
+   [nsieve [bw_lsh 10000 [- n i]]]
+]]
