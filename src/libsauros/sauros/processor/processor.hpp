@@ -35,7 +35,7 @@ class processor_c {
 
       //! \brief Retrieve the location (line/col) that caused the exception to
       //! be thrown
-      const location_s get_location() const { return _cell->location; }
+      const location_s *get_location() const { return _cell->location; }
 
       //! \brief Retrieve the origin
       const std::shared_ptr<std::string> get_origin() const {
@@ -62,7 +62,7 @@ class processor_c {
 
       //! \brief Retrieve the location (line/col) that caused the exception to
       //! be thrown
-      const location_s get_location() const { return _cell->location; }
+      const location_s *get_location() const { return _cell->location; }
 
       //! \brief Retrieve the origin (file) that caused the exception to
       //! be thrown - may be null
@@ -125,7 +125,7 @@ class processor_c {
                                std::shared_ptr<environment_c> env,
                                bool force_double = false);
 
-   void load_package(const std::string &target, location_s location,
+   void load_package(const std::string &target, location_s *location,
                      std::shared_ptr<environment_c> env);
 
    bool _break_loop{false};

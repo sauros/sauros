@@ -70,3 +70,17 @@ mandelbrot.sau >> averaged an execution time of  1.0959s ( 1095.9398ms )  after 
 As can be seen the primality test benifited greatly from this optimization (5.5 SECONDS faster) . The mandelbrot test did benifit (.6 SECONDS faster), but not to the magnitude of the primality test.
 
 Clearly, the primality test has more operations that result in the copying of a cell structure.
+
+
+### 3-January-2022
+
+Updates over the last week that include the code to trace the origin of cells slowed down the bench mark:
+
+primality.sau >> averaged an execution time of  5.5556s ( 5555.6415ms )  after  50  executions
+mandelbrot.sau >> averaged an execution time of  1.3835s ( 1383.4991ms )  after  50  executions
+
+Converting `location_s` to a raw pointer cut the size of the cell down 8 bytes. The total amount of memory the program will eat up is +8 bytes per cell, as the 16 used by location still exist, and now there is a pointer to a location, but despite the location
+having to be cloned into memory every time, and having cells manage the location memory the new bench is:
+
+primality.sau >> averaged an execution time of  4.8319s ( 4831.8663ms )  after  50  executions
+mandelbrot.sau >> averaged an execution time of  1.2559s ( 1255.8673ms )  after  50  executions

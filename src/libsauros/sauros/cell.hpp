@@ -74,17 +74,25 @@ class cell_c {
    //! \brief Create a standard cell
    //! \param type The type to set
    //! \param data The data to set
-   //! \param location The location in source that the cell originated from
-   cell_c(cell_type_e type, const std::string &data, location_s location)
-       : type(type), data(data), location(location) {}
+   //! \param location_in The location in source that the cell originated from
+   cell_c(cell_type_e type, const std::string &data, location_s *location_in)
+       : type(type), data(data) {
+      if (location_in) {
+         location = new location_s(*location_in);
+      }
+   }
 
    //! \brief Create a standard cell
    //! \param type The type to set
    //! \param data The data to set
    //! \param location The location in source that the cell originated from
-   cell_c(cell_type_e type, const std::string data, location_s location,
+   cell_c(cell_type_e type, const std::string data, location_s *location_in,
           std::shared_ptr<std::string> origin)
-       : type(type), data(data), location(location), origin(origin) {}
+       : type(type), data(data), origin(origin) {
+      if (location_in) {
+         location = new location_s(*location_in);
+      }
+   }
 
    //! \brief Create a process cell
    //! \param proc The process function to set
@@ -101,10 +109,31 @@ class cell_c {
    //! \returns A new copy of the cell in a shared_ptr
    cell_ptr clone() const { return std::shared_ptr<cell_c>(new cell_c(*this)); }
 
+   //! \brief Explicit copy constructor for cell
+   cell_c(const cell_c &other) {
+      data = other.data;
+      type = other.type;
+      if (other.location) {
+         location = new location_s(*other.location);
+      }
+      proc = other.proc;
+      list = other.list;
+      box_env = other.box_env;
+      builtin_encoding = other.builtin_encoding;
+      origin = other.origin;
+   }
+
+   //! \brief Clean up the cell
+   ~cell_c() {
+      if (location) {
+         delete location;
+      }
+   }
+
    // Data
    std::string data;
    cell_type_e type{cell_type_e::SYMBOL};
-   location_s location;
+   location_s *location{nullptr};
    proc_f proc{nullptr};
    cells_t list;
    std::shared_ptr<environment_c> box_env{nullptr};

@@ -10,13 +10,13 @@
 namespace sauros {
 
 void display_error_from_file(std::shared_ptr<std::string> file,
-                             location_s location) {
+                             const location_s *location) {
 
    std::string file_actual = (file) ? (*file) : "unknown";
 
    std::cout << rang::fg::magenta << file_actual << rang::fg::reset << " : ("
-             << rang::fg::blue << location.line << rang::fg::reset << ","
-             << rang::fg::blue << location.col << rang::fg::reset << ")\n";
+             << rang::fg::blue << location->line << rang::fg::reset << ","
+             << rang::fg::blue << location->col << rang::fg::reset << ")\n";
 
    struct line_data_pair_s {
       uint64_t number;
@@ -38,8 +38,8 @@ void display_error_from_file(std::shared_ptr<std::string> file,
    uint64_t line_number{0};
 
    // Determine the upper and lower bound for a source code window
-   int64_t upper_bound = location.line + 4;
-   int64_t lower_bound = (int64_t)location.line - 5;
+   int64_t upper_bound = location->line + 4;
+   int64_t lower_bound = (int64_t)location->line - 5;
    if (lower_bound < 0) {
       lower_bound = 0;
    }
@@ -47,9 +47,9 @@ void display_error_from_file(std::shared_ptr<std::string> file,
    // Build a window of source code to display
    while (std::getline(fs, line_data)) {
       line_number++;
-      if ((line_number >= lower_bound && lower_bound < location.line) ||
-          location.line == line_number ||
-          line_number > location.line && line_number < upper_bound) {
+      if ((line_number >= lower_bound && lower_bound < location->line) ||
+          location->line == line_number ||
+          line_number > location->line && line_number < upper_bound) {
          window.push_back({.number = line_number, .data = line_data});
       }
 
@@ -69,14 +69,14 @@ void display_error_from_file(std::shared_ptr<std::string> file,
 
    // Make an arrow to show where the error is
    std::string pointer;
-   for (size_t i = 0; i < location.col; i++) {
+   for (size_t i = 0; i < location->col; i++) {
       pointer += "~";
    }
    pointer += "^";
 
    // Draw the window
    for (auto line_data : window) {
-      if (line_data.number == location.line) {
+      if (line_data.number == location->line) {
          std::cout << rang::fg::yellow << std::right << std::setw(width)
                    << line_data.number << rang::fg::reset << " | "
                    << line_data.data << std::endl;
