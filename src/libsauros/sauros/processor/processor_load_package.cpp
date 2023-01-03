@@ -14,7 +14,7 @@ namespace sauros {
 
 // Investigating the issue is backlogged.
 
-void processor_c::load_package(const std::string &target, location_s location,
+void processor_c::load_package(const std::string &target, location_s *location,
                                std::shared_ptr<environment_c> env) {
 
    // Check to see if its already loaded

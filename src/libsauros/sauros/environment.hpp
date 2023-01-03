@@ -31,7 +31,7 @@ class environment_c {
       const std::string get_id() const { return _id; }
 
       //! \brief Retrieve the location
-      const location_s get_location() const { return _cell->location; }
+      const location_s *get_location() const { return _cell->location; }
 
       //! \brief Retrieve the origin
       const std::shared_ptr<std::string> get_origin() const {

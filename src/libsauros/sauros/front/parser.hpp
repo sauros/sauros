@@ -50,7 +50,7 @@ class parser_exception_c : public std::exception {
 
    //! \brief Retrieve the location (line/col) that caused the exception to
    //! be thrown
-   const location_s get_location() const { return _loc; }
+   const location_s *get_location() const { return &_loc; }
 
    //! \brief Retrieve the origin of the exception
    const std::shared_ptr<std::string> get_origin() const { return _origin; }

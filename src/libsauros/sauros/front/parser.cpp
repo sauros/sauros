@@ -199,14 +199,14 @@ cell_ptr parse(std::vector<token_s> &tokens,
           BUILTIN_STRING_TO_ENCODING.end()) {
          cell_ptr builtin_translation_cell = std::make_shared<cell_c>(
              cell_type_e::ENCODED_SYMBOL, current_token.data,
-             current_token.location, origin);
+             new location_s(current_token.location), origin);
          builtin_translation_cell->builtin_encoding =
              BUILTIN_STRING_TO_ENCODING[current_token.data];
          current_list->list.push_back(builtin_translation_cell);
       } else {
-         current_list->list.push_back(
-             std::make_shared<cell_c>(cell_type_e::SYMBOL, current_token.data,
-                                      current_token.location, origin));
+         current_list->list.push_back(std::make_shared<cell_c>(
+             cell_type_e::SYMBOL, current_token.data,
+             new location_s(current_token.location), origin));
       }
       return parse(tokens, origin, current_list);
    }
@@ -217,9 +217,9 @@ cell_ptr parse(std::vector<token_s> &tokens,
          return {};
       }
 
-      current_list->list.push_back(
-          std::make_shared<cell_c>(cell_type_e::STRING, current_token.data,
-                                   current_token.location, origin));
+      current_list->list.push_back(std::make_shared<cell_c>(
+          cell_type_e::STRING, current_token.data,
+          new location_s(current_token.location), origin));
       return parse(tokens, origin, current_list);
    }
 
@@ -229,9 +229,9 @@ cell_ptr parse(std::vector<token_s> &tokens,
          return {};
       }
 
-      current_list->list.push_back(
-          std::make_shared<cell_c>(cell_type_e::INTEGER, current_token.data,
-                                   current_token.location, origin));
+      current_list->list.push_back(std::make_shared<cell_c>(
+          cell_type_e::INTEGER, current_token.data,
+          new location_s(current_token.location), origin));
       return parse(tokens, origin, current_list);
    }
 
@@ -241,9 +241,9 @@ cell_ptr parse(std::vector<token_s> &tokens,
          return {};
       }
 
-      current_list->list.push_back(
-          std::make_shared<cell_c>(cell_type_e::REAL, current_token.data,
-                                   current_token.location, origin));
+      current_list->list.push_back(std::make_shared<cell_c>(
+          cell_type_e::REAL, current_token.data,
+          new location_s(current_token.location), origin));
       return parse(tokens, origin, current_list);
    }
    }

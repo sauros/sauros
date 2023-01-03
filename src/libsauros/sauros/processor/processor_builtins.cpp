@@ -8,7 +8,7 @@ namespace sauros {
 
 namespace {
 
-static inline bool eval_truthy(cell_ptr cell, location_s &location) {
+static inline bool eval_truthy(cell_ptr cell, location_s *location) {
    switch (cell->type) {
    case cell_type_e::STRING:
       return (!cell->data.empty());
@@ -759,7 +759,7 @@ void processor_c::populate_standard_builtins() {
           cell_ptr result;
           eval_c evaluator(env, [&result](cell_ptr cell) { result = cell; });
 
-          evaluator.eval(cells[1]->location.line, target->data);
+          evaluator.eval(cells[1]->location->line, target->data);
           return result;
        });
 

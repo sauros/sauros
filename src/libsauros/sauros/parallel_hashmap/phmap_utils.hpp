@@ -47,7 +47,9 @@ namespace phmap {
 
 // ---------------------------------------------------------------
 // ---------------------------------------------------------------
-template <int n> struct phmap_mix { inline size_t operator()(size_t) const; };
+template <int n> struct phmap_mix {
+   inline size_t operator()(size_t) const;
+};
 
 template <> struct phmap_mix<4> {
    inline size_t operator()(size_t a) const {
