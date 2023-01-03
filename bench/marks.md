@@ -84,5 +84,3 @@ having to be cloned into memory every time, and having cells manage the location
 
 primality.sau >> averaged an execution time of  4.8319s ( 4831.8663ms )  after  50  executions
 mandelbrot.sau >> averaged an execution time of  1.2559s ( 1255.8673ms )  after  50  executions
-
-Further cutting down the cell size will continue to increase speed.
