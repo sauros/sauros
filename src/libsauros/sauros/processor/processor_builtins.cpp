@@ -609,6 +609,65 @@ void processor_c::populate_standard_builtins() {
           }
        });
 
+   _builtins[BUILTIN_SET_AT] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          if (cells.size() != 4) {
+             throw runtime_exception_c(
+                 "set_at command expects 3 parameters, but " +
+                     std::to_string(cells.size() - 1) + " were given",
+                 cells[0]);
+          }
+
+          auto idx = process_cell(cells[1], env);
+          if (idx->type != cell_type_e::INTEGER) {
+             throw runtime_exception_c("set_at requires index to be an integer",
+                                       cells[1]);
+          }
+
+          auto idx_actual = std::stoull(idx->data);
+          auto target_value = process_cell(cells[3], env);
+          auto &variable_name = cells[2]->data;
+
+          if (variable_name.find('.') != std::string::npos) {
+
+             auto accessors = retrieve_accessors(variable_name);
+
+             cell_ptr result;
+             std::shared_ptr<environment_c> target_env = env;
+             for (std::size_t i = 0; i < accessors.size(); i++) {
+
+                // Get the item from the accessor
+                auto containing_env = target_env->find(accessors[i], cells[2]);
+                result = containing_env->get(accessors[i]);
+
+                // Check if we need to move the environment "in" to the next
+                // object
+                if (result->type == cell_type_e::BOX) {
+                   target_env = result->box_env;
+                }
+             }
+
+             auto item = target_env->get(accessors.back());
+             if (item->list.size() <= idx_actual) {
+                throw runtime_exception_c(
+                    "given idx out of range for target list", cells[1]);
+             }
+
+             item->list[idx_actual] = target_value;
+             return std::make_shared<cell_c>(CELL_TRUE);
+
+          } else {
+
+             // If this isn't found it will throw :)
+             auto containing_env = env->find(variable_name, cells[1]);
+
+             auto item = containing_env->get(variable_name);
+             item->list[idx_actual] = target_value;
+
+             return std::make_shared<cell_c>(CELL_TRUE);
+          }
+       });
+
    // List and block are extremely similar, and realistically `list` coult be
    // used instead of `block` but its "less efficient" as it does the work to
    // construct what would be a temporary cell, while `block` does not.
@@ -1047,7 +1106,7 @@ void processor_c::populate_standard_builtins() {
           target->type != cell_type_e::REAL) {
          throw runtime_exception_c(
              "not command expects parameter to evaluate to a numerical type",
-             cells[1]);
+             cells[0]);
       }
 
       auto val = static_cast<int64_t>(std::stod(target->data));
