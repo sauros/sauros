@@ -23,6 +23,9 @@ void run_file(const std::string &file) {
 
    file_executor = new sauros::file_executor_c(env);
    file_executor->run(file);
+
+   // Indicate that we are about to quit
+   file_executor->finish();
 }
 
 void show_help() {

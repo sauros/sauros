@@ -6,6 +6,7 @@
 #include <sauros/linenoise/linenoise.hpp>
 #include <sauros/system/system.hpp>
 #include <unordered_map>
+#include "profiler.hpp"
 
 namespace sauros {
 
@@ -149,6 +150,14 @@ void driver_if::indicate_complete() {
    }
 }
 
+void driver_if::finish() {
+#ifdef PROFILER_ENABLED
+   profiler_c::get_profiler()->hit("driver_if::finish");
+   profiler_c::get_profiler()->dump();
+#endif
+}
+
+
 void driver_if::execute(parser::segment_parser_c::segment_s segment) {
    try {
       auto parser_result = _segment_parser.submit(segment);
@@ -194,7 +203,6 @@ inline bool blank(std::string &s) {
 }
 
 int file_executor_c::run(const std::string &file) {
-
    _segment_parser.set_origin(file);
 
    _file = file;

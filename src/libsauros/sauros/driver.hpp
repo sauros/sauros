@@ -24,6 +24,9 @@ class driver_if {
    //! \brief Mark that fact that no more source is coming in
    void indicate_complete();
 
+   //! \brief Indicate that the program is about to close
+   void finish();
+
  protected:
    void execute(const char *source, const uint64_t line_number,
                 std::string &line);

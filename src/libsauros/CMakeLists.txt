@@ -9,8 +9,9 @@ set(CMAKE_SHARED_LIBRARY_PREFIX "")
 #
 # Options
 #
-option(COMPILE_TESTS "Execute unit tests" ON)
-option(WITH_ASAN     "Compile with ASAN" OFF)
+option(COMPILE_TESTS   "Execute unit tests" ON)
+option(WITH_ASAN       "Compile with ASAN" OFF)
+option(ENABLE_PROFILER "Enable code profiler" OFF)
 
 #
 # Setup build type 'Release vs Debug'
@@ -44,6 +45,10 @@ if(WITH_ASAN)
   set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
 endif()
 
+if(ENABLE_PROFILER)
+   add_compile_definitions(PROFILER_ENABLED)
+endif()
+
 #
 #  Update version file
 #
@@ -56,6 +61,7 @@ include_directories("sauros")
 set(SAUROS_SOURCES
    ${CMAKE_SOURCE_DIR}/sauros/environment.cpp
    ${CMAKE_SOURCE_DIR}/sauros/driver.cpp
+   ${CMAKE_SOURCE_DIR}/sauros/profiler.cpp
    ${CMAKE_SOURCE_DIR}/sauros/capi/capi.cpp
    ${CMAKE_SOURCE_DIR}/sauros/RLL/rll_wrapper.cpp
    ${CMAKE_SOURCE_DIR}/sauros/system/system.cpp
@@ -83,6 +89,7 @@ set(LINENOISE_HEADERS
 )
 
 set(HEADERS
+   ${CMAKE_SOURCE_DIR}/sauros/profiler.hpp
    ${CMAKE_SOURCE_DIR}/sauros/front/parser.hpp
    ${CMAKE_SOURCE_DIR}/sauros/driver.hpp
    ${CMAKE_SOURCE_DIR}/sauros/rang.hpp
