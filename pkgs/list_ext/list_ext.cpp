@@ -30,5 +30,34 @@ _pkg_list_ext_sort_(sauros::cells_t &cells,
           "data parameter expected to be of type list", cells[1]);
    }
 
-   return std::make_shared<sauros::cell_c>(sauros::CELL_NIL);
+   std::sort(data->list.begin(), data->list.end(),
+             [cells](const sauros::cell_ptr &lhs,
+                     const sauros::cell_ptr &rhs) -> bool {
+                auto is_valid_for_sorty =
+                    [](const sauros::cell_ptr &c) -> bool {
+                   return !(c->type != sauros::cell_type_e::INTEGER &&
+                            c->type != sauros::cell_type_e::REAL);
+                };
+                auto force_double = [](const sauros::cell_ptr &l,
+                                       const sauros::cell_ptr &r) -> bool {
+                   return (l->type == sauros::cell_type_e::REAL ||
+                           r->type == sauros::cell_type_e::REAL);
+                };
+
+                if (!is_valid_for_sorty(lhs) || !is_valid_for_sorty(rhs)) {
+                   throw sauros::processor_c::runtime_exception_c(
+                       "Unable to sort non-numerical item in list", cells[0]);
+                }
+
+                if (force_double(lhs, rhs)) {
+                   auto lhs_actual = std::stod(lhs->data);
+                   auto rhs_actual = std::stod(rhs->data);
+                   return lhs_actual < rhs_actual;
+                }
+
+                auto lhs_actual = std::stoull(lhs->data);
+                auto rhs_actual = std::stoull(rhs->data);
+                return lhs_actual < rhs_actual;
+             });
+   return data;
 }

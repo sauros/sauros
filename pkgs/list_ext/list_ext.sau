@@ -7,4 +7,4 @@
 
 ;  Sort a list of numerical data
 ;
-[var sort [lamnda [data] [list_ext._pkg_list_ext_sort_ data]]]
+[var sort [lambda [data] [list_ext._pkg_list_ext_sort_ data]]]

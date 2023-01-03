@@ -1,0 +1,45 @@
+;  Author: Bosley
+;  About:  This file provides a few"loop" wrappers to make construction and
+;          use easier 
+;
+;  Automatically sets up a loop structure with counters and will inc or dec
+;  depending on start and end parameters automatically. 
+;  body is expected to be a lambda that takes in a single parameter so the current index
+;  can be fed into it.
+;
+;  Example:
+;
+;  [std::auto_loop >= 100 0 [lambda [i] [block 
+;     [putln i]
+;  ]]]
+;
+[var std::auto_loop [lambda [condition start end body] [block
+   [if [sneq "lambda" [type body]] [
+      throw "expected lambda type for parameter: body"
+   ]]
+   [var op [if [< end start] [lambda [lhs rhs] [- lhs rhs]] [lambda [lhs rhs] [+ lhs rhs]] ]]
+   [loop [condition start end] [set start [op start 1] ] [
+      body start
+   ]]
+]]]
+
+;  Loop forever 
+;  This loop will continue to loop until an `exit` command is given or 
+;  an interrupt is given directly to sauros
+;  body is expected to be a lambda that takes in a single parameter so the current index
+;  can be fed into it.
+;
+;  Example:
+;
+; [std::main_loop [lambda [main_loop_idx] [block
+;    [putln main_loop_idx]
+;    [if [== main_loop_idx 100000] [exit 1]]
+; ]]]
+;
+[var std::main_loop [lambda [body] [block
+   [if [sneq "lambda" [type body]] [
+      throw "expected lambda type for parameter: body"
+   ]]
+   [var count 0]
+   [loop [true] [set count [+ 1 count]] [body count]]
+]]]
