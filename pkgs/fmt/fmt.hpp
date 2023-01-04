@@ -26,5 +26,29 @@ API_EXPORT
 extern sauros::cell_ptr
 _pkg_fmt_format_string_(sauros::cells_t &cells,
                         std::shared_ptr<sauros::environment_c> env);
+
+/*
+   Join all elements of a list into a string
+*/
+API_EXPORT
+extern sauros::cell_ptr
+_pkg_fmt_join_(sauros::cells_t &cells,
+               std::shared_ptr<sauros::environment_c> env);
+
+/*
+   Expand a string into a list of individual chars
+*/
+API_EXPORT
+extern sauros::cell_ptr
+_pkg_fmt_expand_(sauros::cells_t &cells,
+                 std::shared_ptr<sauros::environment_c> env);
+
+/*
+   Split a string into a list given a particular delimiter
+*/
+API_EXPORT
+extern sauros::cell_ptr
+_pkg_fmt_split_(sauros::cells_t &cells,
+                std::shared_ptr<sauros::environment_c> env);
 }
 #endif
