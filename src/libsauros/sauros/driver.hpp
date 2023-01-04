@@ -55,6 +55,10 @@ class file_executor_c : private driver_if {
    //! \param file The file to laod
    int run(const std::string &file);
 
+   //! \brief Indicate to the file executor that the program
+   //!        has finished
+   void finish();
+
  private:
    virtual void cell_returned(cell_ptr cell) override final;
    virtual void

@@ -1,12 +1,17 @@
 #include "system.hpp"
 #include <cstdlib>
 
+#include "sauros/profiler.hpp"
 #include <filesystem>
 #include <iostream>
 
 namespace sauros {
 
 system_c::system_c() {
+
+#ifdef PROFILER_ENABLED
+   profiler_c::get_profiler()->hit("system_c::system_c");
+#endif
 
    std::filesystem::path sauros_home;
 

@@ -13,12 +13,12 @@ namespace sauros {
 
 //! \brief Types of cells
 enum class cell_type_e {
+   REAL = 0,
+   INTEGER,
+   STRING,
    SYMBOL,
    LIST,
    LAMBDA,
-   STRING,
-   INTEGER,
-   REAL,
    BOX,
    ENCODED_SYMBOL
 };

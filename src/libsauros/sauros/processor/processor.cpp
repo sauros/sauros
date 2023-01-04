@@ -1,5 +1,6 @@
 #include "processor.hpp"
 
+#include "sauros/profiler.hpp"
 #include <iostream>
 #include <sstream>
 
@@ -16,6 +17,9 @@ processor_c::~processor_c() {
 void processor_c::cell_to_string(std::string &out, cell_ptr cell,
                                  std::shared_ptr<environment_c> env,
                                  bool show_space) {
+#ifdef PROFILER_ENABLED
+   profiler_c::get_profiler()->hit("processor_c::cell_to_string");
+#endif
    switch (cell->type) {
    case cell_type_e::REAL:
       [[fallthrough]];
@@ -63,6 +67,9 @@ void processor_c::cell_to_string(std::string &out, cell_ptr cell,
 
 void processor_c::quote_cell(std::string &out, cell_ptr cell,
                              std::shared_ptr<environment_c> env) {
+#ifdef PROFILER_ENABLED
+   profiler_c::get_profiler()->hit("processor_c::quote_cell");
+#endif
    switch (cell->type) {
    case cell_type_e::REAL:
       [[fallthrough]];
@@ -122,6 +129,9 @@ void processor_c::quote_cell(std::string &out, cell_ptr cell,
 
 cell_ptr processor_c::process_list(cells_t &cells,
                                    std::shared_ptr<environment_c> env) {
+#ifdef PROFILER_ENABLED
+   profiler_c::get_profiler()->hit("processor_c::process_list");
+#endif
    if (_yield_cell) {
       return _yield_cell;
    }
@@ -186,6 +196,9 @@ processor_c::retrieve_accessors(const std::string &value) {
 
 cell_ptr processor_c::process_cell(cell_ptr cell,
                                    std::shared_ptr<environment_c> env) {
+#ifdef PROFILER_ENABLED
+   profiler_c::get_profiler()->hit("processor_c::process_cell");
+#endif
 
    if (_yield_cell) {
       return _yield_cell;
@@ -248,6 +261,9 @@ cell_ptr processor_c::process_cell(cell_ptr cell,
 
 cell_ptr processor_c::process_lambda(cell_ptr cell, cells_t &cells,
                                      std::shared_ptr<environment_c> env) {
+#ifdef PROFILER_ENABLED
+   profiler_c::get_profiler()->hit("processor_c::process_lambda");
+#endif
    cells_t exps;
    for (auto param = cells.begin() + 1; param != cells.end(); ++param) {
 
@@ -285,6 +301,9 @@ cell_ptr processor_c::process_lambda(cell_ptr cell, cells_t &cells,
 void processor_c::reset() { _yield_cell = nullptr; }
 
 cell_ptr processor_c::clone_box(cell_ptr cell) {
+#ifdef PROFILER_ENABLED
+   profiler_c::get_profiler()->hit("processor_c::clone_box");
+#endif
 
    cell_c new_box(cell_type_e::BOX);
    new_box.box_env = std::shared_ptr<environment_c>(new environment_c());
@@ -296,6 +315,9 @@ cell_ptr processor_c::clone_box(cell_ptr cell) {
 
 cell_ptr processor_c::access_box_member(cell_ptr cell,
                                         std::shared_ptr<environment_c> &env) {
+#ifdef PROFILER_ENABLED
+   profiler_c::get_profiler()->hit("processor_c::access_box_member");
+#endif
 
    auto accessors = retrieve_accessors(cell->data);
 
