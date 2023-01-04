@@ -3,6 +3,6 @@
 #include "profiler.hpp"
 
 namespace sauros {
-profiler_c* profiler_c::_profiler = nullptr;
+profiler_c *profiler_c::_profiler = nullptr;
 }
 #endif

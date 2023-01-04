@@ -26,6 +26,10 @@ case $i in
     BUILD_FLAG="-DCMAKE_BUILD_TYPE=Release"
     shift
     ;;
+    -p|--profile)
+    BUILD_FLAG="-DCMAKE_BUILD_TYPE=Debug -DENABLE_PROFILER=ON"
+    shift
+    ;;
     -h|--help)
     echo " Options:"
     echo "  -r --release          build release"

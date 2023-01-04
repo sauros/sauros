@@ -1,9 +1,9 @@
 #include "processor.hpp"
 #include "sauros/driver.hpp"
+#include "sauros/profiler.hpp"
 #include <algorithm>
 #include <filesystem>
 #include <iostream>
-#include "sauros/profiler.hpp"
 
 namespace sauros {
 
@@ -51,7 +51,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_IMPORT] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::IMPORT");
+          profiler_c::get_profiler()->hit("processor_builtin::IMPORT");
 #endif
           if (cells.size() < 2) {
              throw runtime_exception_c(
@@ -87,7 +87,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_USE] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::USE");
+          profiler_c::get_profiler()->hit("processor_builtin::USE");
 #endif
           if (cells.size() < 2) {
              throw runtime_exception_c(
@@ -111,7 +111,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_EXIT] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::EXIT");
+          profiler_c::get_profiler()->hit("processor_builtin::EXIT");
 #endif
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -126,7 +126,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_BREAK] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::BREAK");
+          profiler_c::get_profiler()->hit("processor_builtin::BREAK");
 #endif
           if (cells.size() != 1) {
              throw runtime_exception_c(
@@ -141,7 +141,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_TYPE] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::TYPE");
+          profiler_c::get_profiler()->hit("processor_builtin::TYPE");
 #endif
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -160,7 +160,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_FRONT] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::FRONT");
+          profiler_c::get_profiler()->hit("processor_builtin::FRONT");
 #endif
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -186,7 +186,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_BACK] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::BACK");
+          profiler_c::get_profiler()->hit("processor_builtin::BACK");
 #endif
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -212,7 +212,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_AT] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::AT");
+          profiler_c::get_profiler()->hit("processor_builtin::AT");
 #endif
           if (cells.size() != 3) {
              throw runtime_exception_c("at command expects 2 parameters, but " +
@@ -249,7 +249,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_CLEAR] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::CLEAR");
+          profiler_c::get_profiler()->hit("processor_builtin::CLEAR");
 #endif
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -271,7 +271,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_POP] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::POP");
+          profiler_c::get_profiler()->hit("processor_builtin::POP");
 #endif
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -295,7 +295,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_PUSH] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::PUSH");
+          profiler_c::get_profiler()->hit("processor_builtin::PUSH");
 #endif
           if (cells.size() != 3) {
              throw runtime_exception_c(
@@ -319,7 +319,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_THROW] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::THROW");
+          profiler_c::get_profiler()->hit("processor_builtin::THROW");
 #endif
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -343,7 +343,7 @@ void processor_c::populate_standard_builtins() {
        cell_c>([this](cells_t &cells,
                       std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::NOT");
+      profiler_c::get_profiler()->hit("processor_builtin::NOT");
 #endif
       if (cells.size() != 2) {
          throw runtime_exception_c("not command expects 1 parameters, but " +
@@ -371,7 +371,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_ASSERT] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::ASSERT");
+          profiler_c::get_profiler()->hit("processor_builtin::ASSERT");
 #endif
           if (cells.size() < 3) {
              throw runtime_exception_c(
@@ -416,7 +416,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_VAR] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::VAR");
+          profiler_c::get_profiler()->hit("processor_builtin::VAR");
 #endif
 
           if (cells.size() < 2) {
@@ -465,7 +465,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_PUT] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::PUT");
+          profiler_c::get_profiler()->hit("processor_builtin::PUT");
 #endif
           for (auto i = cells.begin() + 1; i != cells.end(); ++i) {
 
@@ -482,7 +482,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_YIELD] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::YIELD");
+          profiler_c::get_profiler()->hit("processor_builtin::YIELD");
 #endif
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -495,7 +495,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_PUTLN] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::PUTLN");
+          profiler_c::get_profiler()->hit("processor_builtin::PUTLN");
 #endif
           for (auto i = cells.begin() + 1; i != cells.end(); ++i) {
 
@@ -513,7 +513,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_LAMBDA] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::LAMBDA");
+          profiler_c::get_profiler()->hit("processor_builtin::LAMBDA");
 #endif
           // First item following lambda must be a list of parameters
           cells_t body(cells.begin() + 1, cells.end());
@@ -526,7 +526,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_ITER] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::ITER");
+          profiler_c::get_profiler()->hit("processor_builtin::ITER");
 #endif
           if (cells.size() != 4) {
              throw runtime_exception_c(
@@ -570,7 +570,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_LOOP] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::LOOP");
+          profiler_c::get_profiler()->hit("processor_builtin::LOOP");
 #endif
           if (cells.size() != 3 && cells.size() != 4) {
              throw runtime_exception_c(
@@ -625,7 +625,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_SET] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::SET");
+          profiler_c::get_profiler()->hit("processor_builtin::SET");
 #endif
           if (cells.size() != 3) {
              throw runtime_exception_c(
@@ -683,7 +683,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_SET_AT] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::SET_AT");
+          profiler_c::get_profiler()->hit("processor_builtin::SET_AT");
 #endif
           if (cells.size() != 4) {
              throw runtime_exception_c(
@@ -748,7 +748,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_BLOCK] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::BLOCK");
+          profiler_c::get_profiler()->hit("processor_builtin::BLOCK");
 #endif
           for (size_t i = 1; i < cells.size() - 1; i++) {
              auto r = process_cell(cells[i], env);
@@ -764,7 +764,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_LIST] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::LIST");
+          profiler_c::get_profiler()->hit("processor_builtin::LIST");
 #endif
           cells_t body;
 
@@ -781,7 +781,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_TRY] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::TRY");
+          profiler_c::get_profiler()->hit("processor_builtin::TRY");
 #endif
           if (cells.size() != 3) {
              throw runtime_exception_c(
@@ -814,7 +814,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_COMPOSE] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::COMPOSE");
+          profiler_c::get_profiler()->hit("processor_builtin::COMPOSE");
 #endif
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -834,7 +834,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_DECOMPOSE] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::DECOMPOSE");
+          profiler_c::get_profiler()->hit("processor_builtin::DECOMPOSE");
 #endif
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -855,7 +855,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_BOX] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::BOX");
+          profiler_c::get_profiler()->hit("processor_builtin::BOX");
 #endif
           if (cells.size() != 3) {
              throw runtime_exception_c(
@@ -885,7 +885,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_TRUE] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::TRUE");
+          profiler_c::get_profiler()->hit("processor_builtin::TRUE");
 #endif
           return std::make_shared<cell_c>(CELL_TRUE);
        });
@@ -893,7 +893,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_FALSE] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::FALSE");
+          profiler_c::get_profiler()->hit("processor_builtin::FALSE");
 #endif
           return std::make_shared<cell_c>(CELL_FALSE);
        });
@@ -901,7 +901,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_NIL] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::NIL");
+          profiler_c::get_profiler()->hit("processor_builtin::NIL");
 #endif
           return std::make_shared<cell_c>(CELL_NIL);
        });
@@ -909,7 +909,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_IS_NIL] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::IS_NIL");
+          profiler_c::get_profiler()->hit("processor_builtin::IS_NIL");
 #endif
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -924,7 +924,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_LEN] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::LEN");
+          profiler_c::get_profiler()->hit("processor_builtin::LEN");
 #endif
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -942,7 +942,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_REV] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::REV");
+          profiler_c::get_profiler()->hit("processor_builtin::REV");
 #endif
           if (cells.size() != 2) {
              throw runtime_exception_c("rev command expects 1 parameter, but " +
@@ -966,7 +966,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_IF] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::IF");
+          profiler_c::get_profiler()->hit("processor_builtin::IF");
 #endif
           if (cells.size() != 3 && cells.size() != 4) {
              throw runtime_exception_c(
@@ -988,7 +988,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_SEQ] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::SEQ");
+          profiler_c::get_profiler()->hit("processor_builtin::SEQ");
 #endif
           if (cells.size() != 3) {
              throw runtime_exception_c(
@@ -1008,7 +1008,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_SNEQ] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::SNEQ");
+          profiler_c::get_profiler()->hit("processor_builtin::SNEQ");
 #endif
           if (cells.size() != 3) {
              throw runtime_exception_c(
@@ -1028,7 +1028,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_LT] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::LT");
+          profiler_c::get_profiler()->hit("processor_builtin::LT");
 #endif
           return {perform_arithmetic(
               "<", cells,
@@ -1038,7 +1038,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_LT_EQ] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::LT_EQ");
+          profiler_c::get_profiler()->hit("processor_builtin::LT_EQ");
 #endif
           return {perform_arithmetic(
               "<=", cells,
@@ -1049,7 +1049,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_GT] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::GT");
+          profiler_c::get_profiler()->hit("processor_builtin::GT");
 #endif
           return {perform_arithmetic(
               ">", cells,
@@ -1059,7 +1059,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_GT_EQ] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::GT_EQ");
+          profiler_c::get_profiler()->hit("processor_builtin::GT_EQ");
 #endif
           return {perform_arithmetic(
               ">=", cells,
@@ -1070,7 +1070,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_EQ_EQ] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::EQ_EQ");
+          profiler_c::get_profiler()->hit("processor_builtin::EQ_EQ");
 #endif
           return {perform_arithmetic(
               "==", cells,
@@ -1081,7 +1081,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_NOT_EQ] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::NOT_EQ");
+          profiler_c::get_profiler()->hit("processor_builtin::NOT_EQ");
 #endif
           return {perform_arithmetic(
               "!=", cells,
@@ -1092,7 +1092,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_ADD] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::ADD");
+          profiler_c::get_profiler()->hit("processor_builtin::ADD");
 #endif
           return {perform_arithmetic(
               "+", cells,
@@ -1102,7 +1102,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_SUB] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::SUB");
+          profiler_c::get_profiler()->hit("processor_builtin::SUB");
 #endif
           return {perform_arithmetic(
               "-", cells,
@@ -1112,7 +1112,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_DIV] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::DIV");
+          profiler_c::get_profiler()->hit("processor_builtin::DIV");
 #endif
           return {perform_arithmetic(
               "/", cells,
@@ -1129,7 +1129,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_MUL] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::MUL");
+          profiler_c::get_profiler()->hit("processor_builtin::MUL");
 #endif
           return {perform_arithmetic(
               "*", cells,
@@ -1139,7 +1139,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_MOD] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::MOD");
+          profiler_c::get_profiler()->hit("processor_builtin::MOD");
 #endif
           return {perform_arithmetic(
               "%", cells,
@@ -1152,7 +1152,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_OR] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::OR");
+          profiler_c::get_profiler()->hit("processor_builtin::OR");
 #endif
           return {perform_arithmetic(
               "%", cells,
@@ -1168,7 +1168,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_AND] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::AND");
+          profiler_c::get_profiler()->hit("processor_builtin::AND");
 #endif
           return {perform_arithmetic(
               "%", cells,
@@ -1184,7 +1184,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_XOR] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::XOR");
+          profiler_c::get_profiler()->hit("processor_builtin::XOR");
 #endif
           return {perform_arithmetic(
               "%", cells,
@@ -1201,7 +1201,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_BITWISE_AND] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::BW_AND");
+          profiler_c::get_profiler()->hit("processor_builtin::BW_AND");
 #endif
           return {perform_arithmetic(
               "%", cells,
@@ -1214,7 +1214,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_BITWISE_OR] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::BW_OR");
+          profiler_c::get_profiler()->hit("processor_builtin::BW_OR");
 #endif
           return {perform_arithmetic(
               "%", cells,
@@ -1227,7 +1227,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_BITWISE_LSH] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::BW_LSH");
+          profiler_c::get_profiler()->hit("processor_builtin::BW_LSH");
 #endif
           return {perform_arithmetic(
               "%", cells,
@@ -1241,7 +1241,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_BITWISE_RSH] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::BW_RSH");
+          profiler_c::get_profiler()->hit("processor_builtin::BW_RSH");
 #endif
           return {perform_arithmetic(
               "%", cells,
@@ -1255,7 +1255,7 @@ void processor_c::populate_standard_builtins() {
    _builtins[BUILTIN_BITWISE_XOR] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::BW_XOR");
+          profiler_c::get_profiler()->hit("processor_builtin::BW_XOR");
 #endif
           return {perform_arithmetic(
               "%", cells,
@@ -1269,7 +1269,7 @@ void processor_c::populate_standard_builtins() {
        cell_c>([this](cells_t &cells,
                       std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::BW_NOT");
+      profiler_c::get_profiler()->hit("processor_builtin::BW_NOT");
 #endif
       if (cells.size() != 2) {
          throw runtime_exception_c("bw_not command expects 1 parameters, but " +
@@ -1311,9 +1311,9 @@ void processor_c::populate_standard_builtins() {
        [this, conversion_fn](cells_t &cells,
                              std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::AS_INT");
+          profiler_c::get_profiler()->hit("processor_builtin::AS_INT");
 #endif
-                              
+
           if (cells.size() != 2) {
              throw runtime_exception_c(
                  "as_int command expects 1 parameters, but " +
@@ -1331,7 +1331,7 @@ void processor_c::populate_standard_builtins() {
        [this, conversion_fn](cells_t &cells,
                              std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::AS_STR");
+          profiler_c::get_profiler()->hit("processor_builtin::AS_STR");
 #endif
           if (cells.size() != 2) {
              throw runtime_exception_c(
@@ -1351,7 +1351,7 @@ void processor_c::populate_standard_builtins() {
        [this, conversion_fn](cells_t &cells,
                              std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_builtin::AS_REAL");
+          profiler_c::get_profiler()->hit("processor_builtin::AS_REAL");
 #endif
           if (cells.size() != 2) {
              throw runtime_exception_c(

@@ -1,4 +1,5 @@
 #include "driver.hpp"
+#include "profiler.hpp"
 #include "rang.hpp"
 #include <csignal>
 #include <filesystem>
@@ -6,7 +7,6 @@
 #include <sauros/linenoise/linenoise.hpp>
 #include <sauros/system/system.hpp>
 #include <unordered_map>
-#include "profiler.hpp"
 
 namespace sauros {
 
@@ -150,13 +150,12 @@ void driver_if::indicate_complete() {
    }
 }
 
-void driver_if::finish() {
+void file_executor_c::finish() {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("driver_if::finish");
+   profiler_c::get_profiler()->hit("file_executor_c::finish");
    profiler_c::get_profiler()->dump();
 #endif
 }
-
 
 void driver_if::execute(parser::segment_parser_c::segment_s segment) {
    try {

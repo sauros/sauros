@@ -1,25 +1,34 @@
+/*
+   This is a simple profile utility used to determine
+   how many time a given function/ instruction is executed
+   for a given sau file.
 
+   Typically singletons provide a source of bad code smell,
+   but the profiler is meant to be dropped in anywhere that
+   someone may be called whenever the option is enabled in
+   the build system... no better way
+*/
 #ifdef PROFILER_ENABLED
 
 #ifndef SAUROS_PROFILER_HPP
 #define SAUROS_PROFILER_HPP
 
+#include "rang.hpp"
+#include <cstdint>
+#include <iomanip>
+#include <iostream>
 #include <string>
 #include <unordered_map>
-#include <cstdint>
-#include <iostream>
-#include "rang.hpp"
-#include <iomanip>
 
 namespace sauros {
 
 class profiler_c {
 
-public:
-   profiler_c(profiler_c&) = delete;
-   void operator= (const profiler_c&) = delete;
+ public:
+   profiler_c(profiler_c &) = delete;
+   void operator=(const profiler_c &) = delete;
 
-   static profiler_c* get_profiler(){
+   static profiler_c *get_profiler() {
       if (!_profiler) {
          _profiler = new profiler_c();
       }
@@ -35,21 +44,25 @@ public:
    }
 
    void dump() {
-      for(auto [source, count] : _hits) {
-         std::cout << rang::fg::cyan << std::setw(20) << source << rang::fg::reset << ": " << count << std::endl;
+      std::cout << rang::fg::yellow << "Profile dump\n"
+                << rang::fg::reset
+                << "The following items may not show in their execution order\n"
+                << std::endl;
+      for (auto [source, count] : _hits) {
+         std::cout << rang::fg::cyan << source << rang::fg::reset << " : "
+                   << count << std::endl;
       }
    }
 
-protected:
-   static profiler_c * _profiler;
+ protected:
+   static profiler_c *_profiler;
 
-   profiler_c(){}
+   profiler_c() {}
 
    std::unordered_map<std::string, uint64_t> _hits;
 };
 
-
-}
+} // namespace sauros
 
 #endif
 #endif

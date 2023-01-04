@@ -24,9 +24,6 @@ class driver_if {
    //! \brief Mark that fact that no more source is coming in
    void indicate_complete();
 
-   //! \brief Indicate that the program is about to close
-   void finish();
-
  protected:
    void execute(const char *source, const uint64_t line_number,
                 std::string &line);
@@ -57,6 +54,10 @@ class file_executor_c : private driver_if {
    //! \brief Load and execute the file
    //! \param file The file to laod
    int run(const std::string &file);
+
+   //! \brief Indicate to the file executor that the program
+   //!        has finished
+   void finish();
 
  private:
    virtual void cell_returned(cell_ptr cell) override final;

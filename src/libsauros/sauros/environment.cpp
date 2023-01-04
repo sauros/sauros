@@ -1,10 +1,14 @@
 #include "environment.hpp"
 
+#include "profiler.hpp"
 #include <iostream>
 
 namespace sauros {
 
 bool environment_c::exists(const std::string &item) {
+#ifdef PROFILER_ENABLED
+   profiler_c::get_profiler()->hit("environment_c::exists");
+#endif
    if (_env.find(item) != _env.end()) {
       return true;
    }
@@ -19,6 +23,9 @@ bool environment_c::exists(const std::string &item) {
 environment_c::environment_c(cells_t &params, cells_t &args,
                              std::shared_ptr<environment_c> outer)
     : _parent(outer) {
+#ifdef PROFILER_ENABLED
+   profiler_c::get_profiler()->hit("environment_c::environment_c");
+#endif
 
    auto arg = args.begin();
    for (auto param = params.begin(); param != params.end(); ++param) {
@@ -27,13 +34,24 @@ environment_c::environment_c(cells_t &params, cells_t &args,
 }
 
 void environment_c::set(const std::string &item, cell_ptr cell) {
+#ifdef PROFILER_ENABLED
+   profiler_c::get_profiler()->hit("environment_c::set");
+#endif
    _env[item] = cell;
 }
 
-cell_ptr &environment_c::get(const std::string &item) { return _env[item]; }
+cell_ptr &environment_c::get(const std::string &item) {
+#ifdef PROFILER_ENABLED
+   profiler_c::get_profiler()->hit("environment_c::get");
+#endif
+   return _env[item];
+}
 
 environment_c *environment_c::find(const std::string &var,
                                    cell_ptr origin_cell) {
+#ifdef PROFILER_ENABLED
+   profiler_c::get_profiler()->hit("environment_c::find");
+#endif
 
    if (_env.find(var) != _env.end()) {
       return this;
@@ -46,6 +64,9 @@ environment_c *environment_c::find(const std::string &var,
 }
 
 bool environment_c::package_loaded(const std::string &package) {
+#ifdef PROFILER_ENABLED
+   profiler_c::get_profiler()->hit("environment_c::package_loaded");
+#endif
    if (_loaded_packages.find(package) != _loaded_packages.end()) {
       return true;
    }
@@ -57,6 +78,9 @@ bool environment_c::package_loaded(const std::string &package) {
 
 void environment_c::save_package(const std::string &name,
                                  std::shared_ptr<rll_wrapper_c> lib) {
+#ifdef PROFILER_ENABLED
+   profiler_c::get_profiler()->hit("environment_c::save_package");
+#endif
    _loaded_packages[name] = lib;
 }
 

@@ -1,5 +1,6 @@
 #include "../driver.hpp"
 #include "processor.hpp"
+#include "sauros/profiler.hpp"
 #include <filesystem>
 #include <iostream>
 
