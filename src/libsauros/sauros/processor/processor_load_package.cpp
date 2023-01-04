@@ -1,8 +1,8 @@
 #include "../driver.hpp"
 #include "processor.hpp"
-#include "sauros/profiler.hpp"
 #include <filesystem>
 #include <iostream>
+#include "sauros/profiler.hpp"
 
 #include <RLL/rll_wrapper.hpp>
 
@@ -17,7 +17,9 @@ namespace sauros {
 
 void processor_c::load_package(const std::string &target, location_s *location,
                                std::shared_ptr<environment_c> env) {
-
+#ifdef PROFILER_ENABLED
+   profiler_c::get_profiler()->hit("processor_c::load_package");
+#endif
    // Check to see if its already loaded
    if (env->package_loaded(target)) {
       return;
