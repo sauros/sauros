@@ -6,6 +6,9 @@
 [var library_functions [list
    "_pkg_fmt_format_encode_"
    "_pkg_fmt_format_string_"
+   "_pkg_fmt_join_"
+   "_pkg_fmt_expand_"
+   "_pkg_fmt_split_"
 ]]
 
 ; Files to include under the current pkg

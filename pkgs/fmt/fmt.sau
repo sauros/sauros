@@ -6,3 +6,12 @@
 
 ; Encode only escaped chars into a string
 [var string [lambda [string] [fmt._pkg_fmt_format_string_ string]]]
+
+; Join all elements of a list and make a string
+[var join [lambda [source] [fmt._pkg_fmt_join_ source]]]
+
+; Expand a string into all of its chars
+[var expand [lambda [source] [fmt._pkg_fmt_expand_ source]]]
+
+; Split a string by a given delimiter
+[var split [lambda [source delimiter] [fmt._pkg_fmt_split_ source delimiter]]]

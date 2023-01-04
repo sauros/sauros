@@ -1,8 +1,8 @@
 #include "../driver.hpp"
 #include "processor.hpp"
+#include "sauros/profiler.hpp"
 #include <filesystem>
 #include <iostream>
-#include "sauros/profiler.hpp"
 
 #include <RLL/rll_wrapper.hpp>
 

@@ -140,3 +140,73 @@ _pkg_fmt_format_string_(sauros::cells_t &cells,
 
    return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING, buffer);
 }
+
+sauros::cell_ptr _pkg_fmt_join_(sauros::cells_t &cells,
+                                std::shared_ptr<sauros::environment_c> env) {
+   auto source = c_api_process_cell(cells[1], env);
+   if (source->type != sauros::cell_type_e::LIST) {
+      throw sauros::processor_c::runtime_exception_c(
+          "join expects source cell to be a list", cells[1]);
+   }
+
+   std::string result;
+   for (auto &e : source->list) {
+      auto string_cell = c_api_cell_to_string(e, env);
+      result += string_cell->data;
+   }
+
+   return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING, result);
+}
+
+sauros::cell_ptr _pkg_fmt_expand_(sauros::cells_t &cells,
+                                  std::shared_ptr<sauros::environment_c> env) {
+
+   auto source = c_api_process_cell(cells[1], env);
+
+   sauros::cell_ptr result =
+       std::make_shared<sauros::cell_c>(sauros::cell_type_e::LIST);
+
+   for (auto &c : source->data) {
+      result->list.push_back(std::make_shared<sauros::cell_c>(
+          sauros::cell_type_e::STRING, std::string(1, c)));
+   }
+   return result;
+}
+
+sauros::cell_ptr _pkg_fmt_split_(sauros::cells_t &cells,
+                                 std::shared_ptr<sauros::environment_c> env) {
+
+   auto source = c_api_process_cell(cells[1], env);
+   if (source->type != sauros::cell_type_e::STRING) {
+      throw sauros::processor_c::runtime_exception_c(
+          "split expects source cell to be a string", cells[1]);
+   }
+
+   auto delimiter = c_api_process_cell(cells[2], env);
+   if (delimiter->type != sauros::cell_type_e::STRING) {
+      throw sauros::processor_c::runtime_exception_c(
+          "split expects delimiter cell to be a string", cells[2]);
+   }
+
+   sauros::cell_ptr result =
+       std::make_shared<sauros::cell_c>(sauros::cell_type_e::LIST);
+
+   std::string buffer;
+   for (auto &c : source->data) {
+      if (std::string(1, c) == delimiter->data) {
+         result->list.push_back(std::make_shared<sauros::cell_c>(
+             sauros::cell_type_e::STRING, buffer));
+         buffer.clear();
+      } else {
+         buffer += c;
+      }
+   }
+
+   if (!buffer.empty()) {
+      result->list.push_back(std::make_shared<sauros::cell_c>(
+          sauros::cell_type_e::STRING, buffer));
+      buffer.clear();
+   }
+
+   return result;
+}
