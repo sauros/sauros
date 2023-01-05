@@ -112,7 +112,7 @@ static inline void remove_comments(std::string &line) {
 
    // Functioned in case we want more comment tokens
    auto remove_after = [](const std::size_t idx, std::string &line) {
-      if (idx == std::string::npos || idx == 0) {
+      if (idx == std::string::npos) {
          return;
       }
       line = line.substr(0, idx);
