@@ -1,0 +1,57 @@
+[var mandelbrot [lambda [real image] [
+   [block
+      [var result]
+      [var limit 100]
+      [var z_real real]
+      [var z_image image]
+      [var k 0]
+      [loop [ and [not [len result]] [< k limit]] [set k [+ k 1]] [
+         [block
+            [var r2 [* z_real z_real]]
+            [var i2 [* z_image z_image]]
+            
+            [if [> [+ r2 i2] 4.0] [push result k]]
+
+            [set z_image [+ [* z_real [* z_image 2.0]] image]]
+            [set z_real [+ real [- r2 i2]]]
+         ]
+      ]]
+      [if [not [len result]] [push result "#nil"] ]
+      [front result]
+   ]
+]]]
+
+[var width 100.0]
+[var height 50.0]
+
+[var x_start -3.0]
+[var x_end 2.0]
+
+[var y_start -2.0]
+[var y_end 2.0]
+
+[var dx [/ [- x_end x_start] [- width 1]]]
+[var dy [/ [- y_end y_start] [- height 1]]]
+
+[var pixels [list "." "." "," "-" "^" "_" "*" "&" "^" "%" "1" "2" "3" "4" "5"]]
+
+[var i 0.0]
+[loop [< i height] [set i [+ 1 i]] [
+   [block
+      [var j 0.0]
+      [loop [< j width] [set j [+ 1 j]] [
+         [block
+            [var x  [ + x_start [* j dx] ]]
+            [var y  [ - y_end [* i dy] ]]
+            [var value [mandelbrot x y]]
+            [if [seq value "#nil"] [put " "] [
+               [block
+                  [var idx [% value [len pixels]]]
+                  [put [at idx pixels]]
+               ]
+            ]]
+         ]
+      ]]
+      [putln ""]
+   ]
+]]
