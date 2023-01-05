@@ -5,6 +5,7 @@
 #include "sauros/cell.hpp"
 #include "sauros/environment.hpp"
 #include "sauros/types.hpp"
+#include <string>
 
 namespace sauros {
 namespace parser {
