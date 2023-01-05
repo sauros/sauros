@@ -266,11 +266,7 @@ void segment_parser_c::set_origin(const std::string &origin) {
 
 std::optional<cell_ptr>
 segment_parser_c::submit(segment_parser_c::segment_s segment) {
-
-   std::size_t comment_loc = segment.line.find_first_of(";");
-   if (comment_loc != std::string::npos) {
-      segment.line = segment.line.substr(0, comment_loc);
-   }
+   parser::remove_comments(segment.line);
 
    if (segment.line.empty()) {
       return {};

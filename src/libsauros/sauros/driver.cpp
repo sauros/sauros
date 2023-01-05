@@ -105,10 +105,7 @@ class input_buffer_c {
 std::optional<std::string> input_buffer_c::submit(std::string &line) {
 
    // Remove comments
-   std::size_t comment_loc = line.find_first_of(";");
-   if (comment_loc != std::string::npos) {
-      line = line.substr(0, comment_loc);
-   }
+   parser::remove_comments(line);
 
    if (line.empty()) {
       return {};

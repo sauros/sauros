@@ -86,7 +86,9 @@ template <class T> struct Less {
 
 namespace type_traits_internal {
 
-template <typename... Ts> struct VoidTImpl { using type = void; };
+template <typename... Ts> struct VoidTImpl {
+   using type = void;
+};
 
 // NOTE: The `is_detected` family of templates here differ from the library
 // fundamentals specification in that for library fundamentals, `Op<Args...>` is
@@ -532,7 +534,9 @@ template <class Policy, class = void> struct hash_policy_traits {
 namespace phmap {
 namespace internal {
 
-template <typename T> struct identity { typedef T type; };
+template <typename T> struct identity {
+   typedef T type;
+};
 
 template <typename T> using identity_t = typename identity<T>::type;
 
@@ -860,7 +864,9 @@ template <typename T, size_t N> struct Gen {
        typename Extend<typename Gen<T, N / 2>::type, N / 2, N % 2>::type;
 };
 
-template <typename T> struct Gen<T, 0> { using type = integer_sequence<T>; };
+template <typename T> struct Gen<T, 0> {
+   using type = integer_sequence<T>;
+};
 
 } // namespace utility_internal
 
@@ -3496,9 +3502,13 @@ template <size_t> using IntToSize = size_t;
 
 template <class> using TypeToSize = size_t;
 
-template <class T> struct Type : NotAligned<T> { using type = T; };
+template <class T> struct Type : NotAligned<T> {
+   using type = T;
+};
 
-template <class T, size_t N> struct Type<Aligned<T, N>> { using type = T; };
+template <class T, size_t N> struct Type<Aligned<T, N>> {
+   using type = T;
+};
 
 template <class T>
 struct SizeOf : NotAligned<T>, std::integral_constant<size_t, sizeof(T)> {};

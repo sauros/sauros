@@ -97,6 +97,28 @@ parse_line(const char *source_descrption, //! Description of the source of the
            std::size_t line_number,       //! The line number being parsed
            std::string line);             //! The line itsself
 
+//! \brief Remove the comments from a specific line
+//! \param line The line to strip comments from
+//! \post The line will be directly modified to be without comments
+static constexpr void remove_comments(std::string &line) {
+
+   // # lines will be entirely removed, though this way they can still
+   // be used in variable names/ etc but still allow for #! at the
+   // start of a file
+   if (line.size() && line[0] == '#') {
+      line.clear();
+   }
+
+   // Functioned in case we want more comment tokens
+   constexpr auto remove_after = [](const std::size_t idx, std::string &line) {
+      if (idx == std::string::npos || idx == 0) {
+         return;
+      }
+      line = line.substr(0, idx);
+      return;
+   };
+   remove_after(line.find_first_of(';'), line);
+}
 } // namespace parser
 } // namespace sauros
 

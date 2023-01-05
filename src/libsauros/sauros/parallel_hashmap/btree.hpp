@@ -93,7 +93,9 @@ namespace type_traits_internal {
 #pragma warning(disable : 4624)
 #endif // defined(_MSC_VER) && !defined(__GNUC__)
 
-template <class T> union SingleMemberUnion { T t; };
+template <class T> union SingleMemberUnion {
+   T t;
+};
 
 // Restore the state of the destructor warning that was silenced above.
 #if defined(_MSC_VER) && !defined(__GNUC__)
