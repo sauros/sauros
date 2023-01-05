@@ -1,0 +1,20 @@
+[import "lib/todo_data.sau"]
+[import "lib/todo_selector.sau"]
+
+[if [not [len @args]] [block
+    [putln "Please provide a file for todo data"]
+    [exit 0]
+]]
+
+[var my_todos [todo::data::load [at 0 @args]]]
+
+
+; [push my_todos.entries [todo::entry::new "test" "a test entry"]]
+; [push my_todos.entries [todo::entry::new "test" "a test entry"]]
+; [push my_todos.entries [todo::entry::new "test" "a test entry"]]
+
+;[todo::data::save my_todos]
+
+;[todo::data::dump my_todos]
+
+[todo::selector::select_from my_todos 5]

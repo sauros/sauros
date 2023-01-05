@@ -312,7 +312,7 @@ void processor_c::populate_standard_builtins() {
           auto variable = process_cell(cells[1], env);
           auto value = process_cell(cells[2], env);
 
-          variable->list.push_back(value);
+          variable->list.push_back(value->clone());
           return std::make_shared<cell_c>(CELL_TRUE);
        });
 
@@ -489,7 +489,7 @@ void processor_c::populate_standard_builtins() {
                  "Yield command expects only one parameter", cells[0]);
           }
           _yield_cell = process_cell(cells[1], env);
-          return std::make_shared<cell_c>(CELL_TRUE);
+          return _yield_cell;
        });
 
    _builtins[BUILTIN_PUTLN] = std::make_shared<cell_c>(
