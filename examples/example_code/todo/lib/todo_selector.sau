@@ -1,11 +1,12 @@
 [import "lib/todo_entry.sau"]
 [import "std/switch"]
+[use "io"]
+[use "os"]
 
 [box __::anonymous::todo::selector::entry [block
     [var origin_idx 0]
     [var value ""]
 ]]
-
 
 [var __::anonymous::todo::selector::build_pages 
 [lambda [data_set max_per_screen] [block
@@ -39,18 +40,71 @@
     [yield pages]
 ]]]
 
+[var todo__::anonymous::todo::selector::show_page 
+[lambda [page max_selection_inclusive page_number total_pages] [block
+    [os.clear_screen]
+    [iter entry page [putln [fmt.encode "[%] : %" [list entry.origin_idx entry.value]]]]
+
+    [putln "Page " page_number "/" total_pages]
+    [putln "Please use `n` for next page, `p` for previous, or select the id of the entry to select"]
+
+    [var value]
+    [var continue_loop 1]
+    [loop [continue_loop] [block
+        [var selection [io.get_string "[n] [p] [<int>]: "]]
+        [std::switch selection [list
+            [std::case "n" [lambda [] [block
+                    [set value "n"]
+                    [set continue_loop 0]
+                ]]]
+            [std::case "p" [lambda [] [block
+                    [set value "p"]
+                    [set continue_loop 0]
+                ]]]
+        ] [lambda [] [block
+            [if [!= 0 [len [fmt.expand selection]]]
+                [try
+                    [block
+                        [var temp_value [as_int selection]]
+                        [if [ > temp_value max_selection_inclusive] [throw "selection out of range"]]
+                        [if [ < temp_value 0] [throw "selection out of range"]]
+                        [set value temp_value]
+                        [set continue_loop 0]
+                    ]
+                    [
+                        putln "Invalid value: " $
+                    ]
+                ]
+            ]
+        ]]]
+    ]]
+    [yield value]
+]]]
+
 [var todo::selector::select_from [lambda [data_set max_per_screen] [block
 
     [var pages [__::anonymous::todo::selector::build_pages data_set max_per_screen]]
+    [var valid_selection_max [- [len data_set.entries] 1]]
 
-    [putln "There are " [len pages] " pages"]
-
-    [iter page pages [block
-
-        [putln "This page has " [len page] " entries"]
-        [iter entry page [block 
-            [putln [fmt.encode "[%] : %" [list entry.origin_idx entry.value]]]
-        ]]
+    [if [== 0 [len pages]] [block 
+        [putln "Nothing to select from"]
+        [yield nil]
     ]]
 
+    [var current_page 0]
+    [loop [true] [block
+        [var x [todo__::anonymous::todo::selector::show_page [at current_page pages] valid_selection_max [+ 1 current_page] [len pages]]]
+        [if [sneq "integer" [type x]] [block
+            [if [seq "n" x] [block
+                [set current_page [+ 1 current_page]]
+                [if [== current_page [len pages]] [set current_page 0]]
+            ]]
+            [if [seq "p" x] [
+                [if [== current_page 0] [set current_page [- [len pages] 1]] [set current_page [- current_page 1]]  ]
+            ]]
+        ]
+        [
+            [yield x]
+        ]]
+    ]]
 ]]]
