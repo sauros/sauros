@@ -84,3 +84,11 @@ having to be cloned into memory every time, and having cells manage the location
 
 primality.sau >> averaged an execution time of  4.8319s ( 4831.8663ms )  after  50  executions
 mandelbrot.sau >> averaged an execution time of  1.2559s ( 1255.8673ms )  after  50  executions
+
+
+# Changing of benchmark platform:
+
+All benchmarks are now running on `sushi` - Current code runs : 
+
+primality.sau >> averaged an execution time of  0.8564s ( 856.4176ms )  after  50  executions
+mandelbrot.sau >> averaged an execution time of  0.2326s ( 232.6051ms )  after  50  execution
