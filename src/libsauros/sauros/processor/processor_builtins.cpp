@@ -1364,6 +1364,36 @@ void processor_c::populate_standard_builtins() {
                  cell_type_e::REAL, std::to_string(std::stod(target->data)));
           });
        });
+
+   _builtins[BUILTIN_AS_LIST] = std::make_shared<cell_c>(
+       [this, conversion_fn](cells_t &cells,
+                             std::shared_ptr<environment_c> env) -> cell_ptr {
+#ifdef PROFILER_ENABLED
+          profiler_c::get_profiler()->hit("processor_builtin::AS_LIST");
+#endif
+          if (cells.size() != 2) {
+             throw runtime_exception_c(
+                 "as_list command expects 1 parameters, but " +
+                     std::to_string(cells.size() - 1) + " were given",
+                 cells[0]);
+          }
+
+          auto target = process_cell(cells[1], env);
+          if (static_cast<unsigned>(target->type) >
+              static_cast<unsigned>(cell_type_e::STRING)) {
+             throw runtime_exception_c("as_list command expects parameter to "
+                                       "be integer, real, or string type",
+                                       cells[1]);
+          }
+
+          cell_ptr result = std::make_shared<cell_c>(cell_type_e::LIST);
+          for (auto c : target->data) {
+             std::string as_individual = std::string(1, c);
+             result->list.push_back(
+                 std::make_shared<cell_c>(cell_type_e::STRING, as_individual));
+          }
+          return result;
+       });
 }
 
 } // namespace sauros
