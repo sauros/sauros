@@ -550,6 +550,7 @@ void processor_c::populate_standard_builtins() {
 
           auto body = &cells[3];
           for (auto &c : processed_list->list) {
+
              // This will store the iter value for the user to access
              auto temp_iter_env = std::make_shared<environment_c>(env);
 
@@ -559,6 +560,9 @@ void processor_c::populate_standard_builtins() {
              // Execute the body
              auto r = process_cell(*body, temp_iter_env);
              c = temp_iter_env->get(iter_var)->clone();
+             if (_yield_cell) {
+                return _yield_cell;
+             }
              if (_break_loop) {
                 _break_loop = false;
                 break;
@@ -752,10 +756,17 @@ void processor_c::populate_standard_builtins() {
 #endif
           for (size_t i = 1; i < cells.size() - 1; i++) {
              auto r = process_cell(cells[i], env);
+             if (_yield_cell) {
+                return _yield_cell;
+             }
              if (_break_loop) {
                 // Don't reset _break_loop so it is passed up
                 return std::make_shared<cell_c>(CELL_NIL);
              }
+          }
+
+          if (_yield_cell) {
+             return _yield_cell;
           }
 
           return process_cell(cells[cells.size() - 1], env);
@@ -1339,6 +1350,18 @@ void processor_c::populate_standard_builtins() {
                      std::to_string(cells.size() - 1) + " were given",
                  cells[0]);
           }
+
+          // treat lists differently so it has behavior different than `compose`
+          auto target = process_cell(cells[1], env);
+          if (target->type == cell_type_e::LIST) {
+             std::string result;
+             for (auto e : target->list) {
+                auto r = process_cell(e, env);
+                result += r->data;
+             }
+             return std::make_shared<cell_c>(cell_type_e::STRING, result);
+          }
+
           return conversion_fn(
               cells[1], env, [this, env](cell_ptr target) -> cell_ptr {
                  std::string result;

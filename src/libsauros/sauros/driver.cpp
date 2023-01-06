@@ -15,6 +15,20 @@ void display_error_from_file(std::shared_ptr<std::string> file,
 
    std::string file_actual = (file) ? (*file) : "unknown";
 
+   if (!location) {
+      std::cout << rang::fg::red
+                << "No location object given - perhaps an unhandled issue in "
+                   "an external library caused an issue\n\n"
+                << rang::fg::reset << std::endl;
+      std::cout << rang::fg::cyan
+                << "Please report this to the github.com/bosley/sauros issues "
+                   "page with a copy of the source that caused the problem so "
+                   "the method utilizing locations from external cells can be "
+                   "updated to catch the issue(s)\n\n"
+                << rang::fg::reset << std::endl;
+      return;
+   }
+
    std::cout << rang::fg::magenta << file_actual << rang::fg::reset << " : ("
              << rang::fg::blue << location->line << rang::fg::reset << ","
              << rang::fg::blue << location->col << rang::fg::reset << ")\n";
