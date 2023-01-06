@@ -1,0 +1,113 @@
+[import "lib/todo_data.sau"]
+[import "lib/todo_window.sau"]
+
+[if [not [len @args]] [block
+    [putln "Please provide a file for todo data"]
+    [exit 0]
+]]
+
+[var my_todos [todo::data::load [at 0 @args]]]
+
+[var new [lambda [] [block
+    [var title ""]
+    [var desc ""]
+    [var not_confirmed 1]
+    [loop [not_confirmed] [block 
+        [os.clear_screen]
+        [set title [io.get_string "title: "]]
+        [set desc [io.get_string "description: "]]
+        [os.clear_screen]
+        [putln [fmt.encode "\ntitle: %\ndescription: %\n\n" [list title desc]]]
+        [if [seq "y" [io.get_string "is this correct? [Y/n]"]]
+            [set not_confirmed 0]
+        ]
+    ]]
+    [push my_todos.entries [todo::entry::new title desc]]
+    [todo::data::save my_todos]
+    [os.clear_screen]
+]]]
+
+[var delete [lambda [] [block
+    [var selection [todo::window::select_from my_todos 10]]
+    [var i 0]
+    [var temp]
+    [iter x my_todos.entries [block
+        [if [!= selection i] [push temp x]]
+        [set i [+ 1 i]]
+    ]]
+    [set my_todos.entries temp]
+    [todo::data::save my_todos]
+    [os.clear_screen]
+]]]
+
+[var complete [lambda [] [block
+    [putln "Mark a todo completed"]
+    [var selection [todo::window::select_from my_todos 10]]
+    [var i 0]
+    [var temp]
+    [iter x my_todos.entries [block
+        [if [== selection i] [set x.completed 1]]
+        [set i [+ 1 i]]
+    ]]
+    [todo::data::save my_todos]
+    [os.clear_screen]
+]]]
+
+[var todo [lambda [] [block
+    [os.clear_screen]
+    [var temp_todos todo_data]
+    [set temp_todos.disk_path my_todos.disk_path]
+    [iter x my_todos.entries [block
+        [if [not x.completed] [block
+            [push temp_todos.entries x]
+        ]]
+    ]]
+    [todo::window::show temp_todos 10]
+]]]
+
+[var done [lambda [] [block
+    [os.clear_screen]
+    [var temp_todos todo_data]
+    [set temp_todos.disk_path my_todos.disk_path]
+    [iter x my_todos.entries [block
+        [if [x.completed] [block
+            [push temp_todos.entries x]
+        ]]
+    ]]
+    [todo::window::show temp_todos 10]
+]]]
+
+[var show_todos [lambda [] [block
+    [todo::window::show my_todos 10]
+]]]
+
+[var show_help [lambda [] [block
+   [putln "help      Show this message"]
+   [putln "new       Create a new todo"]
+   [putln "delete    Delete a todo"]
+   [putln "complete  Mark a todo complete"]
+   [putln "show      Show all saved todos"]
+   [putln "todo      Show all saved incomplete todos"]
+   [putln "done      Show all complete todos"]
+   [putln "exit      Close the program"]
+   [putln "clear     Clear the screen"]
+]]]
+
+[loop [true] [block
+   [std::switch [io.get_string "$: "] [list
+      [std::case "help" show_help]
+      [std::case "new" new]
+      [std::case "complete" complete]
+      [std::case "delete" delete]
+      [std::case "show" show_todos]
+      [std::case "todo" todo]
+      [std::case "done" done]
+      [std::case "clear" os.clear_screen]
+      [std::case "exit" [lambda [] [block
+         [putln "Goodbye"]
+         [exit 0]
+      ]]]
+   ] [lambda [] [
+      putln "use `help` to get a list of commands"
+   ]]]
+]]
