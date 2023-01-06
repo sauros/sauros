@@ -1,3 +1,10 @@
+
+;   Reverse a given string and return it
+;
+[var std::string::reverse [lambda [string] [block
+    [yield [as_str [rev [as_list string]]]]
+]]]
+
 ;   Returns the modifications of a string based on a lambda
 ;   given to the function. 
 ;
@@ -18,4 +25,86 @@
         [set x [fn x]]
     ]]
     [yield [as_str listed_string]]
+]]]
+
+;   Returns the modifications of a string based on a lambda
+;   given to the function.
+;
+;   The results of the given lambda (Executed once per char)
+;   take take the place of the given string at that particular index
+;
+;       [var new_string "This is a test"]
+;       [set new_string [std::string::filter new_string [lambda [x] [block
+;           [if [seq x " "] [yield "_"]]
+;           [yield x]
+;       ]]]]
+;
+;   resulting value of new_string will be "This_is_a_test"
+;
+;   Differs from std::string::filter in that it filters in reverse
+;
+[var std::string::rev_filter [lambda [string fn] [block
+    [var listed_string [rev [as_list string]]]
+    [iter x listed_string [block
+        [set x [fn x]]
+    ]]
+    [yield [as_str listed_string]]
+]]]
+
+;   Find the first of some given pattern within a string
+;   Returns the first index into the string that the pattern starts at
+;   if it exists, -1 otherwise
+;
+; [putln [std::string::find_first_of "My source string | with a pipe" "|"]]
+; [putln [std::string::find_first_of "My source string <|> with a fancy symbol" "<|>"]]
+; [putln [std::string::find_first_of "My source string ??? with a fancy symbol" "!!!"]]         ; Not found (-1)
+;
+;
+[var std::string::find_first_of [lambda [string pattern] [block
+    [var listed_pattern [as_list pattern]]
+    [var listed_string [as_list string]]
+    [var i 0]
+    [var buff]
+    [var idx_tracker 1]
+    [var found 0]
+    [iter x listed_string [block
+        [if [seq x [at i listed_pattern]][block
+            [push buff [at i listed_pattern]]
+            [if [== [len listed_pattern] [len buff]] [
+                [if [seq [as_str buff] pattern] [block
+                    [set found 1]
+                    [break]
+                ]
+                [clear buff]
+                ]
+            ]]
+            [set i [+ i 1]]
+        ]
+        [block
+            [clear buff]
+        ]]
+        [set idx_tracker [+ idx_tracker 1]]
+    ]]
+    [if [found] [set idx_tracker [- idx_tracker [len listed_pattern] ]] [set idx_tracker -1]]
+    [idx_tracker]
+]]]
+
+;   Retrieve a substring of a given string
+;   start must be >= 0 and < end
+;   end is inclusive
+;   returns the stringed substring
+;
+;   [putln [std::string::sub_string "I like apples a lot" 7 13]]    ; returns 'apples'
+;
+[var std::string::sub_string [lambda [string start end] [block
+    [var listed_string [as_list string]]
+    [if [>= start [len listed_string]] [throw "std::string::sub_string > start for string is out of bounds"]]
+    [if [>= end [len listed_string]] [throw "std::string::sub_string > end for string is out of bounds"]]
+    [if [>= start end] [throw "std::string::sub_string > start must be less than end"]]
+    [if [< start 0] [throw "std::string::sub_string > start must be >= 0"]]
+    [var result]
+    [loop [< start end] [set start [+ 1 start]] [block
+        [push result [at start listed_string]]
+    ]]
+    [yield [as_str result]]
 ]]]
