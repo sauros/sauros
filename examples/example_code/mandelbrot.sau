@@ -1,0 +1,58 @@
+;  This is a slightly more modern version of the mandelbrot program
+;  it has some features that weren't present when bench/mandelbrot 
+;  was made and I hope to expand this one to be a viewer that 
+;  shows an evolving mandelbrot set
+
+[var mandelbrot [lambda [real image] [
+   [block
+      [var limit 100]
+      [var z_real real]
+      [var z_image image]
+      [var k 0]
+      [loop [< k limit] [set k [+ k 1]] [
+         [block
+            [var r2 [* z_real z_real]]
+            [var i2 [* z_image z_image]]
+            [if [> [+ r2 i2] 4.0] [yield k]]
+            [set z_image [+ [* z_real [* z_image 2.0]] image]]
+            [set z_real [+ real [- r2 i2]]]
+         ]
+      ]]
+      [yield [nil]]
+   ]
+]]]
+
+[var width 100.0]
+[var height 50.0]
+
+[var x_start -3.0]
+[var x_end 2.0]
+
+[var y_start -2.0]
+[var y_end 2.0]
+
+[var dx [/ [- x_end x_start] [- width 1]]]
+[var dy [/ [- y_end y_start] [- height 1]]]
+
+[var pixels [list "." "." "," "-" "^" "_" "*" "&" "^" "%" "1" "2" "3" "4" "5"]]
+
+[var i 0.0]
+[loop [< i height] [set i [+ 1 i]] [
+   [block
+      [var j 0.0]
+      [loop [< j width] [set j [+ 1 j]] [
+         [block
+            [var value 
+               [mandelbrot 
+                  [ + x_start [* j dx] ]  ; x
+                  [ - y_end [* i dy] ]    ; y
+               ]
+            ]
+            [if [is_nil value] [put " "] 
+                               [[put [at [% value [len pixels]] pixels]]]
+            ]
+         ]
+      ]]
+      [putln ""]
+   ]
+]]

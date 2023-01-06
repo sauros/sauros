@@ -59,7 +59,6 @@
 ; [putln [std::string::find_first_of "My source string <|> with a fancy symbol" "<|>"]]
 ; [putln [std::string::find_first_of "My source string ??? with a fancy symbol" "!!!"]]         ; Not found (-1)
 ;
-;
 [var std::string::find_first_of [lambda [string pattern] [block
     [var listed_pattern [as_list pattern]]
     [var listed_string [as_list string]]
