@@ -42,14 +42,39 @@
 
 [var complete [lambda [] [block
     [putln "Mark a todo completed"]
+    [var selection [todo::window::select_from my_todos 10]]
+    [var i 0]
+    [var temp]
+    [iter x my_todos.entries [block
+        [if [== selection i] [set x.completed 1]]
+        [set i [+ 1 i]]
+    ]]
+    [todo::data::save my_todos]
+    [os.clear_screen]
 ]]]
 
 [var todo [lambda [] [block
-    [putln "Show all incomplete todos"]
+    [os.clear_screen]
+    [var temp_todos todo_data]
+    [set temp_todos.disk_path my_todos.disk_path]
+    [iter x my_todos.entries [block
+        [if [not x.completed] [block
+            [push temp_todos.entries x]
+        ]]
+    ]]
+    [todo::window::show temp_todos 10]
 ]]]
 
 [var done [lambda [] [block
-    [putln "Show all done todos"]
+    [os.clear_screen]
+    [var temp_todos todo_data]
+    [set temp_todos.disk_path my_todos.disk_path]
+    [iter x my_todos.entries [block
+        [if [x.completed] [block
+            [push temp_todos.entries x]
+        ]]
+    ]]
+    [todo::window::show temp_todos 10]
 ]]]
 
 [var show_todos [lambda [] [block
