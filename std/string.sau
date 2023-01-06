@@ -1,0 +1,21 @@
+;   Returns the modifications of a string based on a lambda
+;   given to the function. 
+;
+;   The results of the given lambda (Executed once per char)
+;   take take the place of the given string at that particular index
+;
+;       [var new_string "This is a test"]
+;       [set new_string [std::string::filter new_string [lambda [x] [block
+;           [if [seq x " "] [yield "_"]]
+;           [yield x]
+;       ]]]]
+;
+;   resulting value of new_string will be "This_is_a_test"
+;
+[var std::string::filter [lambda [string fn] [block
+    [var listed_string [as_list string]]
+    [iter x listed_string [block
+        [set x [fn x]]
+    ]]
+    [yield [as_str listed_string]]
+]]]

@@ -1339,6 +1339,18 @@ void processor_c::populate_standard_builtins() {
                      std::to_string(cells.size() - 1) + " were given",
                  cells[0]);
           }
+
+          // treat lists differently so it has behavior different than `compose`
+          auto target = process_cell(cells[1], env);
+          if (target->type == cell_type_e::LIST) {
+             std::string result;
+             for (auto e : target->list) {
+                auto r = process_cell(e, env);
+                result += r->data;
+             }
+             return std::make_shared<cell_c>(cell_type_e::STRING, result);
+          }
+
           return conversion_fn(
               cells[1], env, [this, env](cell_ptr target) -> cell_ptr {
                  std::string result;
