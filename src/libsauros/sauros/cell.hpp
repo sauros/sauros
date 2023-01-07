@@ -7,8 +7,11 @@
 #include <future>
 #include <memory>
 #include <optional>
+#include <queue>
 #include <string>
 #include <vector>
+
+#include <iostream>
 
 namespace sauros {
 
@@ -165,7 +168,7 @@ static const cell_c CELL_FALSE =
 static const cell_c CELL_NIL =
     cell_c(cell_type_e::STRING, "#nil"); //! A cell that represents NIL
 
-enum class cell_variant_type_e { ASYNC };
+enum class cell_variant_type_e { ASYNC, CHAN };
 
 //! \brief A variant of cell_c
 //!        The variant type is meant to be able to extend cells
@@ -189,24 +192,25 @@ using variant_cell_ptr = std::shared_ptr<variant_cell_c>;
 //!        within the processor or environment
 class async_cell_c : public variant_cell_c {
  public:
-   async_cell_c(location_s *location)
-       : variant_cell_c(cell_variant_type_e::ASYNC, location) {}
-
-   // The processor used to execute the async data
+   async_cell_c(location_s *location);
    std::shared_ptr<processor_c> processor;
-
    std::future<cell_ptr> future;
+   cell_ptr get_fn;
+   cell_ptr wait_fn;
+};
 
-   cell_ptr get_fn = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
-          return future.get();
-       });
-
-   cell_ptr wait_fn = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
-          future.wait();
-          return std::make_shared<cell_c>(CELL_TRUE);
-       });
+//! \brief A cell used to propagate data in a safe way
+//!        between async functions
+class chan_cell_c : public variant_cell_c {
+ public:
+   chan_cell_c(location_s *location);
+   std::mutex channel_mutex;
+   std::queue<cell_ptr> channel_queue;
+   std::shared_ptr<processor_c> processor;
+   cell_ptr put_fn;
+   cell_ptr has_data_fn;
+   cell_ptr get_fn;
+   cell_ptr drain_fn;
 };
 
 } // namespace sauros

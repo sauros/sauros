@@ -49,6 +49,20 @@ static inline bool eval_truthy(cell_ptr cell, location_s *location) {
 
 void processor_c::populate_standard_builtins() {
 
+   auto expect_var_get_name = [this](cell_ptr cell) -> std::string {
+      if (cell->data.find('.') != std::string::npos) {
+         throw runtime_exception_c(
+             "Attempting to directly define a variable accessor " + cell->data,
+             cell);
+      }
+
+      if (cell->builtin_encoding != BUILTIN_DEFAULT_VAL) {
+         throw runtime_exception_c(
+             "Attempting to define a key symbol: " + cell->data, cell);
+      }
+      return cell->data;
+   };
+
    _builtins[BUILTIN_IMPORT] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
@@ -411,7 +425,8 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_VAR] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this, expect_var_get_name](
+           cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::VAR");
 #endif
@@ -421,20 +436,7 @@ void processor_c::populate_standard_builtins() {
                                        cells[0]);
           }
 
-          auto &variable_name = cells[1]->data;
-
-          if (variable_name.find('.') != std::string::npos) {
-             throw runtime_exception_c(
-                 "Attempting to directly define a variable accessor " +
-                     variable_name,
-                 cells[1]);
-          }
-
-          if (cells[1]->builtin_encoding != BUILTIN_DEFAULT_VAL) {
-             throw runtime_exception_c("Attempting to define a key symbol: " +
-                                           variable_name,
-                                       cells[1]);
-          }
+          auto variable_name = expect_var_get_name(cells[1]);
 
           if (cells.size() == 2) {
              auto cell = std::make_shared<cell_c>(cell_type_e::LIST, "<list>");
@@ -1379,21 +1381,25 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_ASYNC] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this, expect_var_get_name](
+           cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::ASYNC");
 #endif
-          if (cells.size() != 2) {
+          if (cells.size() != 3) {
              throw runtime_exception_c(
-                 "async command expects 1 parameters, but " +
+                 "async command expects 2 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
                  cells[0]);
           }
-          if (cells[1]->type != cell_type_e::LIST) {
+
+          auto variable_name = expect_var_get_name(cells[1]);
+
+          if (cells[2]->type != cell_type_e::LIST) {
              throw runtime_exception_c(
                  "async parameter required to be of type `list`\n"
                  "- A list that calls a symbol to execute asynchronously",
-                 cells[1]);
+                 cells[2]);
           }
 
           // Setup async cell
@@ -1414,7 +1420,7 @@ void processor_c::populate_standard_builtins() {
           // Kick off the async
           async_cell->future =
               std::async(std::launch::async, &processor_c::process_cell,
-                         *async_cell->processor, cells[1], env);
+                         *async_cell->processor, cells[2], env);
 
           // Store the async cell in the list to keep it alive
           box->list.push_back(async_cell);
@@ -1422,7 +1428,38 @@ void processor_c::populate_standard_builtins() {
           // Keep the target alive (might not be required yet)
           box->list.push_back(cells[1]);
 
-          return box;
+          env->set(variable_name, box);
+          return std::make_shared<cell_c>(CELL_TRUE);
+       });
+
+   _builtins[BUILTIN_CHAN] = std::make_shared<cell_c>(
+       [this, expect_var_get_name](
+           cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+#ifdef PROFILER_ENABLED
+          profiler_c::get_profiler()->hit("processor_builtin::ASYNC");
+#endif
+          if (cells.size() != 2) {
+             throw runtime_exception_c(
+                 "chan command expects 1 parameters, but " +
+                     std::to_string(cells.size() - 1) + " were given",
+                 cells[0]);
+          }
+
+          auto variable_name = expect_var_get_name(cells[1]);
+
+          auto chan_cell = std::make_shared<chan_cell_c>(cells[0]->location);
+          chan_cell->processor = std::make_shared<processor_c>();
+
+          auto box =
+              std::make_shared<cell_c>(cell_type_e::BOX, cells[0]->location);
+          box->box_env = std::make_shared<sauros::environment_c>();
+          box->box_env->set("put", chan_cell->put_fn);
+          box->box_env->set("get", chan_cell->get_fn);
+          box->box_env->set("has_data", chan_cell->has_data_fn);
+          box->box_env->set("drain", chan_cell->drain_fn);
+          box->list.push_back(chan_cell);
+          env->set(variable_name, box);
+          return std::make_shared<cell_c>(CELL_TRUE);
        });
 }
 
