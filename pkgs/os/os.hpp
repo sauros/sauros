@@ -139,6 +139,7 @@ API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_clear_screen_(sauros::cells_t &cells,
                       std::shared_ptr<sauros::environment_c> env);
+
 /*
    Get an environment variable
 */
@@ -146,6 +147,14 @@ API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_get_env_(sauros::cells_t &cells,
                  std::shared_ptr<sauros::environment_c> env);
+
+/*
+   Sleep ms
+*/
+API_EXPORT
+extern sauros::cell_ptr
+_pkg_os_sleep_ms_(sauros::cells_t &cells,
+                  std::shared_ptr<sauros::environment_c> env);
 }
 
 #endif

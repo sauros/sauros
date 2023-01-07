@@ -1,12 +1,14 @@
 #include "os.hpp"
 
 #include <bit>
+#include <chrono>
 #include <filesystem>
 #include <fstream>
 #include <functional>
 #include <iostream>
 #include <sauros/capi/capi.hpp>
 #include <string>
+#include <thread>
 
 using command = std::function<bool(std::string)>;
 
@@ -385,4 +387,18 @@ sauros::cell_ptr _pkg_os_get_env_(sauros::cells_t &cells,
    }
 
    return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING, "");
+}
+
+sauros::cell_ptr _pkg_os_sleep_ms_(sauros::cells_t &cells,
+                                   std::shared_ptr<sauros::environment_c> env) {
+
+   auto ms_cell = c_api_process_cell(cells[1], env);
+   if (ms_cell->type != sauros::cell_type_e::INTEGER &&
+       ms_cell->type != sauros::cell_type_e::REAL) {
+      throw sauros::processor_c::runtime_exception_c(
+          "sleep_ms operation expects name to be a numerical value", cells[1]);
+   }
+   std::this_thread::sleep_for(
+       std::chrono::milliseconds(std::stoull(ms_cell->data)));
+   return std::make_shared<sauros::cell_c>(sauros::CELL_TRUE);
 }
