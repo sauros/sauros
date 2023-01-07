@@ -90,8 +90,18 @@ class environment_c {
    //! \brief Retrieve a copy of the env map
    cell_map_t get_map() const { return _env; }
 
+   //! \brief Check if a package is loaded
+   //! \param package The package name to checl
+   //! \returns true iff the package was loaded
    bool package_loaded(const std::string &package);
 
+   //! \brief Save a package
+   //! \param name THe name of the package
+   //! \param lib The library to save
+   //! \post package_loaded will return true
+   //!       if given the name, and the lib will
+   //!       stay alive while the environment is
+   //!       still alive
    void save_package(const std::string &name,
                      std::shared_ptr<rll_wrapper_c> lib);
 

@@ -3,6 +3,41 @@
 ;  was made and I hope to expand this one to be a viewer that 
 ;  shows an evolving mandelbrot set
 
+[use "list_ext"]
+
+[box screen::struct [block
+   [var grid]
+]]
+
+[var screen::height 50]
+[var screen::width 100]
+[var screen::pixels [list "." "." "," "-" "^" "_" "*" "&" "^" "%" "1" "2" "3" "4" "5"]]
+
+[var screen::new [lambda [] [block
+   [var h 0]
+   [var s screen::struct]
+   [loop [< h screen::height] [set h [+ 1 h]] [block
+      [push s.grid [list_ext.make_assigned " " screen::width]]
+   ]]
+   [yield s]
+]]]
+
+[var screen::print [lambda [screen] [block
+   [iter row screen.grid [block
+      [iter pixel row [block
+         [put pixel]
+      ]]
+      [putln ""]
+   ]]
+]]]
+
+
+; [var screen::populate [lambda [height width value] [block
+;    [set_at width [at height screen.grid] value]
+; ]]]
+; [screen::populate 40 20 "@"]
+; [screen::print screen]
+
 [var mandelbrot [lambda [real image] [
    [block
       [var limit 100]
@@ -22,37 +57,50 @@
    ]
 ]]]
 
-[var width 100.0]
-[var height 50.0]
 
-[var x_start -3.0]
-[var x_end 2.0]
+[box mandelbrot::pair [block
+   [var start]
+   [var end]
+]]
 
-[var y_start -2.0]
-[var y_end 2.0]
+[var mandelbrot::new_pair [lambda[start end] [block
+   [var se mandelbrot::pair]
+   [set se.start start]
+   [set se.end end]
+   [yield se]
+]]]
 
-[var dx [/ [- x_end x_start] [- width 1]]]
-[var dy [/ [- y_end y_start] [- height 1]]]
-
-[var pixels [list "." "." "," "-" "^" "_" "*" "&" "^" "%" "1" "2" "3" "4" "5"]]
-
-[var i 0.0]
-[loop [< i height] [set i [+ 1 i]] [
-   [block
-      [var j 0.0]
-      [loop [< j width] [set j [+ 1 j]] [
-         [block
-            [var value 
-               [mandelbrot 
-                  [ + x_start [* j dx] ]  ; x
-                  [ - y_end [* i dy] ]    ; y
+[var mandelbrot::generate [lambda [screen x y] [block
+   [var dx [/ [- x.end x.start] [- screen::width 1]]]
+   [var dy [/ [- y.end y.start] [- screen::height 1]]]
+   [var i 0]
+   [loop [< i screen::height] [set i [+ 1 i]] [
+      [block
+         [var j 0]
+         [loop [< j screen::width] [set j [+ 1 j]] [
+            [block
+               [var value 
+                  [mandelbrot 
+                     [ + x.start [* j dx] ]  ; x
+                     [ - y.end [* i dy] ]    ; y
+                  ]
+               ]
+               [if [not [is_nil value]] [[ 
+                  [set_at j [at i screen.grid] [at [% value [len screen::pixels]] screen::pixels]]
+               ]]
                ]
             ]
-            [if [is_nil value] [put " "] 
-                               [[put [at [% value [len pixels]] pixels]]]
-            ]
-         ]
-      ]]
-      [putln ""]
-   ]
-]]
+         ]]
+         [putln ""]
+      ]
+   ]]
+]]]
+
+
+[var current_screen [screen::new]]
+[var x [mandelbrot::new_pair -3.0 2.0]]
+[var y [mandelbrot::new_pair -2.0 2.0]]
+
+[mandelbrot::generate current_screen x y]
+
+[screen::print current_screen]
