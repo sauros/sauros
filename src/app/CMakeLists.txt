@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD 20)
 find_package(libsauros REQUIRED)
 include_directories(${LIBAUROS_INCLUDE_DIRS})
 
+find_package (Threads REQUIRED)
+
 #
 # Options
 #
@@ -56,7 +58,7 @@ target_link_libraries(sauros
    PUBLIC hwinfo::HWinfo
    ${LIBSAUROS_LIBRARIES}
    dl
-)
+   Threads::Threads)
 
 #
 # Install bin

@@ -5,6 +5,8 @@ include_directories(
   ../
 )
 
+find_package (Threads REQUIRED)
+
 add_executable(sauros_unit_tests
         sauros_tests.cpp
         ${SAUROS_SOURCES}
@@ -13,6 +15,6 @@ add_executable(sauros_unit_tests
 target_link_libraries(sauros_unit_tests
   ${CPPUTEST_LDFLAGS}
   dl
-)
+  Threads::Threads)
 
 add_custom_command(TARGET sauros_unit_tests COMMAND ./sauros_unit_tests POST_BUILD)
