@@ -62,6 +62,10 @@ void processor_c::cell_to_string(std::string &out, cell_ptr cell,
       out += "<box>";
       break;
    }
+   case cell_type_e::VARIANT: {
+      out += "<variant>";
+      break;
+   }
    }
 }
 
@@ -122,6 +126,11 @@ void processor_c::quote_cell(std::string &out, cell_ptr cell,
       break;
    }
    case cell_type_e::BOX: {
+      // TODO: Fill this in
+      break;
+   }
+   case cell_type_e::VARIANT: {
+      // TODO: Fill this in
       break;
    }
    }
@@ -172,6 +181,8 @@ cell_ptr processor_c::process_list(cells_t &cells,
    case cell_type_e::INTEGER:
       return process_cell(suspect_cell, env);
       break;
+   case cell_type_e::VARIANT:
+      [[fallthrough]];
    case cell_type_e::LAMBDA:
       [[fallthrough]];
    case cell_type_e::BOX:
@@ -250,6 +261,8 @@ cell_ptr processor_c::process_cell(cell_ptr cell,
    case cell_type_e::LAMBDA: {
       return process_list(cell->list, env);
    case cell_type_e::BOX:
+      [[fallthrough]];
+   case cell_type_e::VARIANT:
       break;
    }
 
@@ -267,9 +280,7 @@ cell_ptr processor_c::process_lambda(cell_ptr cell, cells_t &cells,
 #endif
    cells_t exps;
    for (auto param = cells.begin() + 1; param != cells.end(); ++param) {
-
-      auto evaluated = process_cell((*param), env);
-      exps.push_back(std::move(evaluated));
+      exps.push_back(process_cell((*param), env));
    }
 
    if (cell->list[0]->list.size() != exps.size()) {

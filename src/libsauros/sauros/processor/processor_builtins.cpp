@@ -1377,6 +1377,53 @@ void processor_c::populate_standard_builtins() {
           }
           return result;
        });
+
+   _builtins[BUILTIN_ASYNC] = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+#ifdef PROFILER_ENABLED
+          profiler_c::get_profiler()->hit("processor_builtin::ASYNC");
+#endif
+          if (cells.size() != 2) {
+             throw runtime_exception_c(
+                 "async command expects 1 parameters, but " +
+                     std::to_string(cells.size() - 1) + " were given",
+                 cells[0]);
+          }
+          if (cells[1]->type != cell_type_e::LIST) {
+             throw runtime_exception_c(
+                 "async parameter required to be of type `list`\n"
+                 "- A list that calls a symbol to execute asynchronously",
+                 cells[1]);
+          }
+
+          // Setup async cell
+          auto async_cell = std::make_shared<async_cell_c>(cells[0]->location);
+          async_cell->processor = std::make_shared<processor_c>();
+
+          auto box =
+              std::make_shared<cell_c>(cell_type_e::BOX, cells[0]->location);
+
+          box->box_env = std::make_shared<sauros::environment_c>();
+
+          // Point the box.wait variable at the wait function of the async cell
+          box->box_env->set("wait", async_cell->wait_fn);
+
+          // Point the box.wait variable at the wait function of the async cell
+          box->box_env->set("get", async_cell->get_fn);
+
+          // Kick off the async
+          async_cell->future =
+              std::async(std::launch::async, &processor_c::process_cell,
+                         *async_cell->processor, cells[1], env);
+
+          // Store the async cell in the list to keep it alive
+          box->list.push_back(async_cell);
+
+          // Keep the target alive (might not be required yet)
+          box->list.push_back(cells[1]);
+
+          return box;
+       });
 }
 
 } // namespace sauros
