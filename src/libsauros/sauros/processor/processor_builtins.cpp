@@ -471,7 +471,7 @@ void processor_c::populate_standard_builtins() {
 
              std::string stringed;
              cell_to_string(stringed, item, env, false);
-             std::cout << stringed;
+             std::cout << stringed << std::flush;
           }
 
           return std::make_shared<cell_c>(CELL_TRUE);
@@ -503,7 +503,7 @@ void processor_c::populate_standard_builtins() {
              cell_to_string(stringed, item, env, false);
              std::cout << stringed;
           }
-          std::cout << std::endl;
+          std::cout << std::endl << std::flush;
 
           return std::make_shared<cell_c>(CELL_TRUE);
        });
