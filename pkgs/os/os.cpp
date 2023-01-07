@@ -369,3 +369,20 @@ _pkg_os_clear_screen_(sauros::cells_t &cells,
    return std::make_shared<sauros::cell_c>(
        sauros::cell_type_e::INTEGER, std::to_string(std::system(command)));
 }
+
+sauros::cell_ptr _pkg_os_get_env_(sauros::cells_t &cells,
+                                  std::shared_ptr<sauros::environment_c> env) {
+
+   auto var_string = c_api_process_cell(cells[1], env);
+   if (var_string->type != sauros::cell_type_e::STRING) {
+      throw sauros::processor_c::runtime_exception_c(
+          "get_env operation expects name to be a string", cells[1]);
+   }
+
+   if (const char *env_p = std::getenv(var_string->data.c_str())) {
+      return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING,
+                                              env_p);
+   }
+
+   return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING, "");
+}

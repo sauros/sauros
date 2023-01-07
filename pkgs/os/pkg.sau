@@ -20,6 +20,7 @@
    "_pkg_os_file_write_"
    "_pkg_os_file_read_"
    "_pkg_os_clear_screen_"
+   "_pkg_os_get_env_"
 ]]
 
 ; Files to include under the current pkg

@@ -107,3 +107,7 @@
 ;  Clear the screen
 ;
 [var clear_screen [lambda [] [os._pkg_os_clear_screen_]]]
+
+;  Get an environment variable
+;
+[var get_env [lambda [variable] [os._pkg_os_get_env_ variable]]]
