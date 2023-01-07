@@ -26,11 +26,11 @@
         "patterns": [
            {
            "name": "keyword.control.sau",
-           "match": "\\b(set_at|rev|bw_and|bw_or|bw_lsh|bw_rsh|bw_xor|bw_not|throw|try|as_list|as_int|as_str|as_real|yield|iter|use|true|false|nil|is_nil|box|compose|decompose|exit|clear|at|var|front|back|push|pop|list|set|block|len|put|putln|if|assert|loop|type|import|break)\\b"
+           "match": "\\b(set_at|rev|throw|try|as_list|as_int|as_str|as_real|yield|iter|true|false|nil|is_nil|box|compose|decompose|exit|clear|at|var|front|back|push|pop|list|set|block|len|put|putln|if|assert|loop|type|break)\\b"
            },
            {
            "name": "keyword.operator.sau",
-           "match": "\\b(\\+|\\-\\/|\\*|\\>\\=|\\<\\=|\\>|\\<|seq|sneq|not|or|and|xor)\\b"
+           "match": "\\b(\\+|\\-\\/|\\*|\\>\\=|\\<\\=|\\>|\\<|seq|sneq|not|or|and|xor|bw_and|bw_or|bw_lsh|bw_rsh|bw_xor|bw_not)\\b"
            }
         ]
         },
@@ -38,7 +38,7 @@
         "patterns": [
            {
            "name": "entity.name.function",
-           "match": "\\b(lambda)\\b"
+           "match": "\\b(lambda|async|chan|import|use)\\b"
            }
         ]
      },

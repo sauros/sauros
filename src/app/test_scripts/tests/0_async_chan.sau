@@ -1,0 +1,33 @@
+[use "os"]
+
+; Copy of std::main_loop as CI doesn't install std
+[var std::main_loop [lambda [body] [block
+   [if [sneq "lambda" [type body]] [
+      throw "expected lambda type for parameter: body"
+   ]]
+   [var count 0]
+   [loop [true] [set count [+ 1 count]] [body count]]
+]]]
+
+[chan my_channel]
+
+[var receiver_lambda [lambda [] [block
+    [std::main_loop [lambda [main_loop_idx] [block
+        [if [my_channel.has_data] [block
+            [var data [my_channel.get]]
+            [if [== data 10] [exit 0]]  ; Shut down the loop after 10 cycles
+        ]]
+        [os.sleep_ms 1000]
+    ]]]
+]]]
+
+[async handle [receiver_lambda]]
+[var counter 0]
+
+[loop [< counter 10] [set counter [+ 1 counter]] [block
+    [os.sleep_ms 500]
+    [my_channel.put counter]
+]]
+
+[putln "Waiting"]
+[handle.wait]

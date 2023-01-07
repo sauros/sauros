@@ -4,10 +4,14 @@
 #include "builtin_encodings.hpp"
 #include "types.hpp"
 #include <functional>
+#include <future>
 #include <memory>
 #include <optional>
+#include <queue>
 #include <string>
 #include <vector>
+
+#include <iostream>
 
 namespace sauros {
 
@@ -20,7 +24,8 @@ enum class cell_type_e {
    LIST,
    LAMBDA,
    BOX,
-   ENCODED_SYMBOL
+   ENCODED_SYMBOL,
+   VARIANT
 };
 
 //! \brief Retrieve the type as a string
@@ -40,6 +45,8 @@ static const char *cell_type_to_string(const cell_type_e type) {
       return "real";
    case cell_type_e::BOX:
       return "box";
+   case cell_type_e::VARIANT:
+      return "variant";
    case cell_type_e::ENCODED_SYMBOL:
       return "encoded_symbol";
    }
@@ -48,6 +55,10 @@ static const char *cell_type_to_string(const cell_type_e type) {
 
 //! \brief Forward of environment for proc_f
 class environment_c;
+
+//! \brief Forward for processor for cells with
+//!        embedded processors
+class processor_c;
 
 //! \brief Quick forward to decalare the cells_t type
 class cell_c;
@@ -77,6 +88,15 @@ class cell_c {
    //! \param location_in The location in source that the cell originated from
    cell_c(cell_type_e type, const std::string &data, location_s *location_in)
        : type(type), data(data) {
+      if (location_in) {
+         location = new location_s(*location_in);
+      }
+   }
+
+   //! \brief Create a standard cell
+   //! \param type The type to set
+   //! \param location_in The location in source that the cell originated from
+   cell_c(cell_type_e type, location_s *location_in) : type(type) {
       if (location_in) {
          location = new location_s(*location_in);
       }
@@ -147,6 +167,52 @@ static const cell_c CELL_FALSE =
     cell_c(cell_type_e::INTEGER, "0"); //! A cell that represents FALSE
 static const cell_c CELL_NIL =
     cell_c(cell_type_e::STRING, "#nil"); //! A cell that represents NIL
+
+enum class cell_variant_type_e { ASYNC, CHAN };
+
+//! \brief A variant of cell_c
+//!        The variant type is meant to be able to extend cells
+//!        for very specific uses that enable us to not store more
+//!        and more data in the cell_c. This way we can abstract
+//!        specific things away and not add more and more cell types
+//!        and data as that slows down the processing.
+class variant_cell_c : public cell_c {
+ public:
+   variant_cell_c(cell_variant_type_e type, location_s *location)
+       : cell_c(cell_type_e::VARIANT, location), variant_type(type) {}
+   cell_variant_type_e variant_type;
+};
+
+using variant_cell_ptr = std::shared_ptr<variant_cell_c>;
+
+//! \brief A cell used to encapuslate the operations of an
+//!        asynchronus operation.This allows us to embed the
+//!        methods and data used to interact with async
+//!        processes without creating new storage containers
+//!        within the processor or environment
+class async_cell_c : public variant_cell_c {
+ public:
+   async_cell_c(location_s *location);
+   std::shared_ptr<processor_c> processor;
+   std::future<cell_ptr> future;
+   cell_ptr get_fn;
+   cell_ptr wait_fn;
+};
+
+//! \brief A cell used to propagate data in a safe way
+//!        between async functions
+class chan_cell_c : public variant_cell_c {
+ public:
+   chan_cell_c(location_s *location);
+   std::mutex channel_mutex;
+   std::queue<cell_ptr> channel_queue;
+   std::shared_ptr<processor_c> processor;
+   cell_ptr put_fn;
+   cell_ptr has_data_fn;
+   cell_ptr get_fn;
+   cell_ptr drain_fn;
+};
+
 } // namespace sauros
 
 #endif

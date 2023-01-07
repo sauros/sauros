@@ -60,6 +60,7 @@ include_directories("sauros")
 
 set(SAUROS_SOURCES
    ${CMAKE_SOURCE_DIR}/sauros/environment.cpp
+   ${CMAKE_SOURCE_DIR}/sauros/cell.cpp
    ${CMAKE_SOURCE_DIR}/sauros/driver.cpp
    ${CMAKE_SOURCE_DIR}/sauros/profiler.cpp
    ${CMAKE_SOURCE_DIR}/sauros/capi/capi.cpp
