@@ -107,3 +107,11 @@
 ;  Clear the screen
 ;
 [var clear_screen [lambda [] [os._pkg_os_clear_screen_]]]
+
+;  Get an environment variable
+;
+[var get_env [lambda [variable] [os._pkg_os_get_env_ variable]]]
+
+;  Sleep for a specific number of milliseconds
+;
+[var sleep_ms [lambda [time] [os._pkg_os_sleep_ms_ time]]]

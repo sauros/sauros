@@ -99,6 +99,14 @@ class processor_c {
    //! \brief Reset the processor
    void reset();
 
+   //! \brief Load something that may or may not be a variable
+   //! \param source The raw cell that holds variable data
+   //! \param env The environment to look in
+   //! \note This helps load variables that may or may not
+   //!       contain accessors (this.that.inner)
+   cell_ptr load_potential_variable(cell_ptr source,
+                                    std::shared_ptr<environment_c> env);
+
  private:
    sauros::system_c _system;
    std::array<cell_ptr, BUILTIN_ENTRY_COUNT> _builtins;

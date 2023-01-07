@@ -1,12 +1,14 @@
 #include "os.hpp"
 
 #include <bit>
+#include <chrono>
 #include <filesystem>
 #include <fstream>
 #include <functional>
 #include <iostream>
 #include <sauros/capi/capi.hpp>
 #include <string>
+#include <thread>
 
 using command = std::function<bool(std::string)>;
 
@@ -368,4 +370,35 @@ _pkg_os_clear_screen_(sauros::cells_t &cells,
 #endif
    return std::make_shared<sauros::cell_c>(
        sauros::cell_type_e::INTEGER, std::to_string(std::system(command)));
+}
+
+sauros::cell_ptr _pkg_os_get_env_(sauros::cells_t &cells,
+                                  std::shared_ptr<sauros::environment_c> env) {
+
+   auto var_string = c_api_process_cell(cells[1], env);
+   if (var_string->type != sauros::cell_type_e::STRING) {
+      throw sauros::processor_c::runtime_exception_c(
+          "get_env operation expects name to be a string", cells[1]);
+   }
+
+   if (const char *env_p = std::getenv(var_string->data.c_str())) {
+      return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING,
+                                              env_p);
+   }
+
+   return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING, "");
+}
+
+sauros::cell_ptr _pkg_os_sleep_ms_(sauros::cells_t &cells,
+                                   std::shared_ptr<sauros::environment_c> env) {
+
+   auto ms_cell = c_api_process_cell(cells[1], env);
+   if (ms_cell->type != sauros::cell_type_e::INTEGER &&
+       ms_cell->type != sauros::cell_type_e::REAL) {
+      throw sauros::processor_c::runtime_exception_c(
+          "sleep_ms operation expects name to be a numerical value", cells[1]);
+   }
+   std::this_thread::sleep_for(
+       std::chrono::milliseconds(std::stoull(ms_cell->data)));
+   return std::make_shared<sauros::cell_c>(sauros::CELL_TRUE);
 }

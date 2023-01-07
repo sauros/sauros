@@ -238,14 +238,15 @@ cell_ptr processor_c::process_cell(cell_ptr cell,
       return _builtins[cell->builtin_encoding];
    }
 
-   case cell_type_e::LIST:
-      return process_list(cell->list, env);
    case cell_type_e::REAL:
       [[fallthrough]];
    case cell_type_e::STRING:
       [[fallthrough]];
    case cell_type_e::INTEGER:
       return cell;
+
+   case cell_type_e::LIST:
+      [[fallthrough]];
    case cell_type_e::LAMBDA: {
       return process_list(cell->list, env);
    case cell_type_e::BOX:
@@ -340,6 +341,40 @@ cell_ptr processor_c::access_box_member(cell_ptr cell,
    }
 
    return {result};
+}
+
+cell_ptr
+processor_c::load_potential_variable(cell_ptr cell,
+                                     std::shared_ptr<environment_c> env) {
+
+   if (cell->type != cell_type_e::SYMBOL) {
+      return process_cell(cell, env);
+   }
+
+   auto &variable_name = cell->data;
+   if (variable_name.find('.') != std::string::npos) {
+
+      auto accessors = retrieve_accessors(variable_name);
+
+      cell_ptr result;
+      std::shared_ptr<environment_c> target_env = env;
+      for (std::size_t i = 0; i < accessors.size(); i++) {
+
+         // Get the item from the accessor
+         auto containing_env = target_env->find(accessors[i], cell);
+         result = containing_env->get(accessors[i]);
+
+         // Check if we need to move the environment "in" to the next
+         // object
+         if (result->type == cell_type_e::BOX) {
+            target_env = result->box_env;
+         }
+      }
+      return target_env->get(accessors.back());
+   } else {
+      auto containing_env = env->find(variable_name, cell);
+      return containing_env->get(variable_name);
+   }
 }
 
 } // namespace sauros

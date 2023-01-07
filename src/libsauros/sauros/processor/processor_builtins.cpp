@@ -48,6 +48,7 @@ static inline bool eval_truthy(cell_ptr cell, location_s *location) {
 } // namespace
 
 void processor_c::populate_standard_builtins() {
+
    _builtins[BUILTIN_IMPORT] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
@@ -234,11 +235,7 @@ void processor_c::populate_standard_builtins() {
                  "Second parameter of at must be a variable", cells[2]);
           }
 
-          auto &variable_name = cells[2]->data;
-
-          // If this isn't found it will throw :)
-          auto containing_env = env->find(variable_name, cells[1]);
-          cell_ptr target = containing_env->get(variable_name);
+          auto target = load_potential_variable(cells[2], env);
 
           if (target->list.size() <= idx) {
              return std::make_shared<cell_c>(CELL_NIL);
@@ -425,6 +422,7 @@ void processor_c::populate_standard_builtins() {
           }
 
           auto &variable_name = cells[1]->data;
+
           if (variable_name.find('.') != std::string::npos) {
              throw runtime_exception_c(
                  "Attempting to directly define a variable accessor " +
@@ -473,7 +471,7 @@ void processor_c::populate_standard_builtins() {
 
              std::string stringed;
              cell_to_string(stringed, item, env, false);
-             std::cout << stringed;
+             std::cout << stringed << std::flush;
           }
 
           return std::make_shared<cell_c>(CELL_TRUE);
@@ -505,7 +503,7 @@ void processor_c::populate_standard_builtins() {
              cell_to_string(stringed, item, env, false);
              std::cout << stringed;
           }
-          std::cout << std::endl;
+          std::cout << std::endl << std::flush;
 
           return std::make_shared<cell_c>(CELL_TRUE);
        });
@@ -541,7 +539,7 @@ void processor_c::populate_standard_builtins() {
           }
           auto iter_var = cells[1]->data;
 
-          auto processed_list = process_cell(cells[2], env);
+          auto processed_list = load_potential_variable(cells[2], env);
           if (processed_list->type != cell_type_e::LIST) {
              throw runtime_exception_c(
                  "second parameter to iter needs to be a list to iterate over",
@@ -702,48 +700,10 @@ void processor_c::populate_standard_builtins() {
                                        cells[1]);
           }
 
-          auto idx_actual = std::stoull(idx->data);
           auto target_value = process_cell(cells[3], env);
-          auto &variable_name = cells[2]->data;
-
-          if (variable_name.find('.') != std::string::npos) {
-
-             auto accessors = retrieve_accessors(variable_name);
-
-             cell_ptr result;
-             std::shared_ptr<environment_c> target_env = env;
-             for (std::size_t i = 0; i < accessors.size(); i++) {
-
-                // Get the item from the accessor
-                auto containing_env = target_env->find(accessors[i], cells[2]);
-                result = containing_env->get(accessors[i]);
-
-                // Check if we need to move the environment "in" to the next
-                // object
-                if (result->type == cell_type_e::BOX) {
-                   target_env = result->box_env;
-                }
-             }
-
-             auto item = target_env->get(accessors.back());
-             if (item->list.size() <= idx_actual) {
-                throw runtime_exception_c(
-                    "given idx out of range for target list", cells[1]);
-             }
-
-             item->list[idx_actual] = target_value;
-             return std::make_shared<cell_c>(CELL_TRUE);
-
-          } else {
-
-             // If this isn't found it will throw :)
-             auto containing_env = env->find(variable_name, cells[1]);
-
-             auto item = containing_env->get(variable_name);
-             item->list[idx_actual] = target_value;
-
-             return std::make_shared<cell_c>(CELL_TRUE);
-          }
+          auto target_var = load_potential_variable(cells[2], env);
+          target_var->list[std::stoull(idx->data)] = target_value;
+          return std::make_shared<cell_c>(CELL_TRUE);
        });
 
    // List and block are extremely similar, and realistically `list` coult be
