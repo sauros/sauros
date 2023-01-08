@@ -194,17 +194,6 @@ cell_ptr processor_c::process_list(cells_t &cells,
    throw runtime_exception_c("Unknown cell type", cells[0]);
 }
 
-std::vector<std::string>
-processor_c::retrieve_accessors(const std::string &value) {
-   std::string accessor;
-   std::vector<std::string> accessor_list;
-   std::stringstream source(value);
-   while (std::getline(source, accessor, '.')) {
-      accessor_list.push_back(accessor);
-   }
-   return accessor_list;
-}
-
 cell_ptr processor_c::process_cell(cell_ptr cell,
                                    std::shared_ptr<environment_c> env) {
 #ifdef PROFILER_ENABLED
@@ -224,7 +213,8 @@ cell_ptr processor_c::process_cell(cell_ptr cell,
          // Each item up-to and not including the last item should be n box
          // the last member should be something within the box that we are
          // trying to access
-         return access_box_member(cell, env);
+         auto [r, s, e] = retrieve_box_data(cell, env);
+         return r;
       }
 
       // If not built in maybe it is in the environment
@@ -325,17 +315,30 @@ cell_ptr processor_c::clone_box(cell_ptr cell) {
    return std::make_shared<cell_c>(new_box);
 }
 
-cell_ptr processor_c::access_box_member(cell_ptr cell,
-                                        std::shared_ptr<environment_c> &env) {
+std::vector<std::string> processor_c::retrieve_accessors(cell_ptr &cell) {
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_c::access_box_member");
+   profiler_c::get_profiler()->hit("processor_c::retrieve_accessors");
 #endif
-
-   auto accessors = retrieve_accessors(cell->data);
-
+   std::vector<std::string> accessors;
+   std::string accessor;
+   std::stringstream source(cell->data);
+   while (std::getline(source, accessor, '.')) {
+      accessors.push_back(accessor);
+   }
    if (accessors.size() <= 1) {
       throw runtime_exception_c("Malformed accessor", cell);
    }
+   return accessors;
+}
+
+std::tuple<cell_ptr, std::string, std::shared_ptr<environment_c>>
+processor_c::retrieve_box_data(cell_ptr &cell,
+                               std::shared_ptr<environment_c> &env) {
+#ifdef PROFILER_ENABLED
+   profiler_c::get_profiler()->hit("processor_c::retrieve_box_data");
+#endif
+
+   auto accessors = retrieve_accessors(cell);
 
    cell_ptr result;
    std::shared_ptr<environment_c> moving_env = env;
@@ -350,42 +353,27 @@ cell_ptr processor_c::access_box_member(cell_ptr cell,
          moving_env = result->box_env;
       }
    }
-
-   return {result};
+   return {result, accessors.back(), moving_env};
 }
 
 cell_ptr
 processor_c::load_potential_variable(cell_ptr cell,
                                      std::shared_ptr<environment_c> env) {
-
+#ifdef PROFILER_ENABLED
+   profiler_c::get_profiler()->hit("processor_c::load_potential_variable");
+#endif
    if (cell->type != cell_type_e::SYMBOL) {
       return process_cell(cell, env);
    }
 
    auto &variable_name = cell->data;
    if (variable_name.find('.') != std::string::npos) {
-
-      auto accessors = retrieve_accessors(variable_name);
-
-      cell_ptr result;
-      std::shared_ptr<environment_c> target_env = env;
-      for (std::size_t i = 0; i < accessors.size(); i++) {
-
-         // Get the item from the accessor
-         auto containing_env = target_env->find(accessors[i], cell);
-         result = containing_env->get(accessors[i]);
-
-         // Check if we need to move the environment "in" to the next
-         // object
-         if (result->type == cell_type_e::BOX) {
-            target_env = result->box_env;
-         }
-      }
-      return target_env->get(accessors.back());
-   } else {
-      auto containing_env = env->find(variable_name, cell);
-      return containing_env->get(variable_name);
+      auto [r, s, e] = retrieve_box_data(cell, env);
+      return r;
    }
+
+   auto containing_env = env->find(variable_name, cell);
+   return containing_env->get(variable_name);
 }
 
 } // namespace sauros

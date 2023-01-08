@@ -92,3 +92,11 @@ All benchmarks are now running on `sushi` - Current code runs :
 
 primality.sau >> averaged an execution time of  0.8564s ( 856.4176ms )  after  50  executions
 mandelbrot.sau >> averaged an execution time of  0.2326s ( 232.6051ms )  after  50  execution
+
+### 8-January-2022
+
+Added new cell variant type and async, updated benchs to include nsieve set to 4
+
+primality.sau >> averaged an execution time of  0.8979s ( 897.8553ms )  after  50  executions
+mandelbrot.sau >> averaged an execution time of  0.2604s ( 260.4496ms )  after  50  executions
+4_nsieve.sau >> averaged an execution time of  0.7299s ( 729.903ms )  after  50  executions

@@ -3,6 +3,20 @@
 #include "profiler.hpp"
 #include <iostream>
 
+#include <sstream>
+#include <vector>
+
+static inline std::vector<std::string>
+retrieve_accessors(const std::string &value) {
+   std::string accessor;
+   std::vector<std::string> accessor_list;
+   std::stringstream source(value);
+   while (std::getline(source, accessor, '.')) {
+      accessor_list.push_back(accessor);
+   }
+   return accessor_list;
+}
+
 namespace sauros {
 
 bool environment_c::exists(const std::string &item) {
