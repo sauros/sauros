@@ -642,22 +642,8 @@ void processor_c::populate_standard_builtins() {
 
           if (variable_name.find('.') != std::string::npos) {
 
-             auto accessors = retrieve_accessors(variable_name);
-
-             cell_ptr result;
-             std::shared_ptr<environment_c> target_env = env;
-             for (std::size_t i = 0; i < accessors.size(); i++) {
-
-                // Get the item from the accessor
-                auto containing_env = target_env->find(accessors[i], cells[1]);
-                result = containing_env->get(accessors[i]);
-
-                // Check if we need to move the environment "in" to the next
-                // object
-                if (result->type == cell_type_e::BOX) {
-                   target_env = result->box_env;
-                }
-             }
+             auto [_, target_variable, target_env] =
+                 retrieve_box_data(cells[1], env);
 
              auto value = process_cell(cells[2], env);
 
@@ -666,7 +652,7 @@ void processor_c::populate_standard_builtins() {
                                           cells[2]);
              }
 
-             target_env->set(accessors.back(), value);
+             target_env->set(target_variable, value);
              return {value};
 
           } else {

@@ -12,6 +12,7 @@
 #include <functional>
 #include <optional>
 #include <set>
+#include <tuple>
 #include <vector>
 
 namespace sauros {
@@ -113,8 +114,6 @@ class processor_c {
 
    void populate_standard_builtins();
 
-   std::vector<std::string> retrieve_accessors(const std::string &value);
-
    void quote_cell(std::string &out, cell_ptr cell,
                    std::shared_ptr<environment_c> env);
 
@@ -125,9 +124,6 @@ class processor_c {
 
    cell_ptr clone_box(cell_ptr cell);
 
-   cell_ptr access_box_member(cell_ptr cell,
-                              std::shared_ptr<environment_c> &env);
-
    cell_ptr perform_arithmetic(std::string op, cells_t &cells,
                                std::function<double(double, double)> fn,
                                std::shared_ptr<environment_c> env,
@@ -135,6 +131,11 @@ class processor_c {
 
    void load_package(const std::string &target, location_s *location,
                      std::shared_ptr<environment_c> env);
+
+   static std::vector<std::string> retrieve_accessors(cell_ptr &cell);
+
+   static std::tuple<cell_ptr, std::string, std::shared_ptr<environment_c>>
+   retrieve_box_data(cell_ptr &cell, std::shared_ptr<environment_c> &env);
 
    bool _break_loop{false};
    cell_ptr _yield_cell{nullptr};
