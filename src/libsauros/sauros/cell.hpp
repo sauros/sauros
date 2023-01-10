@@ -24,6 +24,7 @@ enum class cell_type_e {
    LIST,
    LAMBDA,
    BOX,
+   BOX_SYMBOL,
    ENCODED_SYMBOL,
    VARIANT
 };
@@ -33,6 +34,8 @@ static const char *cell_type_to_string(const cell_type_e type) {
    switch (type) {
    case cell_type_e::SYMBOL:
       return "symbol";
+   case cell_type_e::BOX_SYMBOL:
+      return "box_symbol";
    case cell_type_e::LIST:
       return "list";
    case cell_type_e::LAMBDA:

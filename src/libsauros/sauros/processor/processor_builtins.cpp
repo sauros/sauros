@@ -50,7 +50,7 @@ static inline bool eval_truthy(cell_ptr cell, location_s *location) {
 void processor_c::populate_standard_builtins() {
 
    auto expect_var_get_name = [this](cell_ptr cell) -> std::string {
-      if (cell->data.find('.') != std::string::npos) {
+      if (cell->type == cell_type_e::BOX_SYMBOL) {
          throw runtime_exception_c(
              "Attempting to directly define a variable accessor " + cell->data,
              cell);
