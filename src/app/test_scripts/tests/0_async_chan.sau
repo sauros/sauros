@@ -15,7 +15,7 @@
     [std::main_loop [lambda [main_loop_idx] [block
         [if [my_channel.has_data] [block
             [var data [my_channel.get]]
-            [if [== data 10] [exit 0]]  ; Shut down the loop after 10 cycles
+            [if [== data 9] [exit 0]]  ; Shut down the loop after 10 cycles
         ]]
         [os.sleep_ms 1000]
     ]]]

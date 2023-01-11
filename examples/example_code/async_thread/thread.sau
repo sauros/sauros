@@ -1,0 +1,27 @@
+[use "os"]
+
+[chan my_channel]
+
+[var receiver_lambda [lambda [] [block
+    [var counter 0]
+    [loop [< counter 30] [set counter [+ counter 1]] [block
+        [if [my_channel.has_data] [block
+            [var data [my_channel.get]]
+            [putln "Got: " data]
+            [set data [- data 1]]
+        ]]
+        [os.sleep_ms 1000]
+    ]]
+    [putln "broke out of threaded loop"]
+]]]
+
+[thread handle [receiver_lambda]]
+[var idx 0]
+[loop [< idx 10] [set idx [+ idx 1]] [block
+    [os.sleep_ms 5000]
+    [my_channel.put idx]
+    [if [== idx 5] [break]]
+]]
+
+[putln "Join"]
+[handle.join]
