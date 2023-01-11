@@ -31,6 +31,8 @@ void processor_c::cell_to_string(std::string &out, cell_ptr cell,
          out += " ";
       }
       break;
+   case cell_type_e::BOX_SYMBOL:
+      [[fallthrough]];
    case cell_type_e::ENCODED_SYMBOL:
       [[fallthrough]];
    case cell_type_e::SYMBOL: {
@@ -80,6 +82,8 @@ void processor_c::quote_cell(std::string &out, cell_ptr cell,
    case cell_type_e::INTEGER:
       [[fallthrough]];
    case cell_type_e::ENCODED_SYMBOL:
+      [[fallthrough]];
+   case cell_type_e::BOX_SYMBOL:
       [[fallthrough]];
    case cell_type_e::SYMBOL: {
       out += cell->data;
@@ -152,6 +156,8 @@ cell_ptr processor_c::process_list(cells_t &cells,
    auto suspect_cell = cells[0];
 
    switch (suspect_cell->type) {
+   case cell_type_e::BOX_SYMBOL:
+      [[fallthrough]];
    case cell_type_e::ENCODED_SYMBOL:
       [[fallthrough]];
    case cell_type_e::SYMBOL: {
@@ -205,18 +211,14 @@ cell_ptr processor_c::process_cell(cell_ptr cell,
    }
 
    switch (cell->type) {
+   case cell_type_e::BOX_SYMBOL: {
+      // Each item up-to and not including the last item should be n box
+      // the last member should be something within the box that we are
+      // trying to access
+      auto [r, s, e] = retrieve_box_data(cell, env);
+      return r;
+   }
    case cell_type_e::SYMBOL: {
-
-      // Check if its a dot accessor
-      //
-      if (cell->data.find('.') != std::string::npos) {
-         // Each item up-to and not including the last item should be n box
-         // the last member should be something within the box that we are
-         // trying to access
-         auto [r, s, e] = retrieve_box_data(cell, env);
-         return r;
-      }
-
       // If not built in maybe it is in the environment
       //
       auto env_with_data = env->find(cell->data, cell);
@@ -362,16 +364,17 @@ processor_c::load_potential_variable(cell_ptr cell,
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::load_potential_variable");
 #endif
+
+   if (cell->type == cell_type_e::BOX_SYMBOL) {
+      auto [r, s, e] = retrieve_box_data(cell, env);
+      return r;
+   }
+
    if (cell->type != cell_type_e::SYMBOL) {
       return process_cell(cell, env);
    }
 
    auto &variable_name = cell->data;
-   if (variable_name.find('.') != std::string::npos) {
-      auto [r, s, e] = retrieve_box_data(cell, env);
-      return r;
-   }
-
    auto containing_env = env->find(variable_name, cell);
    return containing_env->get(variable_name);
 }

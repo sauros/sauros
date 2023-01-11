@@ -121,14 +121,18 @@ std::vector<token_s> tokenize(size_t line_number, const std::string line,
       // Anything else should be considered a symbol
       //
       std::string value;
+      auto type = token_e::SYMBOL;
       decltype(idx) start = idx;
       while (idx < line.size() && !std::isspace(line[idx]) &&
              line[idx] != '[' && line[idx] != ']') {
+         if (line[idx] == '.') {
+            type = token_e::BOX_SYMBOL;
+         }
          value += line[idx];
          idx++;
       }
 
-      tokens.push_back({token_e::SYMBOL, value, {line_number, start}});
+      tokens.push_back({type, value, {line_number, start}});
       idx--;
    }
    return tokens;
@@ -188,6 +192,16 @@ cell_ptr parse(std::vector<token_s> &tokens,
       return {};
    }
 
+   case token_e::BOX_SYMBOL: {
+      if (!current_list) {
+         throw_no_list_error(current_token, origin);
+         return {};
+      }
+      current_list->list.push_back(std::make_shared<cell_c>(
+          cell_type_e::BOX_SYMBOL, current_token.data,
+          new location_s(current_token.location), origin));
+      return parse(tokens, origin, current_list);
+   }
    case token_e::SYMBOL: {
       if (!current_list) {
          throw_no_list_error(current_token, origin);
