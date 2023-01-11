@@ -12,8 +12,8 @@
 [var magic_number [random.uniform_int 0 100]]
 
 ; Loop until they get the correct number
-[var user_guess]
-[loop [true] [block
+
+[loop [var user_guess] [true] [] [block
 
    ; Get a number from the user
    [set user_guess [io.get_int "Guess a number> "]]

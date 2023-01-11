@@ -18,10 +18,9 @@
 
    [var books]
    [if [ > [len file_data] 0 ] [block
-      [var i 0]
       [var j 0]
       [var temp_list]
-      [loop [> [len file_data] i] [set i [+ 1 i]] [block
+      [loop [var i 0] [> [len file_data] i] [set i [+ 1 i]] [block
          [push temp_list [at i file_data]]
          [set j [+ 1 j]]
          [if [== 3 j] [block

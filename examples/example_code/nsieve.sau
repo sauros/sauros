@@ -22,13 +22,11 @@
 
 [var nsieve [lambda [max] [block
    [var count 0]
-   [var value 2]
    [var flags [list_ext.make_assigned 0 max]]
-   [loop [< value max] [set value [+ 1 value]] [block
+   [loop [var value 2] [< value max] [set value [+ 1 value]] [block
       [if [not [at value flags]] [block
          [set count [+ 1 count]]
-         [var multiple [* 2 value]]
-         [loop [< multiple max] [set multiple [+ value multiple]] [block
+         [loop [var multiple [* 2 value]] [< multiple max] [set multiple [+ value multiple]] [block
             [set_at multiple flags 1]
          ]]
       ]]
@@ -36,7 +34,6 @@
    [putln [fmt.encode "primes up to % : %" [list max count]]]
 ]]]
 
-[var i 0]
-[loop [< i 3] [set i [+ 1 i]] [block
+[loop [var i 0] [< i 3] [set i [+ 1 i]] [block
    [nsieve [bw_lsh 10000 [- n i]]]
 ]]

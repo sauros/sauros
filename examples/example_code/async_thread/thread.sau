@@ -3,8 +3,7 @@
 [chan my_channel]
 
 [var receiver_lambda [lambda [] [block
-    [var counter 0]
-    [loop [< counter 30] [set counter [+ counter 1]] [block
+    [loop [var counter 0] [< counter 30] [set counter [+ counter 1]] [block
         [if [my_channel.has_data] [block
             [var data [my_channel.get]]
             [putln "Got: " data]
@@ -16,8 +15,7 @@
 ]]]
 
 [thread handle [receiver_lambda]]
-[var idx 0]
-[loop [< idx 10] [set idx [+ idx 1]] [block
+[loop [var idx 0] [< idx 10] [set idx [+ idx 1]] [block
     [os.sleep_ms 5000]
     [my_channel.put idx]
     [if [== idx 5] [break]]

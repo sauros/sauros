@@ -102,7 +102,7 @@
     [if [>= start end] [throw "std::string::sub_string > start must be less than end"]]
     [if [< start 0] [throw "std::string::sub_string > start must be >= 0"]]
     [var result]
-    [loop [< start end] [set start [+ 1 start]] [block
+    [loop [] [< start end] [set start [+ 1 start]] [block
         [push result [at start listed_string]]
     ]]
     [yield [as_str result]]

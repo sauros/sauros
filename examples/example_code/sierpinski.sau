@@ -5,12 +5,9 @@
 [var sierpinski [lambda [size] [block
    [var x 0]
    [var i 0]
-   [var y [- size 1]]
-   [loop [>= y 0] [set y [- y 1]] [block
-      [set i 0]
-      [loop [< i y] [set i [+ 1 i]] [ put " " ]]
-      [set x 0]
-      [loop [< [+ x y] size] [set x [+ 1 x]] [block
+   [loop [var y [- size 1]] [>= y 0] [set y [- y 1]] [block
+      [loop [set i 0] [< i y] [set i [+ 1 i]] [ put " " ]]
+      [loop [set x 0] [< [+ x y] size] [set x [+ 1 x]] [block
          [if [bw_and x y] [put "  "] [put "* "]]
       ]]
       [putln ""]
@@ -18,10 +15,8 @@
 ]]]
 
 [var size 4]
-[var counter 0]
-[loop [< counter 4]  
-      [block [set counter [+ 1 counter]] [set size [* 2 size]] ] 
-      [
-         [sierpinski size]
-      ]
-]
+
+[loop [var counter 0] [< counter 4] [set counter [+ 1 counter]] [block  
+   [set size [* 2 size]]
+   [sierpinski size]
+]]

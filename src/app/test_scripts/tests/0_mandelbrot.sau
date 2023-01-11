@@ -4,8 +4,7 @@
       [var limit 100]
       [var z_real real]
       [var z_image image]
-      [var k 0]
-      [loop [ and [not [len result]] [< k limit]] [set k [+ k 1]] [
+      [loop [var k 0] [ and [not [len result]] [< k limit]] [set k [+ k 1]] [
          [block
             [var r2 [* z_real z_real]]
             [var i2 [* z_image z_image]]
@@ -35,11 +34,9 @@
 
 [var pixels [list "." "." "," "-" "^" "_" "*" "&" "^" "%" "1" "2" "3" "4" "5"]]
 
-[var i 0.0]
-[loop [< i height] [set i [+ 1 i]] [
+[loop [var i 0.0] [< i height] [set i [+ 1 i]] [
    [block
-      [var j 0.0]
-      [loop [< j width] [set j [+ 1 j]] [
+      [loop [var j 0.0] [< j width] [set j [+ 1 j]] [
          [block
             [var x  [ + x_start [* j dx] ]]
             [var y  [ - y_end [* i dy] ]]

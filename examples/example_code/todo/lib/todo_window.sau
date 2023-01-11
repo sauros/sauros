@@ -49,8 +49,7 @@
     [putln "Please use `n` for next page, `p` for previous, or select the id of the entry to select"]
 
     [var value]
-    [var continue_loop 1]
-    [loop [continue_loop] [block
+    [loop [var continue_loop 1] [continue_loop] [] [block
         [var selection [io.get_string "[n] [p] [<int>]: "]]
         [std::switch selection [list
             [std::case "n" [lambda [] [block
@@ -90,8 +89,7 @@
     [putln "Please use `n` for next page, `p` for previous, or `d` for done"]
 
     [var value]
-    [var continue_loop 1]
-    [loop [continue_loop] [block
+    [loop [var continue_loop 1] [continue_loop] [] [block
         [var selection [io.get_string "[n] [p] [d]: "]]
         [std::switch selection [list
             [std::case "n" [lambda [] [block
@@ -122,7 +120,7 @@
     ]]
 
     [var current_page 0]
-    [loop [true] [block
+    [loop [] [true] [] [block
         [var x [todo__::anonymous::todo::window::show_page 
             [at current_page pages]
             [+ 1 current_page] 
@@ -152,7 +150,7 @@
     ]]
 
     [var current_page 0]
-    [loop [true] [block
+    [loop [] [true] [] [block
         [var x [todo__::anonymous::todo::window::show_page_window 
             [at current_page pages] 
             valid_selection_max 

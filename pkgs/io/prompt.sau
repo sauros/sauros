@@ -7,8 +7,7 @@
 ;
 [var __io__prompt__fn [lambda [prompt fn] [block
    [var response [nil]]
-   [var continue [true]]
-   [loop [continue] [block
+   [loop [var continue [true]] [continue] [] [block
       [if [not [is_nil prompt]] [put prompt]]
       [set response [fn]]
       [if [not [is_nil response]] [
