@@ -1,6 +1,6 @@
 #include "cell.hpp"
-
 #include "sauros/processor/processor.hpp"
+#include <sstream>
 
 namespace sauros {
 
@@ -16,6 +16,40 @@ async_cell_c::async_cell_c(location_s *location)
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           future.wait();
           return std::make_shared<cell_c>(CELL_TRUE);
+       });
+}
+
+thread_cell_c::thread_cell_c(location_s *location)
+    : variant_cell_c(cell_variant_type_e::THREAD, location) {
+
+   is_joinable = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          return std::make_shared<cell_c>(cell_type_e::INTEGER,
+                                          std::to_string(thread.joinable()));
+       });
+
+   join = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          try {
+             thread.join();
+          } catch (...) {
+             throw processor_c::runtime_exception_c("unable to join thread",
+                                                    cells[0]);
+          }
+          return std::make_shared<cell_c>(CELL_TRUE);
+       });
+
+   detatch = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          thread.detach();
+          return std::make_shared<cell_c>(CELL_TRUE);
+       });
+
+   get_id = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          std::stringstream ss;
+          ss << thread.get_id();
+          return std::make_shared<cell_c>(cell_type_e::INTEGER, ss.str());
        });
 }
 

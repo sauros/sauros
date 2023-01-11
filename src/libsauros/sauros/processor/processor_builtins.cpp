@@ -1383,9 +1383,7 @@ void processor_c::populate_standard_builtins() {
 
           if (cells[2]->type != cell_type_e::LIST) {
              throw runtime_exception_c(
-                 "async parameter required to be of type `list`\n"
-                 "- A list that calls a symbol to execute asynchronously",
-                 cells[2]);
+                 "async parameter required to be of type `list`\n", cells[2]);
           }
 
           // Setup async cell
@@ -1412,6 +1410,51 @@ void processor_c::populate_standard_builtins() {
           box->list.push_back(async_cell);
 
           // Keep the target alive (might not be required yet)
+          box->list.push_back(cells[1]);
+
+          env->set(variable_name, box);
+          return std::make_shared<cell_c>(CELL_TRUE);
+       });
+
+   _builtins[BUILTIN_THREAD] = std::make_shared<cell_c>(
+       [this, expect_var_get_name](
+           cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+#ifdef PROFILER_ENABLED
+          profiler_c::get_profiler()->hit("processor_builtin::THREAD");
+#endif
+          if (cells.size() != 3) {
+             throw runtime_exception_c(
+                 "thread command expects 2 parameters, but " +
+                     std::to_string(cells.size() - 1) + " were given",
+                 cells[0]);
+          }
+
+          auto variable_name = expect_var_get_name(cells[1]);
+
+          if (cells[2]->type != cell_type_e::LIST) {
+             throw runtime_exception_c(
+                 "thread parameter required to be of type `list`\n", cells[2]);
+          }
+
+          // Setup thread cell
+          auto thread_cell =
+              std::make_shared<thread_cell_c>(cells[0]->location);
+          thread_cell->processor = std::make_shared<processor_c>();
+
+          auto box =
+              std::make_shared<cell_c>(cell_type_e::BOX, cells[0]->location);
+
+          box->box_env = std::make_shared<sauros::environment_c>();
+          box->box_env->set("is_joinable", thread_cell->is_joinable);
+          box->box_env->set("join", thread_cell->join);
+          box->box_env->set("detatch", thread_cell->detatch);
+          box->box_env->set("get_id", thread_cell->get_id);
+
+          thread_cell->thread =
+              std::thread(&processor_c::process_cell, thread_cell->processor,
+                          cells[2], env);
+
+          box->list.push_back(thread_cell);
           box->list.push_back(cells[1]);
 
           env->set(variable_name, box);

@@ -11,7 +11,7 @@
 
 namespace sauros {
 constexpr uint8_t BUILTIN_DEFAULT_VAL = 0xFF;
-constexpr uint8_t BUILTIN_ENTRY_COUNT = 64;
+constexpr uint8_t BUILTIN_ENTRY_COUNT = 65;
 
 constexpr uint8_t BUILTIN_FRONT = 0;
 constexpr uint8_t BUILTIN_BACK = 1;
@@ -77,6 +77,7 @@ constexpr uint8_t BUILTIN_SET_AT = 60;
 constexpr uint8_t BUILTIN_AS_LIST = 61;
 constexpr uint8_t BUILTIN_ASYNC = 62;
 constexpr uint8_t BUILTIN_CHAN = 63;
+constexpr uint8_t BUILTIN_THREAD = 64;
 
 // A map that ties a string representation ot the encoding
 // that the parser can leverage to ensure that all translations
@@ -146,6 +147,7 @@ static std::unordered_map<std::string, uint8_t> BUILTIN_STRING_TO_ENCODING{
     {"rev", BUILTIN_REV},
     {"set_at", BUILTIN_SET_AT},
     {"async", BUILTIN_ASYNC},
+    {"thread", BUILTIN_THREAD},
     {"chan", BUILTIN_CHAN}};
 } // namespace sauros
 
