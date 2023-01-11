@@ -100,3 +100,12 @@ Added new cell variant type and async, updated benchs to include nsieve set to 4
 primality.sau >> averaged an execution time of  0.8979s ( 897.8553ms )  after  50  executions
 mandelbrot.sau >> averaged an execution time of  0.2604s ( 260.4496ms )  after  50  executions
 4_nsieve.sau >> averaged an execution time of  0.7299s ( 729.903ms )  after  50  executions
+
+### 10-January-2022
+
+Created cell type for boxed variable to ensure that we don't have to scan every single
+symbol for a `.` at run time.
+
+primality.sau >> averaged an execution time of  0.8108s ( 810.7506ms )  after  50  executions
+mandelbrot.sau >> averaged an execution time of  0.244s ( 244.0041ms )  after  50  executions
+4sieve.sau >> averaged an execution time of  0.6784s ( 678.36ms )  after  50  executions
