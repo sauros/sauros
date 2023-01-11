@@ -244,7 +244,7 @@ void processor_c::populate_standard_builtins() {
 
           uint64_t idx = std::stoull(index->data);
 
-          if (cells[2]->type != cell_type_e::SYMBOL && 
+          if (cells[2]->type != cell_type_e::SYMBOL &&
               cells[2]->type != cell_type_e::BOX_SYMBOL) {
              throw runtime_exception_c(
                  "Second parameter of at must be a variable", cells[2]);
@@ -270,7 +270,7 @@ void processor_c::populate_standard_builtins() {
                  cells[0]);
           }
 
-          if (cells[1]->type != cell_type_e::SYMBOL && 
+          if (cells[1]->type != cell_type_e::SYMBOL &&
               cells[1]->type != cell_type_e::BOX_SYMBOL) {
              throw runtime_exception_c(
                  "First parameter of clear must be a variable", cells[1]);
@@ -293,7 +293,7 @@ void processor_c::populate_standard_builtins() {
                  cells[0]);
           }
 
-          if (cells[1]->type != cell_type_e::SYMBOL && 
+          if (cells[1]->type != cell_type_e::SYMBOL &&
               cells[1]->type != cell_type_e::BOX_SYMBOL) {
              throw runtime_exception_c(
                  "First parameter of pop must be a variable", cells[1]);
@@ -318,7 +318,7 @@ void processor_c::populate_standard_builtins() {
                  cells[0]);
           }
 
-          if (cells[1]->type != cell_type_e::SYMBOL && 
+          if (cells[1]->type != cell_type_e::SYMBOL &&
               cells[1]->type != cell_type_e::BOX_SYMBOL) {
              throw runtime_exception_c(
                  "First parameter of push must be a variable", cells[1]);
@@ -539,7 +539,7 @@ void processor_c::populate_standard_builtins() {
                  cells[0]);
           }
 
-          if (cells[1]->type != cell_type_e::SYMBOL && 
+          if (cells[1]->type != cell_type_e::SYMBOL &&
               cells[1]->type != cell_type_e::BOX_SYMBOL) {
              throw runtime_exception_c(
                  "first parameter to iter needs to be a symbol", cells[1]);
@@ -599,7 +599,8 @@ void processor_c::populate_standard_builtins() {
 
           while (1) {
 
-             auto loop_environment = std::make_shared<environment_c>(outer_loop_env);
+             auto loop_environment =
+                 std::make_shared<environment_c>(outer_loop_env);
 
              // Check the condition
              auto conditional_result =
