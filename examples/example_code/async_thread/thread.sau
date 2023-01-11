@@ -8,10 +8,11 @@
         [if [my_channel.has_data] [block
             [var data [my_channel.get]]
             [putln "Got: " data]
+            [set data [- data 1]]
         ]]
         [os.sleep_ms 1000]
     ]]
-    [putln "broke"]
+    [putln "broke out of threaded loop"]
 ]]]
 
 [thread handle [receiver_lambda]]

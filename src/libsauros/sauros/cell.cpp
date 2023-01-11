@@ -2,6 +2,8 @@
 #include "sauros/processor/processor.hpp"
 #include <sstream>
 
+#include <iostream>
+
 namespace sauros {
 
 async_cell_c::async_cell_c(location_s *location)
@@ -63,7 +65,7 @@ chan_cell_c::chan_cell_c(location_s *location)
           }
           const std::lock_guard<std::mutex> lock(channel_mutex);
           for (auto it = cells.begin() + 1; it != cells.end(); ++it) {
-             channel_queue.push((*it));
+             channel_queue.push(processor->process_cell((*it), env));
           }
           return std::make_shared<cell_c>(CELL_TRUE);
        });
@@ -84,7 +86,7 @@ chan_cell_c::chan_cell_c(location_s *location)
              next = channel_queue.front();
              channel_queue.pop();
           }
-          return processor->process_cell(next, env);
+          return next;
        });
 
    drain_fn = std::make_shared<cell_c>(
