@@ -1,0 +1,10 @@
+[var x [lambda [ref_item] [block
+
+    [ref_item.put 3]
+]]]
+
+[ref my_ref 10]
+
+[x my_ref]
+
+[assert "refs.sau > reference not updated" [== 3 [my_ref.get]]]

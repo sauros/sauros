@@ -172,7 +172,7 @@ static const cell_c CELL_FALSE =
 static const cell_c CELL_NIL =
     cell_c(cell_type_e::STRING, "#nil"); //! A cell that represents NIL
 
-enum class cell_variant_type_e { ASYNC, THREAD, CHAN };
+enum class cell_variant_type_e { ASYNC, THREAD, CHAN, REF };
 
 //! \brief A variant of cell_c
 //!        The variant type is meant to be able to extend cells
@@ -231,6 +231,16 @@ class chan_cell_c : public variant_cell_c {
    cell_ptr has_data_fn;
    cell_ptr get_fn;
    cell_ptr drain_fn;
+};
+
+//! \brief A cell that can be used as a safe reference
+class ref_cell_c : public variant_cell_c {
+ public:
+   ref_cell_c(location_s *location);
+   std::mutex ref_mut;
+   cell_ptr ref_value;
+   cell_ptr put_fn;
+   cell_ptr get_fn;
 };
 
 } // namespace sauros

@@ -1490,6 +1490,42 @@ void processor_c::populate_standard_builtins() {
           env->set(variable_name, box);
           return std::make_shared<cell_c>(CELL_TRUE);
        });
+
+   _builtins[BUILTIN_REF] = std::make_shared<cell_c>(
+       [this, expect_var_get_name](
+           cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+#ifdef PROFILER_ENABLED
+          profiler_c::get_profiler()->hit("processor_builtin::ASYNC");
+#endif
+          if (cells.size() < 2) {
+             throw runtime_exception_c(
+                 "ref command expects 2 or 3 parameters, but " +
+                     std::to_string(cells.size() - 1) + " were given",
+                 cells[0]);
+          }
+
+          auto variable_name = expect_var_get_name(cells[1]);
+
+          auto ref_cell = std::make_shared<ref_cell_c>(cells[0]->location);
+
+          if (cells.size() == 3) {
+             ref_cell->ref_value = process_cell(cells[2], env);
+          } else if (cells.size() > 3) {
+             throw runtime_exception_c(
+                 "ref command expects 3 parameters at most, but " +
+                     std::to_string(cells.size() - 1) + " were given",
+                 cells[0]);
+          }
+
+          auto box =
+              std::make_shared<cell_c>(cell_type_e::BOX, cells[0]->location);
+          box->box_env = std::make_shared<sauros::environment_c>();
+          box->box_env->set("put", ref_cell->put_fn);
+          box->box_env->set("get", ref_cell->get_fn);
+          box->list.push_back(ref_cell);
+          env->set(variable_name, box);
+          return std::make_shared<cell_c>(CELL_TRUE);
+       });
 }
 
 } // namespace sauros

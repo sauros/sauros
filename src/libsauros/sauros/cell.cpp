@@ -100,4 +100,30 @@ chan_cell_c::chan_cell_c(location_s *location)
           return result;
        });
 }
+
+ref_cell_c::ref_cell_c(location_s *location)
+    : variant_cell_c(cell_variant_type_e::REF, location) {
+
+   put_fn = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          if (cells.size() != 2) {
+             throw processor_c::runtime_exception_c(
+                 "ref_cell.put expects 1 parameters", cells[0]);
+          }
+          const std::lock_guard<std::mutex> lock(ref_mut);
+          ref_value = cells[1];
+          return std::make_shared<cell_c>(CELL_TRUE);
+       });
+
+   get_fn = std::make_shared<cell_c>(
+       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+          if (cells.size() != 1) {
+             throw processor_c::runtime_exception_c(
+                 "ref_cell.get expects no parameters", cells[0]);
+          }
+          const std::lock_guard<std::mutex> lock(ref_mut);
+          return ref_value;
+       });
+}
+
 } // namespace sauros
