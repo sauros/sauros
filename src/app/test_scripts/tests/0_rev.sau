@@ -9,7 +9,7 @@
 
 [assert "rev.sau > length not matching" [== x_len r_len]]
 
-[var counter 0]
-[loop [< counter x_len] [set counter [+ counter 1]] [block
+
+[loop [var counter 0] [< counter x_len] [set counter [+ counter 1]] [block
    [assert "rev.sau > incorrect value found in reversed list" [== [at counter r] [at counter y] ]]
 ]]

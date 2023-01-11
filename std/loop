@@ -17,10 +17,12 @@
    [if [sneq "lambda" [type body]] [
       throw "expected lambda type for parameter: body"
    ]]
-   [var op [if [< end start] [lambda [lhs rhs] [- lhs rhs]] [lambda [lhs rhs] [+ lhs rhs]] ]]
-   [loop [condition start end] [set start [op start 1] ] [
-      body start
-   ]]
+   
+   [loop [var op [if [< end start] [lambda [lhs rhs] [- lhs rhs]] [lambda [lhs rhs] [+ lhs rhs]] ]] 
+         [condition start end] 
+         [set start [op start 1]]
+         [body start]
+   ]
 ]]]
 
 ;  Loop forever 
@@ -40,6 +42,5 @@
    [if [sneq "lambda" [type body]] [
       throw "expected lambda type for parameter: body"
    ]]
-   [var count 0]
-   [loop [true] [set count [+ 1 count]] [body count]]
+   [loop [var count 0] [true] [set count [+ 1 count]] [body count]]
 ]]]

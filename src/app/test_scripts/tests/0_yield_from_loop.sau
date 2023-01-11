@@ -1,5 +1,5 @@
 [var test [lambda [] [
-   [loop [true] [
+   [loop [] [true] [] [block
       [yield 24]
       [throw "yield_from_loop.sau > Failed to yield from loop"]
    ]]

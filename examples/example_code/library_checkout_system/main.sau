@@ -38,7 +38,7 @@
 ;  Select a valid entry from a given, or subsection-of the loaded database
 ;
 [var select [lambda [data] [block
-   [loop [true] [block 
+   [loop [] [true] [] [block 
       [var index 0]
       [iter entry data [block
          [var current_entry 
@@ -72,8 +72,7 @@
 ;
 [var list_books [lambda [] [block
    [putln [fmt.encode "There are % books in the database\n"  [len loaded_database]]]
-   [var i 0]
-   [loop [> [len loaded_database] i] [set i [+ 1 i]] [block 
+   [loop [var i 0] [> [len loaded_database] i] [set i [+ 1 i]] [block 
       [putln [database::entry_to_string [at i loaded_database]]]
    ]]
 ]]]
@@ -120,7 +119,7 @@
 ;  Main program loop, get user input and
 ;  map it to the correct function
 ;
-[loop [true] [block
+[loop [] [true] [] [block
    [std::switch [io.get_string "$: "] [list
       [std::case "help" show_help]
       [std::case "new" new_book]

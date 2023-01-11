@@ -5,8 +5,7 @@
    [if [sneq "lambda" [type body]] [
       throw "expected lambda type for parameter: body"
    ]]
-   [var count 0]
-   [loop [true] [set count [+ 1 count]] [body count]]
+   [loop [var count 0] [true] [set count [+ 1 count]] [body count]]
 ]]]
 
 [chan my_channel]
@@ -22,9 +21,7 @@
 ]]]
 
 [async handle [receiver_lambda]]
-[var counter 0]
-
-[loop [< counter 10] [set counter [+ 1 counter]] [block
+[loop [var counter 0] [< counter 10] [set counter [+ 1 counter]] [block
     [os.sleep_ms 500]
     [my_channel.put counter]
 ]]

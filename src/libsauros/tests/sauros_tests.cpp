@@ -93,7 +93,8 @@ TEST(sauros_tests, piecemeal) {
         "1"},
        {"[assert \"a integer\" 420]", "1"},
        {"[assert \"a double\" 2.1828]", "1"},
-       {"[block [var x 1] [loop [< x 10] [[block [set x [+ x 1]] ]]] [x]]",
+       {"[block [var x 1] [loop [] [< x 10] [] [[block [set x [+ x 1]] ]]] "
+        "[x]]",
         "10"},
        {"[block [var x \"A string!\"] [type x] ]", "string"},
        {"[block [var x 42] [type x] ]", "integer"},

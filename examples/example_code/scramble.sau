@@ -12,20 +12,18 @@
 
 ; Get a string to source the scrambled text from
 
-[var getting_string [true]]
-[var source_string [nil]]
 
-[loop [getting_string] [block
+[var source_string [nil]]
+[loop [var getting_string [true]] [getting_string] [] [block
    [set source_string [io.get_string "Please enter some text> "]]
    [if [not [is_nil source_string]] [set getting_string [false]]]
 ]]
 
 ; Get an integer to describe the length og the scrambled string
 
-[var getting_len [true]]
-[var target_len [nil]]
 
-[loop [getting_len] [block
+[var target_len [nil]]
+[loop [var getting_len [true]] [getting_len] [] [block
    [set target_len [io.get_int "Please enter a length (integer)> "]]
    [if [not [is_nil target_len]] [set getting_len [false]]]
 ]]

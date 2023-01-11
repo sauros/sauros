@@ -244,7 +244,8 @@ void processor_c::populate_standard_builtins() {
 
           uint64_t idx = std::stoull(index->data);
 
-          if (cells[2]->type != cell_type_e::SYMBOL) {
+          if (cells[2]->type != cell_type_e::SYMBOL &&
+              cells[2]->type != cell_type_e::BOX_SYMBOL) {
              throw runtime_exception_c(
                  "Second parameter of at must be a variable", cells[2]);
           }
@@ -269,7 +270,8 @@ void processor_c::populate_standard_builtins() {
                  cells[0]);
           }
 
-          if (cells[1]->type != cell_type_e::SYMBOL) {
+          if (cells[1]->type != cell_type_e::SYMBOL &&
+              cells[1]->type != cell_type_e::BOX_SYMBOL) {
              throw runtime_exception_c(
                  "First parameter of clear must be a variable", cells[1]);
           }
@@ -291,7 +293,8 @@ void processor_c::populate_standard_builtins() {
                  cells[0]);
           }
 
-          if (cells[1]->type != cell_type_e::SYMBOL) {
+          if (cells[1]->type != cell_type_e::SYMBOL &&
+              cells[1]->type != cell_type_e::BOX_SYMBOL) {
              throw runtime_exception_c(
                  "First parameter of pop must be a variable", cells[1]);
           }
@@ -315,7 +318,8 @@ void processor_c::populate_standard_builtins() {
                  cells[0]);
           }
 
-          if (cells[1]->type != cell_type_e::SYMBOL) {
+          if (cells[1]->type != cell_type_e::SYMBOL &&
+              cells[1]->type != cell_type_e::BOX_SYMBOL) {
              throw runtime_exception_c(
                  "First parameter of push must be a variable", cells[1]);
           }
@@ -535,7 +539,8 @@ void processor_c::populate_standard_builtins() {
                  cells[0]);
           }
 
-          if (cells[1]->type != cell_type_e::SYMBOL) {
+          if (cells[1]->type != cell_type_e::SYMBOL &&
+              cells[1]->type != cell_type_e::BOX_SYMBOL) {
              throw runtime_exception_c(
                  "first parameter to iter needs to be a symbol", cells[1]);
           }
@@ -576,28 +581,26 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::LOOP");
 #endif
-          if (cells.size() != 3 && cells.size() != 4) {
+          if (cells.size() != 5) {
              throw runtime_exception_c(
-                 "loop command expects 3 parameters, but " +
+                 "loop command expects 4 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
                  cells[0]);
           }
 
-          auto &conditional_cell = cells[1];
+          auto &conditional_cell = cells[2];
+          auto &pre = cells[1];
+          auto &post = cells[3];
+          auto &body = cells[4];
 
-          cell_ptr *body{nullptr};
-          cell_ptr *post{nullptr};
+          auto outer_loop_env = std::make_shared<environment_c>(env);
 
-          if (cells.size() == 3) {
-             body = &cells[2];
-          } else if (cells.size() == 4) {
-             post = &cells[2];
-             body = &cells[3];
-          }
+          process_cell(pre, outer_loop_env);
 
           while (1) {
 
-             auto loop_environment = std::make_shared<environment_c>(env);
+             auto loop_environment =
+                 std::make_shared<environment_c>(outer_loop_env);
 
              // Check the condition
              auto conditional_result =
@@ -608,7 +611,7 @@ void processor_c::populate_standard_builtins() {
              }
 
              // Execute the body
-             auto r = process_cell(*body, loop_environment);
+             auto r = process_cell(body, loop_environment);
              if (_break_loop) {
                 _break_loop = false;
                 break;
@@ -619,7 +622,7 @@ void processor_c::populate_standard_builtins() {
              }
 
              if (post) {
-                process_cell(*post, loop_environment);
+                process_cell(post, loop_environment);
              }
           }
 

@@ -14,9 +14,8 @@
 [var screen::pixels [list "." "." "," "-" "^" "_" "*" "&" "^" "%" "1" "2" "3" "4" "5"]]
 
 [var screen::new [lambda [] [block
-   [var h 0]
    [var s screen::struct]
-   [loop [< h screen::height] [set h [+ 1 h]] [block
+   [loop [var h 0] [< h screen::height] [set h [+ 1 h]] [block
       [push s.grid [list_ext.make_assigned " " screen::width]]
    ]]
    [yield s]
@@ -43,8 +42,7 @@
       [var limit 100]
       [var z_real real]
       [var z_image image]
-      [var k 0]
-      [loop [< k limit] [set k [+ k 1]] [
+      [loop [var k 0] [< k limit] [set k [+ k 1]] [
          [block
             [var r2 [* z_real z_real]]
             [var i2 [* z_image z_image]]
@@ -73,11 +71,9 @@
 [var mandelbrot::generate [lambda [screen x y] [block
    [var dx [/ [- x.end x.start] [- screen::width 1]]]
    [var dy [/ [- y.end y.start] [- screen::height 1]]]
-   [var i 0]
-   [loop [< i screen::height] [set i [+ 1 i]] [
+   [loop [var i 0] [< i screen::height] [set i [+ 1 i]] [
       [block
-         [var j 0]
-         [loop [< j screen::width] [set j [+ 1 j]] [
+         [loop [var j 0] [< j screen::width] [set j [+ 1 j]] [
             [block
                [var value 
                   [mandelbrot 
