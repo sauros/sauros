@@ -1495,7 +1495,7 @@ void processor_c::populate_standard_builtins() {
        [this, expect_var_get_name](
            cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-          profiler_c::get_profiler()->hit("processor_builtin::ASYNC");
+          profiler_c::get_profiler()->hit("processor_builtin::REF");
 #endif
           if (cells.size() < 2) {
              throw runtime_exception_c(
