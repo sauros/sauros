@@ -76,36 +76,45 @@ Clearly, the primality test has more operations that result in the copying of a 
 
 Updates over the last week that include the code to trace the origin of cells slowed down the bench mark:
 
+```
 primality.sau >> averaged an execution time of  5.5556s ( 5555.6415ms )  after  50  executions
 mandelbrot.sau >> averaged an execution time of  1.3835s ( 1383.4991ms )  after  50  executions
+```
 
 Converting `location_s` to a raw pointer cut the size of the cell down 8 bytes. The total amount of memory the program will eat up is +8 bytes per cell, as the 16 used by location still exist, and now there is a pointer to a location, but despite the location
 having to be cloned into memory every time, and having cells manage the location memory the new bench is:
 
+```
 primality.sau >> averaged an execution time of  4.8319s ( 4831.8663ms )  after  50  executions
 mandelbrot.sau >> averaged an execution time of  1.2559s ( 1255.8673ms )  after  50  executions
+```
 
 
 # Changing of benchmark platform:
 
 All benchmarks are now running on `sushi` - Current code runs : 
 
+```
 primality.sau >> averaged an execution time of  0.8564s ( 856.4176ms )  after  50  executions
 mandelbrot.sau >> averaged an execution time of  0.2326s ( 232.6051ms )  after  50  execution
+```
 
 ### 8-January-2022
 
 Added new cell variant type and async, updated benchs to include nsieve set to 4
 
+```
 primality.sau >> averaged an execution time of  0.8979s ( 897.8553ms )  after  50  executions
 mandelbrot.sau >> averaged an execution time of  0.2604s ( 260.4496ms )  after  50  executions
 4_nsieve.sau >> averaged an execution time of  0.7299s ( 729.903ms )  after  50  executions
+```
 
 ### 10-January-2022
 
 Created cell type for boxed variable to ensure that we don't have to scan every single
 symbol for a `.` at run time.
-
+```
 primality.sau >> averaged an execution time of  0.8108s ( 810.7506ms )  after  50  executions
 mandelbrot.sau >> averaged an execution time of  0.244s ( 244.0041ms )  after  50  executions
 4sieve.sau >> averaged an execution time of  0.6784s ( 678.36ms )  after  50  executions
+```
