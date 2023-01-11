@@ -215,7 +215,7 @@ class thread_cell_c : public variant_cell_c {
    std::thread thread;
    cell_ptr is_joinable;
    cell_ptr join;
-   cell_ptr detatch;
+   cell_ptr detach;
    cell_ptr get_id;
 };
 

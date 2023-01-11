@@ -41,7 +41,7 @@ thread_cell_c::thread_cell_c(location_s *location)
           return std::make_shared<cell_c>(CELL_TRUE);
        });
 
-   detatch = std::make_shared<cell_c>(
+   detach = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           thread.detach();
           return std::make_shared<cell_c>(CELL_TRUE);

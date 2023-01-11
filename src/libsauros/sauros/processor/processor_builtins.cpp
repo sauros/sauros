@@ -1447,7 +1447,7 @@ void processor_c::populate_standard_builtins() {
           box->box_env = std::make_shared<sauros::environment_c>();
           box->box_env->set("is_joinable", thread_cell->is_joinable);
           box->box_env->set("join", thread_cell->join);
-          box->box_env->set("detatch", thread_cell->detatch);
+          box->box_env->set("detach", thread_cell->detach);
           box->box_env->set("get_id", thread_cell->get_id);
 
           thread_cell->thread =
