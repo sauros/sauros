@@ -75,25 +75,49 @@ void processor_c::populate_standard_builtins() {
                  cells[0]);
           }
 
-          file_executor_c loader(env);
+          auto perform_load =
+              [this, env](std::string cell_value,
+                          std::shared_ptr<std::string> origin,
+                          std::optional<std::string> sauros_dir) -> bool {
+             file_executor_c loader(env);
+
+             std::cout << "cell value : " << cell_value << std::endl;
+             // Try direct
+             if (!loader.run(cell_value)) {
+                return true;
+             }
+
+             // Try with cell origin in front of it
+             std::filesystem::path full_path = (*origin);
+             full_path.remove_filename();
+             full_path /= cell_value;
+
+             std::cout << "full path value : " << full_path << std::endl;
+             if (!loader.run(full_path)) {
+                return true;
+             }
+
+             // Try std/
+             if (sauros_dir.has_value()) {
+                std::filesystem::path p = (*sauros_dir);
+                p /= cell_value;
+                std::cout << "attempting : " << p << std::endl;
+                return !loader.run(p);
+             }
+             std::cout << "fail\n";
+             return false;
+          };
+
           for (auto i = cells.begin() + 1; i < cells.end(); i++) {
              if ((*i)->type != sauros::cell_type_e::STRING) {
                 throw sauros::processor_c::runtime_exception_c(
                     "Import objects are expected to be raw strings", (*i));
              }
-             if (0 != loader.run((*i)->data)) {
-                bool success{false};
-                auto sys_dir = _system.get_sauros_directory();
-                if (sys_dir.has_value()) {
-                   std::filesystem::path p = (*sys_dir);
-                   p /= (*i)->data;
-                   success = (0 == loader.run(p));
-                }
 
-                if (!success) {
-                   throw sauros::processor_c::runtime_exception_c(
-                       "Unable to load import: " + (*i)->data, (*i));
-                }
+             if (!perform_load((*i)->data, cells[0]->origin,
+                               _system.get_sauros_directory())) {
+                throw sauros::processor_c::runtime_exception_c(
+                    "Unable to load import: " + (*i)->data, (*i));
              }
           }
           return std::make_shared<cell_c>(CELL_TRUE);
