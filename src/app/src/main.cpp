@@ -184,6 +184,18 @@ int main(int argc, char **argv) {
    env->set("@entry_file", std::make_shared<sauros::cell_c>(
                                sauros::cell_type_e::STRING, args[0]));
 
+   // Retrieve any data piped into the program
+   auto piped_cell =
+       std::make_shared<sauros::cell_c>(sauros::cell_type_e::LIST);
+   if (!isatty(STDIN_FILENO)) {
+      std::string piped_in;
+      while (getline(std::cin, piped_in)) {
+         piped_cell->list.push_back(std::make_shared<sauros::cell_c>(
+             sauros::cell_type_e::STRING, piped_in));
+      }
+   }
+   env->set("@piped", piped_cell);
+
    run_file(args[0]);
    return 0;
 }
