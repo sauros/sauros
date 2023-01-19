@@ -51,28 +51,21 @@ std::vector<token_s> tokenize(size_t line_number, const std::string line,
       }
 
       case '"': {
-         bool in_str{false};
-         std::string value;
-         decltype(idx) start = idx;
+         bool in_str{true};
+         std::string value = "\"";
+         decltype(idx) start = idx++;
          while (idx < line.size()) {
             if (line[idx] == '"') {
                if (idx > 0 && line[idx - 1] != '\\') {
-                  in_str = !in_str;
+                  value += line[idx];
+                  break;
                }
             }
-            if (in_str) {
-               value += line[idx];
-            } else if (!std::isspace(line[idx]) && line[idx] != '[' &&
-                       line[idx] != ']') {
-               value += line[idx];
-            } else {
-               --idx;
-               break;
-            }
-            ++idx;
+            value += line[idx++];
          }
 
          if (!value.ends_with('"')) {
+            std::cout << "<<" << value << ">>\n";
             throw parser_exception_c("Unterminated string", origin,
                                      {line_number, idx});
             return tokens;

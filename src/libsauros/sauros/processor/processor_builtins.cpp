@@ -81,8 +81,8 @@ void processor_c::populate_standard_builtins() {
                           std::optional<std::string> sauros_dir) -> bool {
              file_executor_c loader(env);
 
-             std::cout << "cell value : " << cell_value << std::endl;
-             // Try direct
+             // std::cout << "cell value : " << cell_value << std::endl;
+             //  Try direct
              if (!loader.run(cell_value)) {
                 return true;
              }
@@ -92,7 +92,7 @@ void processor_c::populate_standard_builtins() {
              full_path.remove_filename();
              full_path /= cell_value;
 
-             std::cout << "full path value : " << full_path << std::endl;
+             // std::cout << "full path value : " << full_path << std::endl;
              if (!loader.run(full_path)) {
                 return true;
              }
@@ -104,7 +104,7 @@ void processor_c::populate_standard_builtins() {
                 std::cout << "attempting : " << p << std::endl;
                 return !loader.run(p);
              }
-             std::cout << "fail\n";
+             // std::cout << "fail\n";
              return false;
           };
 
