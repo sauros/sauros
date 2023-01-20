@@ -1,0 +1,14 @@
+; Pkg name
+[var pkg_name "signal"]
+
+; C++ shared lib to link to
+[var library_file "signal.lib"]
+[var library_functions [list
+   "_pkg_set_signal_handler_"
+   "_pkg_set_signal_handler_all_"
+]]
+
+; Files to include under the current pkg
+[var source_files [list
+   "signal.saur"
+]]

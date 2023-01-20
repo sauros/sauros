@@ -129,14 +129,12 @@ void processor_c::quote_cell(std::string &out, cell_ptr cell,
       out += std::string("] ");
       break;
    }
-   case cell_type_e::BOX: {
-      // TODO: Fill this in
+   case cell_type_e::BOX:
+      [[fallthrough]];
+   case cell_type_e::VARIANT:
+      // These won't be reached because box cells and variants are
+      // encoded behind symbols which will be encoded above
       break;
-   }
-   case cell_type_e::VARIANT: {
-      // TODO: Fill this in
-      break;
-   }
    }
 }
 
