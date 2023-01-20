@@ -7,11 +7,11 @@ if not os.getenv("SAUROS_HOME"):
    print("Please define `SAUROS_HOME` environment variable")
    exit(1)
 
-sauros_home = os.getenv("SAUROS_HOME")
-sauros_pckgs = os.path.join(sauros_home, "pkgs")
+saurros_home = os.getenv("SAUROS_HOME")
+saurros_pckgs = os.path.join(saurros_home, "pkgs")
 
 # A name of a directory
-# and relevant files to a package (any .sau and .lib)
+# and relevant files to a package (any .saurr and .lib)
 class target_item:
 
    def __init__(self, name):
@@ -43,10 +43,10 @@ class package:
 
 # ENsure that the paths exist that we need
 def pre_flight():
-   if not os.path.isdir(sauros_home):
-      os.mkdir(sauros_home)
-   if not os.path.isdir(sauros_pckgs):
-      os.mkdir(sauros_pckgs)
+   if not os.path.isdir(saurros_home):
+      os.mkdir(saurros_home)
+   if not os.path.isdir(saurros_pckgs):
+      os.mkdir(saurros_pckgs)
 
 # Build an item that has a CMakeLists.txt
 def build_item(item_name):
@@ -84,7 +84,7 @@ def scan_target(target):
    for file in files:
       abs_file = os.path.abspath(file)
       root, extension = os.path.splitext(abs_file)
-      if extension == ".sau" or extension == ".lib":
+      if extension == ".saur" or extension == ".lib":
          target.add_item(abs_file)
 
 # Scan the directories and generate anything needed,
@@ -107,7 +107,7 @@ def build_package(pkg):
 # Copy all of the files that we scanned and deemed relevant
 # to the SAUROS_HOME/packages directory
 def copy_packages(packages):
-   os.chdir(sauros_pckgs)
+   os.chdir(saurros_pckgs)
    for pkg in packages:
       for target in pkg.targets:
          if not os.path.isdir(target.name):

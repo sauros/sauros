@@ -1,0 +1,17 @@
+[use "fmt"]
+[var my_list [list 1 2 3 4 5 6]]
+
+[iter x my_list [block
+   [set x [+ x 1]]
+]]
+
+[assert "iter.saur > modify item" [seq "[2 3 4 5 6 7]" [fmt.encode "%" [list my_list]]]]
+
+[var x 99]
+[iter x my_list [block
+   [if [== x 5] [break]]
+   [set x [+ x 1]]
+]]
+
+[assert "iter.saur > outer x unmodified" [== x 99]]
+[assert "iter.saur > modify item until break" [seq "[3 4 5 5 6 7]" [fmt.encode "%" [list my_list]]]]

@@ -12,15 +12,15 @@
    ],
    "contributes": {
        "languages": [{
-           "id": "sau",
-           "aliases": ["sau", "sau"],
-           "extensions": [".sau"],
+           "id": "saur",
+           "aliases": ["saur", "saur"],
+           "extensions": [".saur"],
            "configuration": "./language-configuration.json"
        }],
        "grammars": [{
-           "language": "sau",
-           "scopeName": "source.sau",
-           "path": "./syntaxes/sau.tmLanguage.json"
+           "language": "saur",
+           "scopeName": "source.saur",
+           "path": "./syntaxes/saur.tmLanguage.json"
        }]
    }
 }

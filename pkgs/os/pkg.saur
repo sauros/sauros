@@ -1,0 +1,30 @@
+; Pkg name
+[var pkg_name "os"]
+
+; C++ shared lib to link to
+[var library_file "os.lib"]
+[var library_functions [list
+   "_pkg_os_cwd_"
+   "_pkg_os_ls_"
+   "_pkg_os_chdir_"
+   "_pkg_os_endian_"
+   "_pkg_os_os_name_"
+   "_pkg_os_is_file_"
+   "_pkg_os_is_dir_"
+   "_pkg_os_exists_"
+   "_pkg_os_mkdir_"
+   "_pkg_os_delete_"
+   "_pkg_os_delete_all_"
+   "_pkg_os_copy_"
+   "_pkg_os_file_append_"
+   "_pkg_os_file_write_"
+   "_pkg_os_file_read_"
+   "_pkg_os_clear_screen_"
+   "_pkg_os_get_env_"
+   "_pkg_os_sleep_ms_"
+]]
+
+; Files to include under the current pkg
+[var source_files [list
+   "os.saur"
+]]

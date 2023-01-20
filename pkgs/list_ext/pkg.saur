@@ -1,0 +1,14 @@
+; Pkg name
+[var pkg_name "list_ext"]
+
+; C++ shared lib to link to
+[var library_file "list_ext.lib"]
+[var library_functions [list
+   "_pkg_list_ext_make_assigned_"
+   "_pkg_list_ext_sort_"
+]]
+
+; Files to include under the current pkg
+[var source_files [list
+   "list_ext.saur"
+]]

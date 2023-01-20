@@ -1,0 +1,4 @@
+
+[var x [list 0 0 0 0 0 0 0 0 0 0]]
+[set_at 5 x 1]
+[assert "set_at.saur > Value was not set" [== 1 [at 5 x]]]

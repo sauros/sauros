@@ -9,12 +9,12 @@ int main(int argc, char **argv) {
 
    sauros::file_executor_c executor(env);
 
-   if (!std::filesystem::is_regular_file("example.sau")) {
-      std::cerr << "Given item `example.sau` is not a file" << std::endl;
+   if (!std::filesystem::is_regular_file("example.saur")) {
+      std::cerr << "Given item `example.saur` is not a file" << std::endl;
       std::exit(1);
    }
 
-   executor.run("example.sau");
+   executor.run("example.saur");
 
    // Pull data from the environment
 
