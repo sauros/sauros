@@ -5,7 +5,16 @@
 #include <filesystem>
 #include <iostream>
 
+#include "sauros/format.hpp"
+
 namespace sauros {
+
+#define SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells__, size__, command__)           \
+   if (cells__.size() != size__) {                                             \
+      throw runtime_exception_c(                                               \
+          format("`%` expects % parameters", command__, size__ - 1),           \
+          cells[0]);                                                           \
+   }
 
 namespace {
 
@@ -68,12 +77,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::IMPORT");
 #endif
-          if (cells.size() < 2) {
-             throw runtime_exception_c(
-                 "import command expects at least 1 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "import");
 
           auto perform_load =
               [this, env](std::string cell_value,
@@ -101,7 +105,7 @@ void processor_c::populate_standard_builtins() {
              if (sauros_dir.has_value()) {
                 std::filesystem::path p = (*sauros_dir);
                 p /= cell_value;
-                std::cout << "attempting : " << p << std::endl;
+                // std::cout << "attempting : " << p << std::endl;
                 return !loader.run(p);
              }
              // std::cout << "fail\n";
@@ -128,12 +132,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::USE");
 #endif
-          if (cells.size() < 2) {
-             throw runtime_exception_c(
-                 "use command expects at least 1 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "use");
 
           for (auto i = cells.begin() + 1; i < cells.end(); i++) {
              if ((*i)->type != sauros::cell_type_e::STRING) {
@@ -152,12 +151,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::EXIT");
 #endif
-          if (cells.size() != 2) {
-             throw runtime_exception_c(
-                 "exit command expects 1 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "exit");
 
           std::exit(std::stoull(process_cell(cells[1], env)->data));
        });
@@ -167,12 +161,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::BREAK");
 #endif
-          if (cells.size() != 1) {
-             throw runtime_exception_c(
-                 "break command expects 0 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 1, "break");
           _break_loop = true;
           return std::make_shared<cell_c>(CELL_NIL);
        });
@@ -182,12 +171,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::TYPE");
 #endif
-          if (cells.size() != 2) {
-             throw runtime_exception_c(
-                 "type command expects 1 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "type");
 
           auto target = process_cell(cells[1], env);
 
@@ -201,12 +185,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::FRONT");
 #endif
-          if (cells.size() != 2) {
-             throw runtime_exception_c(
-                 "front command expects 1 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "front");
 
           auto target = process_cell(cells[1], env);
 
@@ -227,12 +206,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::BACK");
 #endif
-          if (cells.size() != 2) {
-             throw runtime_exception_c(
-                 "back command expects 1 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "back");
 
           auto target = process_cell(cells[1], env);
 
@@ -253,12 +227,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::AT");
 #endif
-          if (cells.size() != 3) {
-             throw runtime_exception_c("at command expects 2 parameters, but " +
-                                           std::to_string(cells.size() - 1) +
-                                           " were given",
-                                       cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 3, "at");
 
           auto index = process_cell(cells[1], env);
           if (index->type != cell_type_e::INTEGER) {
@@ -287,12 +256,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::CLEAR");
 #endif
-          if (cells.size() != 2) {
-             throw runtime_exception_c(
-                 "clear command expects 1 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "clear");
 
           if (cells[1]->type != cell_type_e::SYMBOL &&
               cells[1]->type != cell_type_e::BOX_SYMBOL) {
@@ -310,12 +274,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::POP");
 #endif
-          if (cells.size() != 2) {
-             throw runtime_exception_c(
-                 "pop command expects 1 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "pop");
 
           if (cells[1]->type != cell_type_e::SYMBOL &&
               cells[1]->type != cell_type_e::BOX_SYMBOL) {
@@ -335,12 +294,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::PUSH");
 #endif
-          if (cells.size() != 3) {
-             throw runtime_exception_c(
-                 "push command expects 2 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 3, "push");
 
           if (cells[1]->type != cell_type_e::SYMBOL &&
               cells[1]->type != cell_type_e::BOX_SYMBOL) {
@@ -360,12 +314,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::THROW");
 #endif
-          if (cells.size() != 2) {
-             throw runtime_exception_c(
-                 "throw command expects 1 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "throw");
 
           auto message = process_cell(cells[1], env);
 
@@ -384,12 +333,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
       profiler_c::get_profiler()->hit("processor_builtin::NOT");
 #endif
-      if (cells.size() != 2) {
-         throw runtime_exception_c("not command expects 1 parameters, but " +
-                                       std::to_string(cells.size() - 1) +
-                                       " were given",
-                                   cells[0]);
-      }
+      SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "not");
 
       auto target = process_cell(cells[1], env);
 
@@ -512,10 +456,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::YIELD");
 #endif
-          if (cells.size() != 2) {
-             throw runtime_exception_c(
-                 "Yield command expects only one parameter", cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "yield");
           _yield_cell = process_cell(cells[1], env);
           return _yield_cell;
        });
@@ -556,12 +497,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::ITER");
 #endif
-          if (cells.size() != 4) {
-             throw runtime_exception_c(
-                 "iter command expects 3 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 4, "iter");
 
           if (cells[1]->type != cell_type_e::SYMBOL &&
               cells[1]->type != cell_type_e::BOX_SYMBOL) {
@@ -605,12 +541,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::LOOP");
 #endif
-          if (cells.size() != 5) {
-             throw runtime_exception_c(
-                 "loop command expects 4 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 5, "loop");
 
           auto &conditional_cell = cells[2];
           auto &pre = cells[1];
@@ -658,12 +589,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::SET");
 #endif
-          if (cells.size() != 3) {
-             throw runtime_exception_c(
-                 "set command expects 2 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 3, "set");
 
           auto &variable_name = cells[1]->data;
 
@@ -702,12 +628,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::SET_AT");
 #endif
-          if (cells.size() != 4) {
-             throw runtime_exception_c(
-                 "set_at command expects 3 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 4, "set_at");
 
           auto idx = process_cell(cells[1], env);
           if (idx->type != cell_type_e::INTEGER) {
@@ -769,12 +690,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::TRY");
 #endif
-          if (cells.size() != 3) {
-             throw runtime_exception_c(
-                 "try command expects 2 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 3, "try");
 
           auto make_error = [this, cells,
                              env](const char *message) -> cell_ptr {
@@ -802,12 +718,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::COMPOSE");
 #endif
-          if (cells.size() != 2) {
-             throw runtime_exception_c(
-                 "compose command expects 1 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "compose");
 
           std::string value;
           for (auto c = cells.begin() + 1; c < cells.end(); c++) {
@@ -822,12 +733,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::DECOMPOSE");
 #endif
-          if (cells.size() != 2) {
-             throw runtime_exception_c(
-                 "decompose command expects 1 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "decompose");
 
           auto target = process_cell(cells[1], env);
 
@@ -843,12 +749,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::BOX");
 #endif
-          if (cells.size() != 3) {
-             throw runtime_exception_c(
-                 "object command expectes 3 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 3, "box");
 
           auto &variable_name = cells[1]->data;
 
@@ -897,10 +798,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::IS_NIL");
 #endif
-          if (cells.size() != 2) {
-             throw runtime_exception_c(
-                 "is_null expects only one parameter to evaluate", cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "is_nil");
 
           return (process_cell(cells[1], env)->data == CELL_NIL.data)
                      ? std::make_shared<cell_c>(sauros::CELL_TRUE)
@@ -912,12 +810,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::LEN");
 #endif
-          if (cells.size() != 2) {
-             throw runtime_exception_c(
-                 "len command expects 2 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "len");
 
           return {std::make_shared<cell_c>(
               cell_type_e::INTEGER,
@@ -930,12 +823,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::REV");
 #endif
-          if (cells.size() != 2) {
-             throw runtime_exception_c("rev command expects 1 parameter, but " +
-                                           std::to_string(cells.size() - 1) +
-                                           " were given",
-                                       cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "rev");
 
           auto target = process_cell(cells[1], env);
           if (target->type != cell_type_e::LIST) {
@@ -976,12 +864,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::SEQ");
 #endif
-          if (cells.size() != 3) {
-             throw runtime_exception_c(
-                 "seq command expects 3 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 3, "seq");
 
           auto lhs = process_cell(cells[1], env);
           auto rhs = process_cell(cells[2], env);
@@ -996,12 +879,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::SNEQ");
 #endif
-          if (cells.size() != 3) {
-             throw runtime_exception_c(
-                 "sneq command expects 3 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 3, "sneq");
 
           auto lhs = process_cell(cells[1], env);
           auto rhs = process_cell(cells[2], env);
@@ -1257,12 +1135,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
       profiler_c::get_profiler()->hit("processor_builtin::BW_NOT");
 #endif
-      if (cells.size() != 2) {
-         throw runtime_exception_c("bw_not command expects 1 parameters, but " +
-                                       std::to_string(cells.size() - 1) +
-                                       " were given",
-                                   cells[0]);
-      }
+      SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "bw_not");
 
       auto target = process_cell(cells[1], env);
 
@@ -1300,12 +1173,7 @@ void processor_c::populate_standard_builtins() {
           profiler_c::get_profiler()->hit("processor_builtin::AS_INT");
 #endif
 
-          if (cells.size() != 2) {
-             throw runtime_exception_c(
-                 "as_int command expects 1 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "as_int");
           return conversion_fn(cells[1], env, [](cell_ptr target) -> cell_ptr {
              return std::make_shared<cell_c>(
                  cell_type_e::INTEGER,
@@ -1319,12 +1187,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::AS_STR");
 #endif
-          if (cells.size() != 2) {
-             throw runtime_exception_c(
-                 "as_str command expects 1 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "as_str");
 
           // treat lists differently so it has behavior different than `compose`
           auto target = process_cell(cells[1], env);
@@ -1351,12 +1214,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::AS_REAL");
 #endif
-          if (cells.size() != 2) {
-             throw runtime_exception_c(
-                 "as_real command expects 1 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "as_real");
           return conversion_fn(cells[1], env, [](cell_ptr target) -> cell_ptr {
              return std::make_shared<cell_c>(
                  cell_type_e::REAL, std::to_string(std::stod(target->data)));
@@ -1369,13 +1227,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::AS_LIST");
 #endif
-          if (cells.size() != 2) {
-             throw runtime_exception_c(
-                 "as_list command expects 1 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
-
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "as_list");
           auto target = process_cell(cells[1], env);
           if (static_cast<unsigned>(target->type) >
               static_cast<unsigned>(cell_type_e::STRING)) {
@@ -1399,12 +1251,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::ASYNC");
 #endif
-          if (cells.size() != 3) {
-             throw runtime_exception_c(
-                 "async command expects 2 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 3, "async");
 
           auto variable_name = expect_var_get_name(cells[1]);
 
@@ -1449,12 +1296,7 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::THREAD");
 #endif
-          if (cells.size() != 3) {
-             throw runtime_exception_c(
-                 "thread command expects 2 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 3, "thread");
 
           auto variable_name = expect_var_get_name(cells[1]);
 
@@ -1492,14 +1334,9 @@ void processor_c::populate_standard_builtins() {
        [this, expect_var_get_name](
            cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
-          profiler_c::get_profiler()->hit("processor_builtin::ASYNC");
+          profiler_c::get_profiler()->hit("processor_builtin::CHAN");
 #endif
-          if (cells.size() != 2) {
-             throw runtime_exception_c(
-                 "chan command expects 1 parameters, but " +
-                     std::to_string(cells.size() - 1) + " were given",
-                 cells[0]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "chan");
 
           auto variable_name = expect_var_get_name(cells[1]);
 

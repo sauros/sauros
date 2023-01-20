@@ -91,6 +91,7 @@ set(LINENOISE_HEADERS
 
 set(HEADERS
    ${CMAKE_SOURCE_DIR}/sauros/profiler.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/format.hpp
    ${CMAKE_SOURCE_DIR}/sauros/front/parser.hpp
    ${CMAKE_SOURCE_DIR}/sauros/driver.hpp
    ${CMAKE_SOURCE_DIR}/sauros/rang.hpp

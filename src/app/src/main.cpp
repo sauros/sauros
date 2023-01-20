@@ -1,6 +1,5 @@
 #include <sauros/sauros.hpp>
 
-#include <csignal>
 #include <filesystem>
 #include <iostream>
 
@@ -121,27 +120,8 @@ void system_report() {
              << rang::fg::reset << std::endl;
 }
 
-void handle_signal(int signal) {
-
-   if (repl) {
-      repl->stop();
-   }
-
-   if (file_executor) {
-      delete file_executor;
-   }
-   std::exit(0);
-}
-
 int main(int argc, char **argv) {
    std::vector<std::string> args(argv + 1, argv + argc);
-
-   signal(SIGHUP, handle_signal);  /* Hangup the process */
-   signal(SIGINT, handle_signal);  /* Interrupt the process */
-   signal(SIGQUIT, handle_signal); /* Quit the process */
-   signal(SIGILL, handle_signal);  /* Illegal instruction. */
-   signal(SIGTRAP, handle_signal); /* Trace trap. */
-   signal(SIGABRT, handle_signal); /* Abort. */
 
    for (size_t i = 0; i < args.size(); i++) {
       if (args[i] == "--help" || args[i] == "-h") {
