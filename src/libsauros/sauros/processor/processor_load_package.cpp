@@ -42,7 +42,7 @@ void processor_c::load_package(const std::string &target, location_s *location,
 
    auto root = target_manifest_file;
 
-   target_manifest_file /= "pkg.sau";
+   target_manifest_file /= "pkg.saur";
 
    // std::cout << "looking for package : " << target_manifest_file.c_str()
    //  << std::endl;
@@ -89,13 +89,13 @@ void processor_c::load_package(const std::string &target, location_s *location,
       auto package_name_cell = package_load_env->get("pkg_name");
       if (package_name_cell->type != cell_type_e::STRING) {
          throw runtime_exception_c(
-             "pkg_name in pkg.sau for " + target + " is not of type `STRING`",
+             "pkg_name in pkg.saur for " + target + " is not of type `STRING`",
              std::make_shared<cell_c>(cell_type_e::STRING, "", location));
       }
       package.name = package_name_cell->data;
 
       auto package_file = root;
-      package_file /= "pkg.sau";
+      package_file /= "pkg.saur";
 
       package.env = std::make_shared<sauros::environment_c>();
 
@@ -116,7 +116,7 @@ void processor_c::load_package(const std::string &target, location_s *location,
          auto library_file_cell = package.env->get("library_file");
          if (library_file_cell->type != cell_type_e::STRING) {
             throw runtime_exception_c(
-                "library_file in package.sau for " + target +
+                "library_file in package.saur for " + target +
                     " is not of type `STRING`",
                 std::make_shared<cell_c>(cell_type_e::STRING, "", location));
          }
@@ -148,7 +148,7 @@ void processor_c::load_package(const std::string &target, location_s *location,
          auto library_functions_cell = package.env->get("library_functions");
          if (library_functions_cell->type != cell_type_e::LIST) {
             throw runtime_exception_c(
-                "library_functions in package.sau for " + target +
+                "library_functions in package.saur for " + target +
                     " is not of type `LIST`",
                 std::make_shared<cell_c>(cell_type_e::STRING, "", location));
          }
@@ -157,7 +157,7 @@ void processor_c::load_package(const std::string &target, location_s *location,
          for (auto &function_name_cell : library_functions_cell->list) {
             if (function_name_cell->type != cell_type_e::STRING) {
                throw runtime_exception_c(
-                   "function name listed in package.sau for " + target +
+                   "function name listed in package.saur for " + target +
                        " is not of type `STRING`",
                    std::make_shared<cell_c>(cell_type_e::STRING, "", location));
             }
@@ -174,7 +174,7 @@ void processor_c::load_package(const std::string &target, location_s *location,
          auto source_files_cell = package.env->get("source_files");
          if (source_files_cell->type != cell_type_e::LIST) {
             throw runtime_exception_c(
-                "source_files in package.sau for " + target +
+                "source_files in package.saur for " + target +
                     " is not of type `LIST`",
                 std::make_shared<cell_c>(cell_type_e::STRING, "", location));
          }
@@ -183,7 +183,7 @@ void processor_c::load_package(const std::string &target, location_s *location,
          for (auto &file_name_cell : source_files_cell->list) {
             if (file_name_cell->type != cell_type_e::STRING) {
                throw runtime_exception_c(
-                   "file name listed in package.sau for " + target +
+                   "file name listed in package.saur for " + target +
                        " is not of type `STRING`",
                    std::make_shared<cell_c>(cell_type_e::STRING, "", location));
             }

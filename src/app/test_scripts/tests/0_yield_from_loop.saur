@@ -1,0 +1,8 @@
+[var test [lambda [] [
+   [loop [] [true] [] [block
+      [yield 24]
+      [throw "yield_from_loop.saur > Failed to yield from loop"]
+   ]]
+]]]
+
+[assert "yield_from_loop.saur > Yielded value was not expected" [== [test] 24]]

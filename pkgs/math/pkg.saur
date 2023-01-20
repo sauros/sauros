@@ -1,0 +1,33 @@
+; Pkg name
+[var pkg_name "math"]
+
+; C++ shared lib to link to
+[var library_file "math.lib"]
+[var library_functions [list
+   "_sauros_pkg_math_log_"
+   "_sauros_pkg_math_log2_"
+   "_sauros_pkg_math_log10_"
+   "_sauros_pkg_math_sin_"
+   "_sauros_pkg_math_cos_"
+   "_sauros_pkg_math_tan_"
+   "_sauros_pkg_math_sinh_"
+   "_sauros_pkg_math_cosh_"
+   "_sauros_pkg_math_tanh_"
+   "_sauros_pkg_math_asin_"
+   "_sauros_pkg_math_acos_"
+   "_sauros_pkg_math_atan_"
+   "_sauros_pkg_math_asinh_"
+   "_sauros_pkg_math_acosh_"
+   "_sauros_pkg_math_atanh_"
+   "_sauros_pkg_math_exp_"
+   "_sauros_pkg_math_sqrt_"
+   "_sauros_pkg_math_ceil_"
+   "_sauros_pkg_math_floor_"
+   "_sauros_pkg_math_abs_"
+   "_sauros_pkg_math_pow_"
+]]
+
+; Files to include under the current pkg
+[var source_files [list
+   "math.saur"
+]]

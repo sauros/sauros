@@ -18,5 +18,5 @@ target_link_libraries(example
    Threads::Threads)
 
    
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/example.sau
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/example.saur
    DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

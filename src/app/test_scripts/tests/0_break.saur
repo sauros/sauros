@@ -1,0 +1,18 @@
+[var got_block 0]
+[var good 1]
+[var fn [lambda [] [
+   [block
+      [loop [var i 0] [ < i 10] [+ i 1] [
+         [block 
+            [set got_block 1]
+            [break]
+            [set good 0]
+         ]
+      ]]
+   ]
+]]]
+
+[fn]
+
+[assert "break.saur > break failure"  [and [good] [got_block]]]
+[exit 0]

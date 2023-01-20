@@ -1,0 +1,20 @@
+[var source [list 2 4 8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768]]
+
+[var x 1]
+[iter i source [block
+   [assert "bitwise.saur > bw_lsh failure" [== i [bw_lsh 1 x]]]
+   [set x [+ x 1]]
+]]
+
+[set source [rev source]]
+[set x [- x 1]]
+[iter i source [block
+   [assert "bitwise.saur > bw_rsh failure" [== 1 [bw_rsh i x]]]
+   [set x [- x 1]]
+]]
+
+[assert "bitwise.saur > bw_or failure" [== 18 [bw_or [bw_lsh 1 1] [bw_lsh 1 4] ]]]
+[assert "bitwise.saur > bw_and failure" [== 2 [bw_and 19 [bw_lsh 1 1] ]]]
+[assert "bitwise.saur > bw_not failure" [== -2 [bw_not 1] ]]
+[assert "bitwise.saur > bw_xor failure" [== 20 [bw_xor 4 16] ]]
+[assert "bitwise.saur > bw_xor failure" [== 0 [bw_xor 4 4] ]]
