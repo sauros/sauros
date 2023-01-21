@@ -172,7 +172,7 @@ static const cell_c CELL_FALSE =
 static const cell_c CELL_NIL =
     cell_c(cell_type_e::STRING, "#nil"); //! A cell that represents NIL
 
-enum class cell_variant_type_e { ASYNC, THREAD, CHAN, REF };
+enum class cell_variant_type_e { ASYNC, THREAD, CHAN, REF, VOID };
 
 //! \brief A variant of cell_c
 //!        The variant type is meant to be able to extend cells
@@ -241,6 +241,23 @@ class ref_cell_c : public variant_cell_c {
    cell_ptr ref_value;
    cell_ptr put_fn;
    cell_ptr get_fn;
+};
+
+//! \brief A cell that can be leveraged to store data
+//!        of any kind (for external use)
+class void_cell_c : public variant_cell_c {
+ public:
+   void_cell_c(location_s *location);
+   ~void_cell_c();
+
+   // The entity that utilizes this pointer
+   // is responsible for maintaining the
+   // data it points
+   void *ptr{nullptr};
+
+   // Callback that, if set, will be executed upon
+   // the destruction of the cell
+   std::function<void(void *)> deletion_cb{nullptr};
 };
 
 } // namespace sauros

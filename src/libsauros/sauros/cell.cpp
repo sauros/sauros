@@ -126,4 +126,13 @@ ref_cell_c::ref_cell_c(location_s *location)
        });
 }
 
+void_cell_c::void_cell_c(location_s *location)
+    : variant_cell_c(cell_variant_type_e::VOID, location) {}
+
+void_cell_c::~void_cell_c() {
+   if (deletion_cb) {
+      deletion_cb(ptr);
+   }
+}
+
 } // namespace sauros
