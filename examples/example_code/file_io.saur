@@ -1,0 +1,37 @@
+[use "fmt"]
+[use "file_io"]
+[use "random"]
+
+[var line_len 15]
+
+; Make some random data followed by a new line 
+[var random_data [fmt.string [fmt.join [list [random.string line_len] "\n"]]]]
+
+[var x [file_io.handle "/tmp/test.data"]]
+
+[x.open]
+
+[assert "Unable to write string" [not [is_nil [x.write_string random_data]]]]
+
+[assert "Unable to seek " [x.seek 0]]
+[assert "Seek brought us to the wrong location" [== 0 [x.get_pos]]]
+
+[var file_size [x.get_size]]
+
+[putln "There are now " file_size " bytes in the file"]
+
+[put "Seeking to pos 5 ... "]
+
+[x.seek 5]
+
+[putln "Byte 5: " [x.get_n 1]]
+
+[x.seek 0]
+
+[putln "First line data: " [x.get_line]]
+
+[x.seek [- file_size [+ 1 line_len]]]
+
+[putln "Last line data: " [x.get_line]]
+
+[x.close]
