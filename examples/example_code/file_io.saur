@@ -7,13 +7,14 @@
 ; Make some random data followed by a new line 
 [var random_data [fmt.string [fmt.join [list [random.string line_len] "\n"]]]]
 
-[var x [file_io.handle "/tmp/test.data"]]
+[var x [file_io.get_handle "/tmp/test.data"]]
 
 [x.open]
 
 [assert "Unable to write string" [not [is_nil [x.write_string random_data]]]]
 
 [assert "Unable to seek " [x.seek 0]]
+
 [assert "Seek brought us to the wrong location" [== 0 [x.get_pos]]]
 
 [var file_size [x.get_size]]

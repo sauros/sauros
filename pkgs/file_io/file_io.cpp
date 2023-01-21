@@ -141,7 +141,7 @@ extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
 
                       auto location = c_api_process_cell(cells[1], env);
                       EXPECT((location->type == cell_type_e::INTEGER),
-                             "file_io > goto Expected an integer type")
+                             "file_io > seek Expected an integer type")
 
                       uint64_t actual_location = std::stoull(location->data);
 
