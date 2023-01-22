@@ -16,7 +16,7 @@ _pkg_list_ext_make_assigned_(sauros::cells_t &cells,
 
    sauros::cell_ptr result =
        std::make_shared<sauros::cell_c>(sauros::cell_type_e::LIST);
-   result->list.assign(std::stoull(size->data), value);
+   result->list.assign(size->data.i, value);
    return result;
 }
 
@@ -50,14 +50,18 @@ _pkg_list_ext_sort_(sauros::cells_t &cells,
                 }
 
                 if (force_double(lhs, rhs)) {
-                   auto lhs_actual = std::stod(lhs->data);
-                   auto rhs_actual = std::stod(rhs->data);
-                   return lhs_actual < rhs_actual;
+                   double lhs_d = lhs->data.d;
+                   double rhs_d = rhs->data.d;
+                   if (lhs->type == sauros::cell_type_e::INTEGER) {
+                      lhs_d = lhs->data.i;
+                   }
+                   if (rhs->type == sauros::cell_type_e::INTEGER) {
+                      rhs_d = rhs->data.i;
+                   }
+                   return lhs_d, rhs_d;
                 }
 
-                auto lhs_actual = std::stoull(lhs->data);
-                auto rhs_actual = std::stoull(rhs->data);
-                return lhs_actual < rhs_actual;
+                return lhs->data.i, rhs->data.i;
              });
    return data;
 }

@@ -24,7 +24,9 @@ enum class token_e {
 //! \brief  A token/ data/ location pair
 struct token_s {
    token_e token;
-   std::string data;
+   cell_string_t string_data;
+   cell_int_t integer_data;
+   cell_real_t real_data;
    location_s location;
 };
 

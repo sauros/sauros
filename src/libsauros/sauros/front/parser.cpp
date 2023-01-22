@@ -33,14 +33,14 @@ std::vector<token_s> tokenize(size_t line_number, const std::string line,
       std::string current_data;
       switch (current) {
       case '[': {
-         tokens.push_back({token_e::L_BRACKET, "[", {line_number, idx}});
+         tokens.push_back({token_e::L_BRACKET, "[", 0, 0, {line_number, idx}});
          bts.location = {line_number, idx};
          bts.tracker++;
          continue;
       }
 
       case ']': {
-         tokens.push_back({token_e::R_BRACKET, "]", {line_number, idx}});
+         tokens.push_back({token_e::R_BRACKET, "]", 0, 0, {line_number, idx}});
          if (bts.tracker > 0) {
             bts.tracker--;
          } else {
@@ -73,6 +73,8 @@ std::vector<token_s> tokenize(size_t line_number, const std::string line,
 
          tokens.push_back({token_e::STRING,
                            value.substr(1, value.size() - 2),
+                           0,
+                           0,
                            {line_number, start}});
          continue;
       }
@@ -95,12 +97,14 @@ std::vector<token_s> tokenize(size_t line_number, const std::string line,
 
          if (std::regex_match(current_data, is_number)) {
             if (current_data.find('.') != std::string::npos) {
+               cell_real_t actual = std::stod(current_data);
                tokens.push_back(
-                   {token_e::REAL, current_data, {line_number, start}});
+                   {token_e::REAL, "", 0, actual, {line_number, start}});
                continue;
             } else {
+               cell_int_t actual = std::stoll(current_data);
                tokens.push_back(
-                   {token_e::INTEGER, current_data, {line_number, start}});
+                   {token_e::INTEGER, "", actual, 0.00, {line_number, start}});
                continue;
             }
          } else {
@@ -125,7 +129,7 @@ std::vector<token_s> tokenize(size_t line_number, const std::string line,
          idx++;
       }
 
-      tokens.push_back({type, value, {line_number, start}});
+      tokens.push_back({type, value, 0, 0, {line_number, start}});
       idx--;
    }
    return tokens;
@@ -191,7 +195,7 @@ cell_ptr parse(std::vector<token_s> &tokens,
          return {};
       }
       current_list->list.push_back(std::make_shared<cell_c>(
-          cell_type_e::BOX_SYMBOL, current_token.data,
+          cell_type_e::BOX_SYMBOL, current_token.string_data,
           new location_s(current_token.location), origin));
       return parse(tokens, origin, current_list);
    }
@@ -202,17 +206,17 @@ cell_ptr parse(std::vector<token_s> &tokens,
       }
 
       // Check the encoding map for builtins to see if we need to
-      if (BUILTIN_STRING_TO_ENCODING.find(current_token.data) !=
+      if (BUILTIN_STRING_TO_ENCODING.find(current_token.string_data) !=
           BUILTIN_STRING_TO_ENCODING.end()) {
          cell_ptr builtin_translation_cell = std::make_shared<cell_c>(
-             cell_type_e::ENCODED_SYMBOL, current_token.data,
+             cell_type_e::ENCODED_SYMBOL, current_token.string_data,
              new location_s(current_token.location), origin);
          builtin_translation_cell->builtin_encoding =
-             BUILTIN_STRING_TO_ENCODING[current_token.data];
+             BUILTIN_STRING_TO_ENCODING[current_token.string_data];
          current_list->list.push_back(builtin_translation_cell);
       } else {
          current_list->list.push_back(std::make_shared<cell_c>(
-             cell_type_e::SYMBOL, current_token.data,
+             cell_type_e::SYMBOL, current_token.string_data,
              new location_s(current_token.location), origin));
       }
       return parse(tokens, origin, current_list);
@@ -225,7 +229,7 @@ cell_ptr parse(std::vector<token_s> &tokens,
       }
 
       current_list->list.push_back(std::make_shared<cell_c>(
-          cell_type_e::STRING, current_token.data,
+          cell_type_e::STRING, current_token.string_data,
           new location_s(current_token.location), origin));
       return parse(tokens, origin, current_list);
    }
@@ -237,7 +241,7 @@ cell_ptr parse(std::vector<token_s> &tokens,
       }
 
       current_list->list.push_back(std::make_shared<cell_c>(
-          cell_type_e::INTEGER, current_token.data,
+          cell_type_e::INTEGER, current_token.integer_data,
           new location_s(current_token.location), origin));
       return parse(tokens, origin, current_list);
    }
@@ -249,7 +253,7 @@ cell_ptr parse(std::vector<token_s> &tokens,
       }
 
       current_list->list.push_back(std::make_shared<cell_c>(
-          cell_type_e::REAL, current_token.data,
+          cell_type_e::REAL, current_token.real_data,
           new location_s(current_token.location), origin));
       return parse(tokens, origin, current_list);
    }

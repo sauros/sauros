@@ -43,7 +43,7 @@ environment_c::environment_c(cells_t &params, cells_t &args,
 
    auto arg = args.begin();
    for (auto param = params.begin(); param != params.end(); ++param) {
-      _env[(*param)->data] = *arg++;
+      _env[(*(*param)->data.s)] = *arg++;
    }
 }
 

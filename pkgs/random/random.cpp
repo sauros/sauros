@@ -48,16 +48,13 @@ _pkg_random_string_(sauros::cells_t &cells,
           "random::string expects parameter `len` to be numerical", cells[1]);
    }
 
-   int len_int = 0;
-   try {
-      len_int = std::stoi(len->data);
-   } catch (...) {
-      throw sauros::processor_c::runtime_exception_c(
-          "random::string failed to convert parameter to integer (stoi)",
-          cells[1]);
+   sauros::cell_int_t len_i = len->data.i;
+   if (len->type == sauros::cell_type_e::REAL) {
+      len_i = len->data.d;
    }
+
    return std::make_shared<sauros::cell_c>(
-       sauros::cell_type_e::STRING, generate_random_string(ALL_CHARS, len_int));
+       sauros::cell_type_e::STRING, generate_random_string(ALL_CHARS, len_i));
 }
 
 sauros::cell_ptr
@@ -78,16 +75,12 @@ _pkg_random_alpha_string_(sauros::cells_t &cells,
           cells[1]);
    }
 
-   int len_int = 0;
-   try {
-      len_int = std::stoi(len->data);
-   } catch (...) {
-      throw sauros::processor_c::runtime_exception_c(
-          "random::alpha_string failed to convert parameter to integer (stoi)",
-          cells[1]);
+   sauros::cell_int_t len_i = len->data.i;
+   if (len->type == sauros::cell_type_e::REAL) {
+      len_i = len->data.d;
    }
    return std::make_shared<sauros::cell_c>(
-       sauros::cell_type_e::STRING, generate_random_string(ALPHA_NUM, len_int));
+       sauros::cell_type_e::STRING, generate_random_string(ALPHA_NUM, len_i));
 }
 
 sauros::cell_ptr
@@ -118,17 +111,13 @@ _pkg_random_sourced_string_(sauros::cells_t &cells,
           cells[2]);
    }
 
-   int len_int = 0;
-   try {
-      len_int = std::stoi(len->data);
-   } catch (...) {
-      throw sauros::processor_c::runtime_exception_c(
-          "random::sourced_string failed to convert parameter to integer "
-          "(stoi)",
-          cells[2]);
+   sauros::cell_int_t len_i = len->data.i;
+   if (len->type == sauros::cell_type_e::REAL) {
+      len_i = len->data.d;
    }
    return std::make_shared<sauros::cell_c>(
-       sauros::cell_type_e::STRING, generate_random_string(src->data, len_int));
+       sauros::cell_type_e::STRING,
+       generate_random_string(src->data_as_str(), len_i));
 }
 
 sauros::cell_ptr
@@ -158,28 +147,19 @@ _pkg_random_uniform_int_(sauros::cells_t &cells,
           cells[2]);
    }
 
-   int min_int = 0;
-   int max_int = 0;
-   try {
-      max_int = std::stoi(max->data);
-      min_int = std::stoi(min->data);
-   } catch (...) {
-      throw sauros::processor_c::runtime_exception_c(
-          "random::uniform_int failed to convert parameters to integers "
-          "(stoi)",
-          cells[2]);
+   sauros::cell_int_t max_i = max->data.i;
+   if (max->type == sauros::cell_type_e::REAL) {
+      max_i = max->data.d;
    }
 
-   if (min_int >= max_int) {
-      throw sauros::processor_c::runtime_exception_c(
-          "random::uniform_int minimum value must be less than maximum "
-          "value",
-          cells[2]);
+   sauros::cell_int_t min_i = min->data.i;
+   if (min->type == sauros::cell_type_e::REAL) {
+      min_i = min->data.d;
    }
 
    std::random_device rd;
    std::mt19937 mt(rd());
-   std::uniform_int_distribution<int> dist(min_int, max_int);
+   std::uniform_int_distribution<int> dist(min_i, max_i);
 
    return std::make_shared<sauros::cell_c>(sauros::cell_type_e::INTEGER,
                                            std::to_string(dist(mt)));
@@ -212,28 +192,18 @@ _pkg_random_uniform_real_(sauros::cells_t &cells,
           cells[2]);
    }
 
-   double min_int = 0;
-   double max_int = 0;
-   try {
-      max_int = std::stod(max->data);
-      min_int = std::stod(min->data);
-   } catch (...) {
-      throw sauros::processor_c::runtime_exception_c(
-          "random::uniform_real failed to convert parameters to "
-          "integers (stoi)",
-          cells[2]);
+   sauros::cell_int_t max_i = max->data.i;
+   if (max->type == sauros::cell_type_e::REAL) {
+      max_i = max->data.d;
    }
 
-   if (min_int >= max_int) {
-      throw sauros::processor_c::runtime_exception_c(
-          "random::uniform_real minimum value must be less than maximum "
-          "value",
-          cells[2]);
+   sauros::cell_int_t min_i = min->data.i;
+   if (min->type == sauros::cell_type_e::REAL) {
+      min_i = min->data.d;
    }
-
    std::random_device rd;
    std::mt19937 mt(rd());
-   std::uniform_real_distribution<double> dist(min_int, max_int);
+   std::uniform_real_distribution<double> dist(min_i, max_i);
 
    return std::make_shared<sauros::cell_c>(sauros::cell_type_e::REAL,
                                            std::to_string(dist(mt)));

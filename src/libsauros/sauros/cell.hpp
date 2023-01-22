@@ -11,6 +11,7 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <assert.h>
 
 #include <iostream>
 
@@ -69,6 +70,10 @@ class cell_c;
 using cell_ptr = std::shared_ptr<cell_c>;
 using cells_t = std::vector<cell_ptr>;
 
+using cell_int_t = int64_t;
+using cell_real_t = double;
+using cell_string_t = std::string;
+
 //! \brief An cell representation
 class cell_c {
  public:
@@ -84,14 +89,63 @@ class cell_c {
    //! \brief Create a standard cell
    //! \param type The type to set
    //! \param data The data to set
-   cell_c(cell_type_e type, const std::string &data) : type(type), data(data) {}
+   cell_c(cell_type_e type, const cell_string_t data) : type(type) {
+      assert(type != cell_type_e::INTEGER);
+      assert(type != cell_type_e::REAL);
+      this->data.s = new std::string(data);
+   }
+
+   //! \brief Create a standard cell
+   //! \param type The type to set
+   //! \param data The data to set
+   cell_c(cell_type_e type, cell_real_t data) : type(type) {
+      assert(type == cell_type_e::REAL);
+      this->data.d = data;
+   }
+
+   //! \brief Create a standard cell
+   //! \param type The type to set
+   //! \param data The data to set
+   cell_c(cell_type_e type, cell_int_t data) : type(type) {
+      assert(type == cell_type_e::INTEGER);
+      this->data.i = data;
+   }
 
    //! \brief Create a standard cell
    //! \param type The type to set
    //! \param data The data to set
    //! \param location_in The location in source that the cell originated from
-   cell_c(cell_type_e type, const std::string &data, location_s *location_in)
-       : type(type), data(data) {
+   cell_c(cell_type_e type, const cell_string_t data, location_s *location_in)
+       : type(type) {
+      assert(type != cell_type_e::INTEGER);
+      assert(type != cell_type_e::REAL);
+      this->data.s = new std::string(data);
+      if (location_in) {
+         location = new location_s(*location_in);
+      }
+   }
+
+   //! \brief Create a standard cell
+   //! \param type The type to set
+   //! \param data The data to set
+   //! \param location_in The location in source that the cell originated from
+   cell_c(cell_type_e type, const cell_real_t data, location_s *location_in)
+       : type(type) {
+      assert(type == cell_type_e::REAL);
+      this->data.d = data;
+      if (location_in) {
+         location = new location_s(*location_in);
+      }
+   }
+
+   //! \brief Create a standard cell
+   //! \param type The type to set
+   //! \param data The data to set
+   //! \param location_in The location in source that the cell originated from
+   cell_c(cell_type_e type, const cell_int_t data, location_s *location_in)
+       : type(type) {
+      assert(type == cell_type_e::INTEGER);
+      this->data.i = data;
       if (location_in) {
          location = new location_s(*location_in);
       }
@@ -110,9 +164,40 @@ class cell_c {
    //! \param type The type to set
    //! \param data The data to set
    //! \param location The location in source that the cell originated from
-   cell_c(cell_type_e type, const std::string data, location_s *location_in,
+   cell_c(cell_type_e type, const cell_string_t data, location_s *location_in,
           std::shared_ptr<std::string> origin)
-       : type(type), data(data), origin(origin) {
+       : type(type), origin(origin) {
+      assert(type != cell_type_e::INTEGER);
+      assert(type != cell_type_e::REAL);
+      this->data.s = new std::string(data);
+      if (location_in) {
+         location = new location_s(*location_in);
+      }
+   }
+
+   //! \brief Create a standard cell
+   //! \param type The type to set
+   //! \param data The data to set
+   //! \param location The location in source that the cell originated from
+   cell_c(cell_type_e type, const cell_real_t data, location_s *location_in,
+          std::shared_ptr<std::string> origin)
+       : type(type), origin(origin) {
+      assert(type == cell_type_e::REAL);
+      this->data.d = data;
+      if (location_in) {
+         location = new location_s(*location_in);
+      }
+   }
+
+   //! \brief Create a standard cell
+   //! \param type The type to set
+   //! \param data The data to set
+   //! \param location The location in source that the cell originated from
+   cell_c(cell_type_e type, const cell_int_t data, location_s *location_in,
+          std::shared_ptr<std::string> origin)
+       : type(type), origin(origin) {
+      assert(type == cell_type_e::INTEGER);
+      this->data.i = data;
       if (location_in) {
          location = new location_s(*location_in);
       }
@@ -135,7 +220,19 @@ class cell_c {
 
    //! \brief Explicit copy constructor for cell
    cell_c(const cell_c &other) {
-      data = other.data;
+      switch (other.type) {
+      case cell_type_e::REAL:
+         data.d = other.data.d;
+         break;
+      case cell_type_e::INTEGER:
+         data.i = other.data.i;
+         break;
+      default:
+         if (other.data.s) {
+            data.s = new std::string(*other.data.s);
+         }
+         break;
+      }
       type = other.type;
       if (other.location) {
          location = new location_s(*other.location);
@@ -148,14 +245,45 @@ class cell_c {
    }
 
    //! \brief Clean up the cell
-   ~cell_c() {
+   virtual ~cell_c() {
       if (location) {
          delete location;
+         location = nullptr;
+      }
+      if ((type != cell_type_e::INTEGER && type != cell_type_e::REAL) &&
+          data.s) {
+         delete data.s;
+         data.s = nullptr;
       }
    }
 
+   std::string data_as_str() const {
+      switch (type) {
+      case cell_type_e::INTEGER:
+         return std::to_string(data.i);
+      case cell_type_e::REAL:
+         return std::to_string(data.d);
+      case cell_type_e::STRING:
+         return *data.s;
+      default: {
+         if (data.s) {
+            return *data.s;
+         }
+      }
+      }
+      return "";
+   }
+
+   union data_u {
+      constexpr data_u() : s{nullptr} {}
+      ~data_u() {}
+      cell_int_t i;
+      cell_real_t d;
+      cell_string_t *s;
+   };
+
    // Data
-   std::string data;
+   data_u data;
    cell_type_e type{cell_type_e::SYMBOL};
    location_s *location{nullptr};
    proc_f proc{nullptr};
@@ -165,10 +293,12 @@ class cell_c {
    std::shared_ptr<std::string> origin{nullptr};
 };
 
-static const cell_c CELL_TRUE =
-    cell_c(cell_type_e::INTEGER, "1"); //! A cell that represents TRUE
-static const cell_c CELL_FALSE =
-    cell_c(cell_type_e::INTEGER, "0"); //! A cell that represents FALSE
+static const cell_c CELL_TRUE = cell_c(
+    cell_type_e::INTEGER,
+    (cell_int_t)1); //! A cell that represents TRUE - cast to avoid ambiguity
+static const cell_c CELL_FALSE = cell_c(
+    cell_type_e::INTEGER,
+    (cell_int_t)0); //! A cell that represents FALSE - cast to avoid ambiguity
 static const cell_c CELL_NIL =
     cell_c(cell_type_e::STRING, "#nil"); //! A cell that represents NIL
 

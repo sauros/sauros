@@ -63,7 +63,7 @@ _pkg_set_signal_handler_(sauros::cells_t &cells,
                          std::shared_ptr<sauros::environment_c> env) {
 
    // Validated data type in signal.saur
-   uint8_t signal_number = std::stoi(c_api_process_cell(cells[1], env)->data);
+   uint8_t signal_number = c_api_process_cell(cells[1], env)->data.i;
    local_cell_map[signal_number] = {cells[2], env};
 
    set_signal_pipe();

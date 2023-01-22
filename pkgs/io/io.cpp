@@ -15,13 +15,12 @@ sauros::cell_ptr
 _pkg_io_getline_int_(sauros::cells_t &cells,
                      std::shared_ptr<sauros::environment_c> env) {
 
-   int64_t x = 0;
+   sauros::cell_int_t x = 0;
    std::string line;
    std::getline(std::cin, line);
    try {
       x = std::stoull(line);
-      return std::make_shared<sauros::cell_c>(sauros::cell_type_e::INTEGER,
-                                              std::to_string(x));
+      return std::make_shared<sauros::cell_c>(sauros::cell_type_e::INTEGER, x);
    } catch (std::invalid_argument) {
       return std::make_shared<sauros::cell_c>(sauros::CELL_NIL);
    }
@@ -32,13 +31,12 @@ sauros::cell_ptr
 _pkg_io_getline_real_(sauros::cells_t &cells,
                       std::shared_ptr<sauros::environment_c> env) {
 
-   double x = 0.0;
+   sauros::cell_real_t x = 0.0;
    std::string line;
    std::getline(std::cin, line);
    try {
       x = std::stod(line);
-      return std::make_shared<sauros::cell_c>(sauros::cell_type_e::REAL,
-                                              std::to_string(x));
+      return std::make_shared<sauros::cell_c>(sauros::cell_type_e::REAL, x);
    } catch (std::invalid_argument) {
       return std::make_shared<sauros::cell_c>(sauros::CELL_NIL);
    }

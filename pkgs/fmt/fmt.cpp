@@ -58,7 +58,7 @@ _pkg_fmt_format_encode_(sauros::cells_t &cells,
           "format string expects source cell to be a string", raw_target);
    }
 
-   auto target = raw_target->data;
+   auto target = *raw_target->data.s;
 
    sauros::cells_t source_cells;
    {
@@ -98,7 +98,7 @@ _pkg_fmt_format_encode_(sauros::cells_t &cells,
 
          auto result = c_api_cell_to_string(source_cells[emplaced++], env);
 
-         buffer += result->data;
+         buffer += result->data_as_str();
          continue;
       }
 
@@ -119,7 +119,7 @@ _pkg_fmt_format_string_(sauros::cells_t &cells,
           "format string expects source cell to be a string", raw_target);
    }
 
-   auto target = raw_target->data;
+   auto target = *raw_target->data.s;
 
    std::string buffer;
    for (auto i = 0; i < target.size(); i++) {
@@ -152,7 +152,7 @@ sauros::cell_ptr _pkg_fmt_join_(sauros::cells_t &cells,
    std::string result;
    for (auto &e : source->list) {
       auto string_cell = c_api_cell_to_string(e, env);
-      result += string_cell->data;
+      result += string_cell->data_as_str();
    }
 
    return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING, result);
@@ -166,7 +166,7 @@ sauros::cell_ptr _pkg_fmt_expand_(sauros::cells_t &cells,
    sauros::cell_ptr result =
        std::make_shared<sauros::cell_c>(sauros::cell_type_e::LIST);
 
-   for (auto &c : source->data) {
+   for (auto &c : source->data_as_str()) {
       result->list.push_back(std::make_shared<sauros::cell_c>(
           sauros::cell_type_e::STRING, std::string(1, c)));
    }
@@ -192,8 +192,8 @@ sauros::cell_ptr _pkg_fmt_split_(sauros::cells_t &cells,
        std::make_shared<sauros::cell_c>(sauros::cell_type_e::LIST);
 
    std::string buffer;
-   for (auto &c : source->data) {
-      if (std::string(1, c) == delimiter->data) {
+   for (auto &c : source->data_as_str()) {
+      if (std::string(1, c) == delimiter->data_as_str()) {
          result->list.push_back(std::make_shared<sauros::cell_c>(
              sauros::cell_type_e::STRING, buffer));
          buffer.clear();

@@ -51,7 +51,9 @@ thread_cell_c::thread_cell_c(location_s *location)
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
           std::stringstream ss;
           ss << thread.get_id();
-          return std::make_shared<cell_c>(cell_type_e::INTEGER, ss.str());
+          cell_int_t id{0};
+          ss << id;
+          return std::make_shared<cell_c>(cell_type_e::INTEGER, id);
        });
 }
 
@@ -75,7 +77,7 @@ chan_cell_c::chan_cell_c(location_s *location)
           const std::lock_guard<std::mutex> lock(channel_mutex);
           return std::make_shared<cell_c>(
               cell_type_e::INTEGER,
-              std::to_string(static_cast<int64_t>(!channel_queue.empty())));
+              static_cast<cell_int_t>(!channel_queue.empty()));
        });
 
    get_fn = std::make_shared<cell_c>(
@@ -83,6 +85,9 @@ chan_cell_c::chan_cell_c(location_s *location)
           cell_ptr next;
           {
              const std::lock_guard<std::mutex> lock(channel_mutex);
+             if (channel_queue.empty()) {
+               return std::make_shared<cell_c>(CELL_NIL);
+             }
              next = channel_queue.front();
              channel_queue.pop();
           }
