@@ -61,7 +61,7 @@ _pkg_list_ext_sort_(sauros::cells_t &cells,
                    return lhs_d, rhs_d;
                 }
 
-                return lhs->data.i, rhs->data.i;
+                return lhs->data.i < rhs->data.i;
              });
    return data;
 }

@@ -34,13 +34,13 @@ sauros::cell_ptr single_arithmetic(sauros::cells_t &cells,
 
    if (cells.size() == 2) {
       return std::make_shared<sauros::cell_c>(
-          sauros::cell_type_e::REAL, std::to_string(op(cells[1], env)));
+          sauros::cell_type_e::REAL, (sauros::cell_real_t)op(cells[1], env));
    }
 
    auto result = std::make_shared<sauros::cell_c>(sauros::cell_type_e::LIST);
    for (auto c = cells.begin() + 1; c < cells.end(); ++c) {
       result->list.push_back(std::make_shared<sauros::cell_c>(
-          sauros::cell_type_e::REAL, std::to_string(op((*c), env))));
+          sauros::cell_type_e::REAL, (sauros::cell_real_t)op((*c), env)));
    }
    return result;
 }
@@ -225,5 +225,5 @@ _sauros_pkg_math_pow_(sauros::cells_t &cells,
    };
 
    return std::make_shared<sauros::cell_c>(
-       sauros::cell_type_e::REAL, std::to_string(op(cells[1], cells[2], env)));
+       sauros::cell_type_e::REAL, (sauros::cell_real_t)(op(cells[1], cells[2], env)));
 }

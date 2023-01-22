@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <iostream>
+#include <limits>
 
 #include "sauros/format.hpp"
 
@@ -15,6 +16,11 @@ namespace sauros {
           format("`%` expects % parameters", command__, size__ - 1),           \
           cells[0]);                                                           \
    }
+
+static constexpr double EPSILON = 0.0001;
+
+#define SAUROS_DOUBLES_EQUAL(lhs__, rhs__) \
+    (std::fabs(lhs__ - rhs__) <= EPSILON * std::max(std::fabs(lhs__), std::fabs(rhs__)))
 
 namespace {
 
@@ -34,7 +40,7 @@ static inline bool eval_truthy(cell_ptr cell, location_s *location) {
       return true;
       break;
    case cell_type_e::REAL:
-      return (cell->data.d > 0.00); // TODO: do this correctly
+      return (cell->data.d > 0.0); // TODO: do this correctly
    case cell_type_e::INTEGER:
       return (cell->data.i > 0);
    }
@@ -381,13 +387,11 @@ void processor_c::populate_standard_builtins() {
              } else if (cell_type_e::INTEGER == result->type &&
                         result->data.i < 1) {
                 throw assertion_exception_c(
-                    "assertion failure: " + std::to_string(cells[1]->data.i),
-                    cells[0]);
+                    "assertion failure: " + *cells[1]->data.s, cells[0]);
              } else if (cell_type_e::REAL == result->type &&
                         result->data.d <= 0.0) {
                 throw assertion_exception_c(
-                    "assertion failure: " + std::to_string(cells[1]->data.d),
-                    cells[0]);
+                    "assertion failure: " + *cells[1]->data.s, cells[0]);
              }
           }
           return std::make_shared<cell_c>(CELL_TRUE);
@@ -797,6 +801,10 @@ void processor_c::populate_standard_builtins() {
 #endif
           SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "is_nil");
 
+          if (cells[1]->type != cell_type_e::STRING) {
+                return std::make_shared<cell_c>(sauros::CELL_FALSE);
+          }
+
           return ((*process_cell(cells[1], env)->data.s) == *CELL_NIL.data.s)
                      ? std::make_shared<cell_c>(sauros::CELL_TRUE)
                      : std::make_shared<cell_c>(sauros::CELL_FALSE);
@@ -865,7 +873,16 @@ void processor_c::populate_standard_builtins() {
 
           auto lhs = process_cell(cells[1], env);
           auto rhs = process_cell(cells[2], env);
-
+          if (lhs->type != cell_type_e::STRING) {
+                throw runtime_exception_c(
+                    "Both operands of seq must be of type string", lhs
+                );
+           }
+          if (rhs->type != cell_type_e::STRING) {
+                throw runtime_exception_c(
+                    "Both operands of seq must be of type string", rhs
+                );
+           }
           return std::make_shared<cell_c>(
               cell_type_e::INTEGER, (cell_int_t)(*lhs->data.s == *rhs->data.s),
               cells[0]->location);
@@ -881,6 +898,16 @@ void processor_c::populate_standard_builtins() {
           auto lhs = process_cell(cells[1], env);
           auto rhs = process_cell(cells[2], env);
 
+          if (lhs->type != cell_type_e::STRING) {
+                throw runtime_exception_c(
+                    "Both operands of sneq must be of type string", lhs
+                );
+           }
+          if (rhs->type != cell_type_e::STRING) {
+                throw runtime_exception_c(
+                    "Both operands of sneq must be of type string", rhs
+                );
+           }
           return std::make_shared<cell_c>(
               cell_type_e::INTEGER, (cell_int_t)(*lhs->data.s != *rhs->data.s),
               cells[0]->location);
@@ -935,7 +962,9 @@ void processor_c::populate_standard_builtins() {
 #endif
           return {perform_arithmetic(
               "==", cells,
-              [](double lhs, double rhs) -> double { return lhs == rhs; },
+              [](double lhs, double rhs) -> double {
+                    return SAUROS_DOUBLES_EQUAL(lhs, rhs);
+                },
               env)};
        });
 
