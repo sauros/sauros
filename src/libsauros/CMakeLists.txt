@@ -58,6 +58,10 @@ include(${CMAKE_SOURCE_DIR}/cmake/SetEnv.cmake)
 
 include_directories("sauros")
 
+if (NOT CMAKE_BUILD_TYPE MATCHES Debug)
+    add_definitions(-DNDEBUG)
+endif()
+
 set(SAUROS_SOURCES
    ${CMAKE_SOURCE_DIR}/sauros/environment.cpp
    ${CMAKE_SOURCE_DIR}/sauros/cell.cpp

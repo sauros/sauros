@@ -199,11 +199,15 @@ class cell_c {
    //! \note Process cells are declared as SYMBOL to reduce number of
    //!       given celltypes. A process cell can be quickly identified
    //!       by the existence of a valid proc_f being set
-   cell_c(proc_f proc) : type(cell_type_e::SYMBOL), proc(proc) {}
+   cell_c(proc_f proc) : type(cell_type_e::SYMBOL), proc(proc) {
+      data.s = nullptr;
+   }
 
    //! \brief Create a list cell
    //! \param list The list to set in the cell
-   cell_c(cells_t list) : type(cell_type_e::LIST), list(list) {}
+   cell_c(cells_t list) : type(cell_type_e::LIST), list(list) {
+      data.s = nullptr;
+   }
 
    //! \brief Clone the cell
    //! \returns A new copy of the cell in a shared_ptr

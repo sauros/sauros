@@ -68,6 +68,7 @@ environment_c *environment_c::find(const std::string &var,
 #endif
 
    if (_env.find(var) != _env.end()) {
+      _last_good_cell = origin_cell;
       return this;
    }
    if (_parent) {
