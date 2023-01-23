@@ -1,0 +1,27 @@
+[use "fmt"]
+[use "math"]
+
+[putln [math.log 5]]
+
+[var x [lambda [] [block
+    [putln [fmt.string "\n\n\t[SUCCESS]\n\n"]]
+]]]
+
+;  X isn't found becuase its scoped to test_req
+;  and the caller of the lambda exists outside test_req
+;  meaning that when the lambda is called it is operating 
+;  under the environment of caller
+
+
+;
+;   Best way to handle this 
+;   would be to tag the cell with information
+;   regarding where it exists relative to the caller
+;   so when lambdas are executed they operate within
+;   their defined context
+;
+;
+
+[var test [lambda [] [block
+    [x]
+]]]

@@ -71,6 +71,7 @@ set(SAUROS_SOURCES
    ${CMAKE_SOURCE_DIR}/sauros/RLL/rll_wrapper.cpp
    ${CMAKE_SOURCE_DIR}/sauros/system/system.cpp
    ${CMAKE_SOURCE_DIR}/sauros/front/parser.cpp
+   ${CMAKE_SOURCE_DIR}/sauros/package/package.cpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor.cpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor_load_package.cpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor_arithmetic.cpp
@@ -102,6 +103,7 @@ set(HEADERS
    ${CMAKE_SOURCE_DIR}/sauros/capi/capi.hpp
    ${CMAKE_SOURCE_DIR}/sauros/RLL/rll_wrapper.hpp
    ${CMAKE_SOURCE_DIR}/sauros/system/system.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/package/package.hpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor.hpp
    ${CMAKE_SOURCE_DIR}/sauros/environment.hpp
    ${CMAKE_SOURCE_DIR}/sauros/cell.hpp

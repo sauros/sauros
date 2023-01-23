@@ -9,11 +9,11 @@
 ;
 ;  Example:
 ;
-;  [std::auto_loop >= 100 0 [lambda [i] [block 
+;  [loop::auto >= 100 0 [lambda [i] [block 
 ;     [putln i]
 ;  ]]]
 ;
-[var std::auto_loop [lambda [condition start end body] [block
+[var loop::auto [lambda [condition start end body] [block
    [if [sneq "lambda" [type body]] [
       throw "expected lambda type for parameter: body"
    ]]
@@ -33,12 +33,12 @@
 ;
 ;  Example:
 ;
-; [std::main_loop [lambda [main_loop_idx] [block
-;    [putln main_loop_idx]
-;    [if [== main_loop_idx 100000] [exit 1]]
+; [loop::main [lambda [idx] [block
+;    [putln idx]
+;    [if [== idx 100000] [exit 1]]
 ; ]]]
 ;
-[var std::main_loop [lambda [body] [block
+[var loop::main [lambda [body] [block
    [if [sneq "lambda" [type body]] [
       throw "expected lambda type for parameter: body"
    ]]

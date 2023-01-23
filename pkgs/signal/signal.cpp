@@ -26,7 +26,7 @@ void signal_handler(int sig) {
                                                      active_cell->location);
    list_cell->list.push_back(active_cell);
    list_cell->list.push_back(std::make_shared<sauros::cell_c>(
-       sauros::cell_type_e::INTEGER, std::to_string(sig),
+       sauros::cell_type_e::INTEGER, (sauros::cell_int_t)(sig),
        active_cell->location));
 
    try {

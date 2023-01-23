@@ -6,9 +6,9 @@
 [use "io"]
 [use "os"]
 [use "fmt"]
+[use "std"]
 [import "database/db.saur"]
 [import "database/entry.saur"]
-[import "std/switch"]
 
 ;  Load the database file from the @args list
 ;
@@ -120,14 +120,14 @@
 ;  map it to the correct function
 ;
 [loop [] [true] [] [block
-   [std::switch [io.get_string "$: "] [list
-      [std::case "help" show_help]
-      [std::case "new" new_book]
-      [std::case "checkout" checkout_book]
-      [std::case "return" return_book]
-      [std::case "list" list_books]
-      [std::case "clear" os.clear_screen]
-      [std::case "exit" [lambda [] [block
+   [std.match::item [io.get_string "$: "] [list
+      [std.match::pattern "help" show_help]
+      [std.match::pattern "new" new_book]
+      [std.match::pattern "checkout" checkout_book]
+      [std.match::pattern "return" return_book]
+      [std.match::pattern "list" list_books]
+      [std.match::pattern "clear" os.clear_screen]
+      [std.match::pattern "exit" [lambda [] [block
          [putln "Goodbye"]
          [exit 0]
       ]]]

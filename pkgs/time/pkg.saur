@@ -1,6 +1,9 @@
 ; Pkg name
 [var pkg_name "time"]
 
+[var authors "Bosley"]
+[var license "MIT"]
+
 ; C++ shared lib to link to
 [var library_file "time.lib"]
 [var library_functions [list

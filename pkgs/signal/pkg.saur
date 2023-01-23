@@ -1,6 +1,9 @@
 ; Pkg name
 [var pkg_name "signal"]
 
+[var authors "Bosley"]
+[var license "MIT"]
+
 ; C++ shared lib to link to
 [var library_file "signal.lib"]
 [var library_functions [list

@@ -1,6 +1,9 @@
 ; Pkg name
 [var pkg_name "file_io"]
 
+[var authors "Bosley"]
+[var license "MIT"]
+
 ; C++ shared lib to link to
 [var library_file "file_io.lib"]
 [var library_functions [list
