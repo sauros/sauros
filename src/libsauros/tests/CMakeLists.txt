@@ -17,4 +17,4 @@ target_link_libraries(sauros_unit_tests
   dl
   Threads::Threads)
 
-#add_custom_command(TARGET sauros_unit_tests COMMAND ./sauros_unit_tests POST_BUILD)
+add_custom_command(TARGET sauros_unit_tests COMMAND ./sauros_unit_tests POST_BUILD)

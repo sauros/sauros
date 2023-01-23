@@ -6,7 +6,7 @@
 #include "sauros/environment.hpp"
 #include "sauros/system/system.hpp"
 
-#include "sauros/cell_map.hpp"
+#include "sauros/types.hpp"
 #include <array>
 #include <exception>
 #include <functional>

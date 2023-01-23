@@ -1,35 +1,3 @@
-
-```
-[ Release Build ]
-[ ---- Midas Server ---- ]
-
-19-September-2022
-
-[Before hashmap modifications and general tweaking]
-
-primality
-   100,000 Primes
-      0 - 5.38s user 0.00s system 99% cpu 5.384 total
-      1 - 5.35s user 0.01s system 99% cpu 5.360 total
-      2 - 5.35s user 0.01s system 99% cpu 5.360 total
-      3 - 5.41s user 0.00s system 99% cpu 5.408 total
-      4 - 5.38s user 0.00s system 99% cpu 5.388 total
-
-mandelbrot
-      0 - 0.86s user 0.00s system 99% cpu 0.857 total
-      1 - 0.85s user 0.00s system 99% cpu 0.855 total
-      2 - 0.86s user 0.00s system 99% cpu 0.865 total
-      3 - 0.85s user 0.00s system 99% cpu 0.859 total
-      4 - 0.85s user 0.00s system 99% cpu 0.855 total
-
-[new metrics as of first map optimization work]
-
-primality.saur >> averaged an execution time of  4.8125s ( 4812.522ms )  after  50  executions
-mandelbrot.saur >> averaged an execution time of  0.7721s ( 772.0777ms )  after  50  executions
-
-[ ---------------------- ]
-```
-
 ## Bosleys Lab - Server
 
 The lab server is significantly slower than Midas so they are not directly comparable
@@ -117,4 +85,18 @@ symbol for a `.` at run time.
 primality.saur >> averaged an execution time of  0.8108s ( 810.7506ms )  after  50  executions
 mandelbrot.saur >> averaged an execution time of  0.244s ( 244.0041ms )  after  50  executions
 4sieve.saur >> averaged an execution time of  0.6784s ( 678.36ms )  after  50  executions
+```
+
+## 22-January-2022
+
+Update to cells to use a union to store the underlying data together in an int64_t, 
+double, and a std::string pointer. This means that we can directly work with values
+rather than relying on string conversions (ew)
+
+It can be seen by the results of the benchmarks that the 2 benchmarks that utilize a lot of 
+number manipulation have improved pretty significantly
+```
+primality.saur >> averaged an execution time of  0.6962s ( 696.1787ms )  after  50  executions
+mandelbrot.saur >> averaged an execution time of  0.1345s ( 134.5026ms )  after  50  executions
+4sieve.saur >> averaged an execution time of  0.656s ( 656.0264ms )  after  50  executions
 ```

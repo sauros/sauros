@@ -1,5 +1,5 @@
-#ifndef SAUROS_PKG_LIST_EXT
-#define SAUROS_PKG_LIST_EXT
+#ifndef SAUROS_PKG_EXT
+#define SAUROS_PKG_EXT
 
 #include <sauros/sauros.hpp>
 

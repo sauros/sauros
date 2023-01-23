@@ -1,5 +1,5 @@
-#ifndef SAUROS_PKG_STD_FMT
-#define SAUROS_PKG_STD_FMT
+#ifndef SAUROS_PKG_FILE_IO
+#define SAUROS_PKG_FILE_IO
 
 #include <sauros/sauros.hpp>
 

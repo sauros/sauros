@@ -86,7 +86,7 @@ chan_cell_c::chan_cell_c(location_s *location)
           {
              const std::lock_guard<std::mutex> lock(channel_mutex);
              if (channel_queue.empty()) {
-               return std::make_shared<cell_c>(CELL_NIL);
+                return std::make_shared<cell_c>(CELL_NIL);
              }
              next = channel_queue.front();
              channel_queue.pop();

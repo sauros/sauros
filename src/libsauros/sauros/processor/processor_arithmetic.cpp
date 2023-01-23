@@ -16,23 +16,13 @@ cell_ptr processor_c::perform_arithmetic(
                                 cells[0]);
    }
 
-   /*
-      double result = 0.0;
-      bool store_as_double{false};
-      auto first_cell_value = process_cell(cells[1], env);
-      try {
-         result = std::stod(first_cell_value->data);
-      } catch (const std::invalid_argument &) {
-         throw runtime_exception_c("Invalid data type given for operand",
-                                   cells[0]);
-      } catch (const std::out_of_range &) {
-         throw runtime_exception_c("Item caused out of range exception",
-      cells[0]);
-      }
-   */
-
    bool store_as_double{false};
    auto first_cell_value = process_cell(cells[1], env);
+
+   if (first_cell_value->type == cell_type_e::STRING) {
+      throw runtime_exception_c("Invalid data type given for operand",
+                                cells[0]);
+   }
 
    double result = first_cell_value->data.d;
    if (first_cell_value->type == cell_type_e::INTEGER) {
@@ -44,17 +34,10 @@ cell_ptr processor_c::perform_arithmetic(
       auto cell_value = process_cell((*i), env);
       store_as_double = static_cast<unsigned short>(cell_value->type) == 0;
 
-      /*
-      try {
-         result = fn(result, std::stod(cell_value->data));
-      } catch (const std::invalid_argument &) {
+      if (cell_value->type == cell_type_e::STRING) {
          throw runtime_exception_c("Invalid data type given for operand",
                                    cells[0]);
-      } catch (const std::out_of_range &) {
-         throw runtime_exception_c("Item caused out of range exception",
-                                   cells[0]);
       }
-      */
 
       double cell_value_actual = cell_value->data.d;
       if (cell_value->type == cell_type_e::INTEGER) {

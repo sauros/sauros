@@ -19,8 +19,9 @@ namespace sauros {
 
 static constexpr double EPSILON = 0.0001;
 
-#define SAUROS_DOUBLES_EQUAL(lhs__, rhs__) \
-    (std::fabs(lhs__ - rhs__) <= EPSILON * std::max(std::fabs(lhs__), std::fabs(rhs__)))
+#define SAUROS_DOUBLES_EQUAL(lhs__, rhs__)                                     \
+   (std::fabs(lhs__ - rhs__) <=                                                \
+    EPSILON * std::max(std::fabs(lhs__), std::fabs(rhs__)))
 
 namespace {
 
@@ -801,11 +802,12 @@ void processor_c::populate_standard_builtins() {
 #endif
           SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "is_nil");
 
-          if (cells[1]->type != cell_type_e::STRING) {
-                return std::make_shared<cell_c>(sauros::CELL_FALSE);
+          auto target = process_cell(cells[1], env);
+          if (target->type != cell_type_e::STRING) {
+             return std::make_shared<cell_c>(sauros::CELL_FALSE);
           }
 
-          return ((*process_cell(cells[1], env)->data.s) == *CELL_NIL.data.s)
+          return ((*target->data.s) == *CELL_NIL.data.s)
                      ? std::make_shared<cell_c>(sauros::CELL_TRUE)
                      : std::make_shared<cell_c>(sauros::CELL_FALSE);
        });
@@ -874,15 +876,13 @@ void processor_c::populate_standard_builtins() {
           auto lhs = process_cell(cells[1], env);
           auto rhs = process_cell(cells[2], env);
           if (lhs->type != cell_type_e::STRING) {
-                throw runtime_exception_c(
-                    "Both operands of seq must be of type string", lhs
-                );
-           }
+             throw runtime_exception_c(
+                 "Both operands of seq must be of type string", lhs);
+          }
           if (rhs->type != cell_type_e::STRING) {
-                throw runtime_exception_c(
-                    "Both operands of seq must be of type string", rhs
-                );
-           }
+             throw runtime_exception_c(
+                 "Both operands of seq must be of type string", rhs);
+          }
           return std::make_shared<cell_c>(
               cell_type_e::INTEGER, (cell_int_t)(*lhs->data.s == *rhs->data.s),
               cells[0]->location);
@@ -899,15 +899,13 @@ void processor_c::populate_standard_builtins() {
           auto rhs = process_cell(cells[2], env);
 
           if (lhs->type != cell_type_e::STRING) {
-                throw runtime_exception_c(
-                    "Both operands of sneq must be of type string", lhs
-                );
-           }
+             throw runtime_exception_c(
+                 "Both operands of sneq must be of type string", lhs);
+          }
           if (rhs->type != cell_type_e::STRING) {
-                throw runtime_exception_c(
-                    "Both operands of sneq must be of type string", rhs
-                );
-           }
+             throw runtime_exception_c(
+                 "Both operands of sneq must be of type string", rhs);
+          }
           return std::make_shared<cell_c>(
               cell_type_e::INTEGER, (cell_int_t)(*lhs->data.s != *rhs->data.s),
               cells[0]->location);
@@ -963,8 +961,8 @@ void processor_c::populate_standard_builtins() {
           return {perform_arithmetic(
               "==", cells,
               [](double lhs, double rhs) -> double {
-                    return SAUROS_DOUBLES_EQUAL(lhs, rhs);
-                },
+                 return SAUROS_DOUBLES_EQUAL(lhs, rhs);
+              },
               env)};
        });
 
@@ -1034,7 +1032,8 @@ void processor_c::populate_standard_builtins() {
           return {perform_arithmetic(
               "%", cells,
               [](double lhs, double rhs) -> double {
-                 return static_cast<int64_t>(lhs) % static_cast<int64_t>(rhs);
+                 return static_cast<cell_int_t>(lhs) %
+                        static_cast<cell_int_t>(rhs);
               },
               env)};
        });

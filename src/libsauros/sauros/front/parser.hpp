@@ -12,7 +12,7 @@ namespace parser {
 
 //! \brief The parser tokens
 enum class token_e {
-   L_BRACKET,
+   L_BRACKET = 0,
    R_BRACKET,
    SYMBOL,
    BOX_SYMBOL,
@@ -22,12 +22,36 @@ enum class token_e {
 };
 
 //! \brief  A token/ data/ location pair
-struct token_s {
+class token_c {
+ public:
+   token_c(token_e token, location_s location)
+       : token(token), location(location) {}
    token_e token;
-   cell_string_t string_data;
-   cell_int_t integer_data;
-   cell_real_t real_data;
    location_s location;
+};
+
+class string_token_c : public token_c {
+ public:
+   string_token_c(location_s loc) : token_c(token_e::STRING, loc) {}
+   string_token_c(location_s loc, cell_string_t data)
+       : token_c(token_e::STRING, loc), data(data) {}
+   cell_string_t data;
+};
+
+class real_token_c : public token_c {
+ public:
+   real_token_c(location_s loc) : token_c(token_e::REAL, loc) {}
+   real_token_c(location_s loc, cell_real_t data)
+       : token_c(token_e::REAL, loc), data(data) {}
+   cell_real_t data;
+};
+
+class integer_token_c : public token_c {
+ public:
+   integer_token_c(location_s loc) : token_c(token_e::INTEGER, loc) {}
+   integer_token_c(location_s loc, cell_int_t data)
+       : token_c(token_e::INTEGER, loc), data(data) {}
+   cell_int_t data;
 };
 
 //! \brief A struct to track brackets
@@ -89,7 +113,7 @@ class segment_parser_c {
    void set_origin(const std::string &origin);
 
  private:
-   std::vector<token_s> _tokens;
+   std::vector<token_c *> _tokens;
    bracket_track_s _bts;
    std::shared_ptr<std::string> _origin{nullptr};
 };

@@ -225,5 +225,6 @@ _sauros_pkg_math_pow_(sauros::cells_t &cells,
    };
 
    return std::make_shared<sauros::cell_c>(
-       sauros::cell_type_e::REAL, (sauros::cell_real_t)(op(cells[1], cells[2], env)));
+       sauros::cell_type_e::REAL,
+       (sauros::cell_real_t)(op(cells[1], cells[2], env)));
 }

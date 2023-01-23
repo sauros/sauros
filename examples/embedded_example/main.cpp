@@ -20,12 +20,12 @@ int main(int argc, char **argv) {
 
    if (env->exists("name")) {
       auto name_cell = env->get("name");
-      std::cout << name_cell->data.s << std::endl;
+      std::cout << name_cell->data_as_str()<< std::endl;
    }
 
    if (env->exists("age")) {
       auto age_cell = env->get("age");
-      std::cout << age_cell->data.s << std::endl;
+      std::cout << age_cell->data_as_str() << std::endl;
    }
 
    return 0;
