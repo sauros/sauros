@@ -8,7 +8,7 @@
 #include <iostream>
 
 #include "RLL/rll_wrapper.hpp"
-#include "cell_map.hpp"
+#include "types.hpp"
 
 namespace sauros {
 

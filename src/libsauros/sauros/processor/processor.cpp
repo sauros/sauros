@@ -22,11 +22,19 @@ void processor_c::cell_to_string(std::string &out, cell_ptr cell,
 #endif
    switch (cell->type) {
    case cell_type_e::REAL:
-      [[fallthrough]];
+      out += std::to_string(cell->data.d);
+      if (show_space) {
+         out += " ";
+      }
+      break;
    case cell_type_e::STRING:
-      [[fallthrough]];
+      out += *cell->data.s;
+      if (show_space) {
+         out += " ";
+      }
+      break;
    case cell_type_e::INTEGER:
-      out += cell->data;
+      out += std::to_string(cell->data.i);
       if (show_space) {
          out += " ";
       }
@@ -86,12 +94,12 @@ void processor_c::quote_cell(std::string &out, cell_ptr cell,
    case cell_type_e::BOX_SYMBOL:
       [[fallthrough]];
    case cell_type_e::SYMBOL: {
-      out += cell->data;
+      out += cell->data_as_str();
       out += " ";
       break;
    }
    case cell_type_e::STRING:
-      out += "\"" + cell->data + "\" ";
+      out += "\"" + cell->data_as_str() + "\" ";
       break;
    case cell_type_e::LIST: {
 
@@ -107,16 +115,16 @@ void processor_c::quote_cell(std::string &out, cell_ptr cell,
 
       auto &cells = cell->list;
 
-      auto lambda_name = cells[0]->data;
+      auto lambda_name = cell->data_as_str();
 
       out += lambda_name + "[ ";
 
       auto target_lambda =
-          env->find(cells[0]->data, cells[0])->get(cells[0]->data);
+          env->find(*cells[0]->data.s, cells[0])->get(*cells[0]->data.s);
 
       for (auto param = target_lambda->list[0]->list.begin() + 1;
            param != target_lambda->list[0]->list.end(); ++param) {
-         out += (*param)->data + " ";
+         out += *(*param)->data.s + " ";
       }
 
       out += "] ";
@@ -219,8 +227,8 @@ cell_ptr processor_c::process_cell(cell_ptr cell,
    case cell_type_e::SYMBOL: {
       // If not built in maybe it is in the environment
       //
-      auto env_with_data = env->find(cell->data, cell);
-      auto r = env_with_data->get(cell->data);
+      auto env_with_data = env->find(*cell->data.s, cell);
+      auto r = env_with_data->get(*cell->data.s);
 
       if (r->type == cell_type_e::BOX) {
          return clone_box(r);
@@ -231,8 +239,8 @@ cell_ptr processor_c::process_cell(cell_ptr cell,
    case cell_type_e::ENCODED_SYMBOL: {
       if (cell->builtin_encoding == BUILTIN_DEFAULT_VAL ||
           cell->builtin_encoding >= BUILTIN_ENTRY_COUNT) {
-         throw runtime_exception_c("Invalid encoded symbol for : " + cell->data,
-                                   cell);
+         throw runtime_exception_c(
+             "Invalid encoded symbol for : " + *cell->data.s, cell);
       }
 
       // Direct access - no more mapping
@@ -275,15 +283,16 @@ cell_ptr processor_c::process_lambda(cell_ptr cell, cells_t &cells,
 
    if (cell->list[0]->list.size() != exps.size()) {
       throw runtime_exception_c(
-          "Invalid number of paramters given to lambda: " + cells[0]->data +
+          "Invalid number of paramters given to lambda: " + *cells[0]->data.s +
               ". " + std::to_string(exps.size()) + " parameters given, but " +
               std::to_string(cell->list[0]->list.size()) + " were expected.",
           cells[0]);
    }
 
    // Create the lambda cell
-   cell_ptr lambda_cell = std::make_shared<cell_c>();
-   lambda_cell->data = cells[0]->data;
+   cell_ptr lambda_cell =
+       std::make_shared<cell_c>(cell_type_e::LAMBDA, cells[0]->location);
+   lambda_cell->data.s = new std::string(*cells[0]->data.s);
    lambda_cell->type = cell->type;
    lambda_cell->list = cell->list[1]->list;
 
@@ -321,7 +330,7 @@ std::vector<std::string> processor_c::retrieve_accessors(cell_ptr &cell) {
 #endif
    std::vector<std::string> accessors;
    std::string accessor;
-   std::stringstream source(cell->data);
+   std::stringstream source(*cell->data.s);
    while (std::getline(source, accessor, '.')) {
       accessors.push_back(accessor);
    }
@@ -372,7 +381,7 @@ processor_c::load_potential_variable(cell_ptr cell,
       return process_cell(cell, env);
    }
 
-   auto &variable_name = cell->data;
+   auto &variable_name = *cell->data.s;
    auto containing_env = env->find(variable_name, cell);
    return containing_env->get(variable_name);
 }

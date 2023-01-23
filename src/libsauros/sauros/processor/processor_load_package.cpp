@@ -92,7 +92,7 @@ void processor_c::load_package(const std::string &target, location_s *location,
              "pkg_name in pkg.saur for " + target + " is not of type `STRING`",
              std::make_shared<cell_c>(cell_type_e::STRING, "", location));
       }
-      package.name = package_name_cell->data;
+      package.name = *package_name_cell->data.s;
 
       auto package_file = root;
       package_file /= "pkg.saur";
@@ -126,7 +126,7 @@ void processor_c::load_package(const std::string &target, location_s *location,
 
          {
             auto library_file_actual = root;
-            library_file_actual /= library_file_cell->data;
+            library_file_actual /= *library_file_cell->data.s;
             if (!std::filesystem::is_regular_file(library_file_actual)) {
                throw runtime_exception_c(
                    "library file:" + library_file_actual.string() +
@@ -161,7 +161,8 @@ void processor_c::load_package(const std::string &target, location_s *location,
                        " is not of type `STRING`",
                    std::make_shared<cell_c>(cell_type_e::STRING, "", location));
             }
-            package.library_function_list.push_back(function_name_cell->data);
+            package.library_function_list.push_back(
+                *function_name_cell->data.s);
 
             // std::cout << "\t[library function] " << function_name_cell->data
             //   << std::endl;
@@ -190,7 +191,7 @@ void processor_c::load_package(const std::string &target, location_s *location,
 
             {
                auto file_actual = root;
-               file_actual /= file_name_cell->data;
+               file_actual /= *file_name_cell->data.s;
                if (!std::filesystem::is_regular_file(file_actual)) {
                   throw runtime_exception_c(
                       "source file:" + file_actual.string() +
@@ -201,7 +202,7 @@ void processor_c::load_package(const std::string &target, location_s *location,
                package.source_file_list.push_back(file_actual);
             }
 
-            // std::cout << "\t[source file] " << file_name_cell->data
+            // std::cout << "\t[source file] " << *file_name_cell->data.s
             //    << std::endl;
          }
       }

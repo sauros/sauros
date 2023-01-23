@@ -53,7 +53,7 @@ sauros::cell_ptr execute_commands(sauros::cells_t &cells,
       // Indicate the path being listed
       current_dir->list.push_back(s);
 
-      if (!cmd(s->data)) {
+      if (!cmd(s->data_as_str())) {
          current_dir->list.push_back(
              std::make_shared<sauros::cell_c>(sauros::CELL_FALSE));
       } else {
@@ -93,7 +93,7 @@ sauros::cell_ptr _pkg_os_ls_(sauros::cells_t &cells,
       // Indicate the path being listed
       current_dir->list.push_back(s);
 
-      if (!std::filesystem::is_directory(s->data)) {
+      if (!std::filesystem::is_directory(s->data_as_str())) {
          current_dir->list.push_back(
              std::make_shared<sauros::cell_c>(sauros::CELL_NIL));
          result->list.push_back(current_dir);
@@ -101,7 +101,8 @@ sauros::cell_ptr _pkg_os_ls_(sauros::cells_t &cells,
       }
 
       // Now indicate the
-      for (const auto &entry : std::filesystem::directory_iterator(s->data)) {
+      for (const auto &entry :
+           std::filesystem::directory_iterator(s->data_as_str())) {
          current_dir->list.push_back(std::make_shared<sauros::cell_c>(
              sauros::cell_type_e::STRING, entry.path().string()));
       }
@@ -120,11 +121,11 @@ sauros::cell_ptr _pkg_os_chdir_(sauros::cells_t &cells,
           "chdir command expects parameter to be a string", cells[0]);
    }
 
-   if (!std::filesystem::is_directory(raw_dest->data)) {
+   if (!std::filesystem::is_directory(raw_dest->data_as_str())) {
       return std::make_shared<sauros::cell_c>(sauros::CELL_FALSE);
    }
 
-   auto dest = std::filesystem::path(raw_dest->data);
+   auto dest = std::filesystem::path(raw_dest->data_as_str());
    std::filesystem::current_path(dest);
 
    auto path = std::filesystem::current_path();
@@ -185,9 +186,9 @@ sauros::cell_ptr _pkg_os_is_file_(sauros::cells_t &cells,
           "is_file command expects parameter to be a string", cells[0]);
    }
 
-   if (std::filesystem::is_block_file(raw_dest->data) ||
-       std::filesystem::is_regular_file(raw_dest->data) ||
-       std::filesystem::is_character_file(raw_dest->data)) {
+   if (std::filesystem::is_block_file(raw_dest->data_as_str()) ||
+       std::filesystem::is_regular_file(raw_dest->data_as_str()) ||
+       std::filesystem::is_character_file(raw_dest->data_as_str())) {
       return std::make_shared<sauros::cell_c>(sauros::CELL_TRUE);
    }
    return std::make_shared<sauros::cell_c>(sauros::CELL_FALSE);
@@ -202,7 +203,7 @@ sauros::cell_ptr _pkg_os_is_dir_(sauros::cells_t &cells,
           "is_dir command expects parameter to be a string", cells[0]);
    }
 
-   if (std::filesystem::is_directory(raw_dest->data)) {
+   if (std::filesystem::is_directory(raw_dest->data_as_str())) {
       return std::make_shared<sauros::cell_c>(sauros::CELL_TRUE);
    }
    return std::make_shared<sauros::cell_c>(sauros::CELL_FALSE);
@@ -217,7 +218,7 @@ sauros::cell_ptr _pkg_os_exists_(sauros::cells_t &cells,
           "is_file command expects parameter to be a string", cells[0]);
    }
 
-   if (std::filesystem::exists(raw_dest->data)) {
+   if (std::filesystem::exists(raw_dest->data_as_str())) {
       return std::make_shared<sauros::cell_c>(sauros::CELL_TRUE);
    }
    return std::make_shared<sauros::cell_c>(sauros::CELL_FALSE);
@@ -259,7 +260,7 @@ sauros::cell_ptr _pkg_os_copy_(sauros::cells_t &cells,
           "copy command expects source parameter to be a string", cells[1]);
    }
 
-   if (!std::filesystem::exists(source->data)) {
+   if (!std::filesystem::exists(source->data_as_str())) {
       return std::make_shared<sauros::cell_c>(sauros::CELL_FALSE);
    }
    auto dest = c_api_process_cell(cells[2], env);
@@ -269,9 +270,9 @@ sauros::cell_ptr _pkg_os_copy_(sauros::cells_t &cells,
           cells[2]);
    }
 
-   std::filesystem::copy(source->data, dest->data,
+   std::filesystem::copy(source->data_as_str(), dest->data_as_str(),
                          std::filesystem::copy_options::overwrite_existing);
-   if (std::filesystem::exists(dest->data)) {
+   if (std::filesystem::exists(dest->data_as_str())) {
       return std::make_shared<sauros::cell_c>(sauros::CELL_TRUE);
    }
    return std::make_shared<sauros::cell_c>(sauros::CELL_FALSE);
@@ -287,7 +288,7 @@ _pkg_os_file_append_(sauros::cells_t &cells,
    }
 
    std::ofstream out_file;
-   out_file.open(file->data, std::ios::out | std::ios::app);
+   out_file.open(file->data_as_str(), std::ios::out | std::ios::app);
 
    if (!out_file.is_open()) {
       return std::make_shared<sauros::cell_c>(sauros::CELL_FALSE);
@@ -296,7 +297,7 @@ _pkg_os_file_append_(sauros::cells_t &cells,
    sauros::cells_t lines = populate_source(cells, 2, env);
 
    for (auto &line : lines) {
-      out_file << line->data;
+      out_file << line->data_as_str();
    }
 
    out_file.close();
@@ -314,7 +315,7 @@ _pkg_os_file_write_(sauros::cells_t &cells,
    }
 
    std::ofstream out_file;
-   out_file.open(file->data, std::ios::out | std::ios::trunc);
+   out_file.open(file->data_as_str(), std::ios::out | std::ios::trunc);
 
    if (!out_file.is_open()) {
       return std::make_shared<sauros::cell_c>(sauros::CELL_FALSE);
@@ -323,7 +324,7 @@ _pkg_os_file_write_(sauros::cells_t &cells,
    sauros::cells_t lines = populate_source(cells, 2, env);
 
    for (auto &line : lines) {
-      out_file << line->data;
+      out_file << line->data_as_str();
    }
 
    out_file.close();
@@ -341,7 +342,7 @@ _pkg_os_file_read_(sauros::cells_t &cells,
    }
 
    std::ifstream in_file;
-   in_file.open(file->data, std::ios::in);
+   in_file.open(file->data_as_str(), std::ios::in);
 
    if (!in_file.is_open()) {
       return std::make_shared<sauros::cell_c>(sauros::CELL_NIL);
@@ -381,7 +382,7 @@ sauros::cell_ptr _pkg_os_get_env_(sauros::cells_t &cells,
           "get_env operation expects name to be a string", cells[1]);
    }
 
-   if (const char *env_p = std::getenv(var_string->data.c_str())) {
+   if (const char *env_p = std::getenv(var_string->data_as_str().c_str())) {
       return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING,
                                               env_p);
    }
@@ -398,7 +399,12 @@ sauros::cell_ptr _pkg_os_sleep_ms_(sauros::cells_t &cells,
       throw sauros::processor_c::runtime_exception_c(
           "sleep_ms operation expects name to be a numerical value", cells[1]);
    }
-   std::this_thread::sleep_for(
-       std::chrono::milliseconds(std::stoull(ms_cell->data)));
+
+   sauros::cell_int_t time = ms_cell->data.i;
+   if (ms_cell->type == sauros::cell_type_e::REAL) {
+      time = ms_cell->data.d;
+   }
+
+   std::this_thread::sleep_for(std::chrono::milliseconds(time));
    return std::make_shared<sauros::cell_c>(sauros::CELL_TRUE);
 }

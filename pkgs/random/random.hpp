@@ -1,5 +1,5 @@
-#ifndef SAUROS_PKG_STD_IO
-#define SAUROS_PKG_STD_IO
+#ifndef SAUROS_PKG_RANDOM
+#define SAUROS_PKG_RANDOM
 
 #include <sauros/sauros.hpp>
 

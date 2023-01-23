@@ -24,18 +24,23 @@ sauros::cell_ptr single_arithmetic(sauros::cells_t &cells,
              cell);
       }
 
-      return fn(std::stod(item->data));
+      double item_d = item->data.d;
+      if (item->type == sauros::cell_type_e::INTEGER) {
+         item_d = item->data.i;
+      }
+
+      return fn(item_d);
    };
 
    if (cells.size() == 2) {
       return std::make_shared<sauros::cell_c>(
-          sauros::cell_type_e::REAL, std::to_string(op(cells[1], env)));
+          sauros::cell_type_e::REAL, (sauros::cell_real_t)op(cells[1], env));
    }
 
    auto result = std::make_shared<sauros::cell_c>(sauros::cell_type_e::LIST);
    for (auto c = cells.begin() + 1; c < cells.end(); ++c) {
       result->list.push_back(std::make_shared<sauros::cell_c>(
-          sauros::cell_type_e::REAL, std::to_string(op((*c), env))));
+          sauros::cell_type_e::REAL, (sauros::cell_real_t)op((*c), env)));
    }
    return result;
 }
@@ -207,9 +212,19 @@ _sauros_pkg_math_pow_(sauros::cells_t &cells,
              "math operation expects parameter to be an integer or a double",
              rhs);
       }
-      return pow(std::stod(lhs->data), std::stod(rhs->data));
+
+      double lhs_d = lhs->data.d;
+      double rhs_d = rhs->data.d;
+      if (lhs->type == sauros::cell_type_e::INTEGER) {
+         lhs_d = lhs->data.i;
+      }
+      if (rhs->type == sauros::cell_type_e::INTEGER) {
+         rhs_d = rhs->data.i;
+      }
+      return pow(lhs_d, rhs_d);
    };
 
    return std::make_shared<sauros::cell_c>(
-       sauros::cell_type_e::REAL, std::to_string(op(cells[1], cells[2], env)));
+       sauros::cell_type_e::REAL,
+       (sauros::cell_real_t)(op(cells[1], cells[2], env)));
 }

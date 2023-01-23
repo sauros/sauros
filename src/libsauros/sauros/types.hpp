@@ -1,10 +1,19 @@
 #ifndef SAUROS_TYPES_HPP
 #define SAUROS_TYPES_HPP
 
-#include <cstdint>
 #include <string>
+#include <cstdint>
+#include "parallel_hashmap/phmap.hpp"
 
 namespace sauros {
+
+class cell_c;
+using cell_ptr = std::shared_ptr<cell_c>;
+using cells_t = std::vector<cell_ptr>;
+using cell_int_t = int64_t;
+using cell_real_t = double;
+using cell_string_t = std::string;
+using cell_map_t = phmap::parallel_node_hash_map<std::string, cell_ptr>;
 
 //! \brief A location representation
 struct location_s {

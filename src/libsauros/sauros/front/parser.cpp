@@ -17,11 +17,11 @@ static bool is_digit(const char c) {
 
 //    Retrieve a list of tokens based on the given string
 //
-std::vector<token_s> tokenize(size_t line_number, const std::string line,
-                              bracket_track_s &bts,
-                              std::shared_ptr<std::string> origin) {
+std::vector<token_c *> tokenize(size_t line_number, const std::string line,
+                                bracket_track_s &bts,
+                                std::shared_ptr<std::string> origin) {
 
-   std::vector<token_s> tokens;
+   std::vector<token_c *> tokens;
    for (size_t idx = 0; idx < line.size(); idx++) {
 
       auto current = line[idx];
@@ -33,14 +33,14 @@ std::vector<token_s> tokenize(size_t line_number, const std::string line,
       std::string current_data;
       switch (current) {
       case '[': {
-         tokens.push_back({token_e::L_BRACKET, "[", {line_number, idx}});
+         tokens.push_back(new token_c(token_e::L_BRACKET, {line_number, idx}));
          bts.location = {line_number, idx};
          bts.tracker++;
          continue;
       }
 
       case ']': {
-         tokens.push_back({token_e::R_BRACKET, "]", {line_number, idx}});
+         tokens.push_back(new token_c(token_e::R_BRACKET, {line_number, idx}));
          if (bts.tracker > 0) {
             bts.tracker--;
          } else {
@@ -71,9 +71,8 @@ std::vector<token_s> tokenize(size_t line_number, const std::string line,
             return tokens;
          }
 
-         tokens.push_back({token_e::STRING,
-                           value.substr(1, value.size() - 2),
-                           {line_number, start}});
+         tokens.push_back(new string_token_c(
+             {line_number, start}, value.substr(1, value.size() - 2)));
          continue;
       }
 
@@ -95,12 +94,13 @@ std::vector<token_s> tokenize(size_t line_number, const std::string line,
 
          if (std::regex_match(current_data, is_number)) {
             if (current_data.find('.') != std::string::npos) {
-               tokens.push_back(
-                   {token_e::REAL, current_data, {line_number, start}});
+               cell_real_t actual = std::stod(current_data);
+               tokens.push_back(new real_token_c({line_number, start}, actual));
                continue;
             } else {
+               cell_int_t actual = std::stoll(current_data);
                tokens.push_back(
-                   {token_e::INTEGER, current_data, {line_number, start}});
+                   new integer_token_c({line_number, start}, actual));
                continue;
             }
          } else {
@@ -125,22 +125,25 @@ std::vector<token_s> tokenize(size_t line_number, const std::string line,
          idx++;
       }
 
-      tokens.push_back({type, value, {line_number, start}});
+      auto tok = new string_token_c({line_number, start}, value);
+      tok->token = type;
+
+      tokens.push_back(tok);
       idx--;
    }
    return tokens;
 }
 
 namespace {
-void throw_no_list_error(token_s current_token,
+void throw_no_list_error(token_c *current_token,
                          std::shared_ptr<std::string> origin) {
    throw parser_exception_c(
        "Attempting to create object prior to list creation", origin,
-       current_token.location);
+       (*current_token).location);
 }
 } // namespace
 
-cell_ptr parse(std::vector<token_s> &tokens,
+cell_ptr parse(std::vector<token_c *> &tokens,
                std::shared_ptr<std::string> origin,
                cell_ptr current_list = nullptr) {
 
@@ -149,9 +152,13 @@ cell_ptr parse(std::vector<token_s> &tokens,
    }
 
    auto current_token = tokens[0];
-   tokens = std::vector<token_s>(tokens.begin() + 1, tokens.end());
+   tokens = std::vector<token_c *>(tokens.begin() + 1, tokens.end());
 
-   switch (current_token.token) {
+   if (!current_token) {
+      return {};
+   }
+
+   switch ((*current_token).token) {
 
    case token_e::L_BRACKET: {
       cell_ptr new_list = std::make_shared<cell_c>(cell_type_e::LIST);
@@ -176,7 +183,7 @@ cell_ptr parse(std::vector<token_s> &tokens,
       // This means we are done building whatever current_list is
       if (!current_list) {
          throw parser_exception_c("Unopened closing bracket detected", origin,
-                                  current_token.location);
+                                  (*current_token).location);
          return {};
       }
 
@@ -190,9 +197,11 @@ cell_ptr parse(std::vector<token_s> &tokens,
          throw_no_list_error(current_token, origin);
          return {};
       }
+
+      auto str_tok = static_cast<string_token_c *>(current_token);
       current_list->list.push_back(std::make_shared<cell_c>(
-          cell_type_e::BOX_SYMBOL, current_token.data,
-          new location_s(current_token.location), origin));
+          cell_type_e::BOX_SYMBOL, (*str_tok).data,
+          new location_s((*str_tok).location), origin));
       return parse(tokens, origin, current_list);
    }
    case token_e::SYMBOL: {
@@ -201,19 +210,21 @@ cell_ptr parse(std::vector<token_s> &tokens,
          return {};
       }
 
+      auto str_tok = static_cast<string_token_c *>(current_token);
+
       // Check the encoding map for builtins to see if we need to
-      if (BUILTIN_STRING_TO_ENCODING.find(current_token.data) !=
+      if (BUILTIN_STRING_TO_ENCODING.find((*str_tok).data) !=
           BUILTIN_STRING_TO_ENCODING.end()) {
          cell_ptr builtin_translation_cell = std::make_shared<cell_c>(
-             cell_type_e::ENCODED_SYMBOL, current_token.data,
-             new location_s(current_token.location), origin);
+             cell_type_e::ENCODED_SYMBOL, (*str_tok).data,
+             new location_s((*str_tok).location), origin);
          builtin_translation_cell->builtin_encoding =
-             BUILTIN_STRING_TO_ENCODING[current_token.data];
+             BUILTIN_STRING_TO_ENCODING[(*str_tok).data];
          current_list->list.push_back(builtin_translation_cell);
       } else {
          current_list->list.push_back(std::make_shared<cell_c>(
-             cell_type_e::SYMBOL, current_token.data,
-             new location_s(current_token.location), origin));
+             cell_type_e::SYMBOL, (*str_tok).data,
+             new location_s((*str_tok).location), origin));
       }
       return parse(tokens, origin, current_list);
    }
@@ -224,9 +235,10 @@ cell_ptr parse(std::vector<token_s> &tokens,
          return {};
       }
 
+      auto str_tok = static_cast<string_token_c *>(current_token);
       current_list->list.push_back(std::make_shared<cell_c>(
-          cell_type_e::STRING, current_token.data,
-          new location_s(current_token.location), origin));
+          cell_type_e::STRING, (*str_tok).data,
+          new location_s((*str_tok).location), origin));
       return parse(tokens, origin, current_list);
    }
 
@@ -235,10 +247,10 @@ cell_ptr parse(std::vector<token_s> &tokens,
          throw_no_list_error(current_token, origin);
          return {};
       }
-
+      auto int_tok = static_cast<integer_token_c *>(current_token);
       current_list->list.push_back(std::make_shared<cell_c>(
-          cell_type_e::INTEGER, current_token.data,
-          new location_s(current_token.location), origin));
+          cell_type_e::INTEGER, (*int_tok).data,
+          new location_s((*int_tok).location), origin));
       return parse(tokens, origin, current_list);
    }
 
@@ -248,15 +260,18 @@ cell_ptr parse(std::vector<token_s> &tokens,
          return {};
       }
 
+      auto real_tok = static_cast<real_token_c *>(current_token);
       current_list->list.push_back(std::make_shared<cell_c>(
-          cell_type_e::REAL, current_token.data,
-          new location_s(current_token.location), origin));
+          cell_type_e::REAL, (*real_tok).data,
+          new location_s((*real_tok).location), origin));
       return parse(tokens, origin, current_list);
    }
    }
 
+   std::cout << (int)(*current_token).token << std::endl;
+
    throw parser_exception_c("internal error > unhandled token type", origin,
-                            current_token.location);
+                            (*current_token).location);
    return {};
 }
 
@@ -292,6 +307,12 @@ void segment_parser_c::indicate_complete() {
    if (_bts.tracker != 0) {
       throw parser_exception_c("Unmatched opening bracket", _origin,
                                _bts.location);
+   }
+
+   for (auto *tok : _tokens) {
+      //  if (tok) {
+      //     delete tok;
+      //  }
    }
 }
 
