@@ -41,7 +41,7 @@ TEST(sauros_tests, piecemeal) {
        {"[l 420]", "420"},
        {"[var g [lambda [a b c] [+ a b c]]", "<lambda>"},
        {"[g 10 3 200]", "213"},
-       {"[set x 4.5]", "4.5"},
+       {"[set x 4.5]", "4.500000"},
        {"[block [var item 1] [set item [+ item 1]] [+ item 1]]", "3"},
        {"[if [0] [1] [0] ]", "0"},
        {"[if [1] [1] [0] ]", "1"},
@@ -78,7 +78,7 @@ TEST(sauros_tests, piecemeal) {
        {"[back [list 1 2 3]]", "3"},
        {"[len [list 1 2 3]]", "3"},
        {"[front [list [list 5 6 7] 2 3]]", "[5 6 7]"},
-       {"[block [var q [list 1 2 3]] [var r 3.4] [list q r]]", "[[1 2 3] 3.4]"},
+       {"[block [var q [list 1 2 3]] [var r 3.4] [list q r]]", "[[1 2 3] 3.400000]"},
        {"[block [var monkey [list 1]] [pop monkey] [len monkey]]", "0"},
        {"[var is_true 1]", "1"},
        {"[var is_false 0]", "0"},
@@ -128,7 +128,7 @@ TEST(sauros_tests, piecemeal) {
          std::string stringed_result;
          proc.cell_to_string(stringed_result, cell_result, env, false);
 
-         //   CHECK_EQUAL(tc.expected_output, stringed_result);
+         CHECK_EQUAL(tc.expected_output, stringed_result);
       } catch (sauros::processor_c::runtime_exception_c &e) {
          std::cout << e.what() << std::endl;
          FAIL("exception");
