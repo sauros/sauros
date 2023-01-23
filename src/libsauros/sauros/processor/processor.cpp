@@ -119,6 +119,11 @@ void processor_c::quote_cell(std::string &out, cell_ptr cell,
 
       out += lambda_name + "[ ";
 
+      if (!cells[0]->data.s) {
+         throw runtime_exception_c("Accessed data item unknown",
+                                   env->get_last_good_cell());
+      }
+
       auto target_lambda =
           env->find(*cells[0]->data.s, cells[0])->get(*cells[0]->data.s);
 
@@ -227,6 +232,10 @@ cell_ptr processor_c::process_cell(cell_ptr cell,
    case cell_type_e::SYMBOL: {
       // If not built in maybe it is in the environment
       //
+      if (!cell->data.s) {
+         throw runtime_exception_c("Accessed data item unknown",
+                                   env->get_last_good_cell());
+      }
       auto env_with_data = env->find(*cell->data.s, cell);
       auto r = env_with_data->get(*cell->data.s);
 
@@ -379,6 +388,11 @@ processor_c::load_potential_variable(cell_ptr cell,
 
    if (cell->type != cell_type_e::SYMBOL) {
       return process_cell(cell, env);
+   }
+
+   if (!cell->data.s) {
+      throw runtime_exception_c("Accessed data item unknown",
+                                env->get_last_good_cell());
    }
 
    auto &variable_name = *cell->data.s;

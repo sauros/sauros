@@ -105,10 +105,15 @@ class environment_c {
    void save_package(const std::string &name,
                      std::shared_ptr<rll_wrapper_c> lib);
 
+   //! \brief Retrieve the last known good source location.
+   //!        Used to help in error recovery
+   cell_ptr get_last_good_cell() const { return _last_good_cell; };
+
  private:
    std::shared_ptr<environment_c> _parent{nullptr};
    cell_map_t _env;
    rll_map _loaded_packages;
+   cell_ptr _last_good_cell{nullptr};
 };
 
 } // namespace sauros

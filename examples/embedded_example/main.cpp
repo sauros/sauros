@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
 
    if (env->exists("name")) {
       auto name_cell = env->get("name");
-      std::cout << name_cell->data_as_str()<< std::endl;
+      std::cout << name_cell->data_as_str() << std::endl;
    }
 
    if (env->exists("age")) {

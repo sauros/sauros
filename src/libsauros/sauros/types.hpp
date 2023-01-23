@@ -1,9 +1,9 @@
 #ifndef SAUROS_TYPES_HPP
 #define SAUROS_TYPES_HPP
 
-#include <string>
-#include <cstdint>
 #include "parallel_hashmap/phmap.hpp"
+#include <cstdint>
+#include <string>
 
 namespace sauros {
 

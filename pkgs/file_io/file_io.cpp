@@ -161,10 +161,10 @@ extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
                          if (!fc->stream || !fc->stream->is_open()) {
                             return std::make_shared<sauros::cell_c>(CELL_NIL);
                          }
-
-                         std::string pos = std::to_string(fc->stream->tellg());
                          return std::make_shared<cell_c>(
-                             cell_type_e::INTEGER, pos, cells[0]->location);
+                             cell_type_e::INTEGER,
+                             (sauros::cell_int_t)fc->stream->tellg(),
+                             cells[0]->location);
                       }));
 
    box->box_env->set(
@@ -182,7 +182,7 @@ extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
 
                           fc->stream->seekg(0, fc->stream->end);
 
-                          auto length = std::to_string(fc->stream->tellg());
+                          auto length = (sauros::cell_int_t)fc->stream->tellg();
 
                           fc->stream->seekg(current_pos);
 

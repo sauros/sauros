@@ -593,6 +593,10 @@ void processor_c::populate_standard_builtins() {
 #endif
           SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 3, "set");
 
+          if (!cells[1]->data.s) {
+             throw runtime_exception_c("Data unknown", cells[1]);
+          }
+
           auto &variable_name = *cells[1]->data.s;
 
           if (variable_name.find('.') != std::string::npos) {
