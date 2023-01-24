@@ -40,7 +40,6 @@ environment_c::environment_c(cells_t &params, cells_t &args,
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("environment_c::environment_c");
 #endif
-
    auto arg = args.begin();
    for (auto param = params.begin(); param != params.end(); ++param) {
       _env[(*(*param)->data.s)] = *arg++;
@@ -97,6 +96,24 @@ void environment_c::save_package(const std::string &name,
    profiler_c::get_profiler()->hit("environment_c::save_package");
 #endif
    _loaded_packages[name] = lib;
+}
+
+
+void environment_c::push_parent(std::shared_ptr<environment_c> outer) {
+   _parent = outer;
+}
+
+void environment_c::dump_env() {
+
+
+   for(auto [k, v] : _env ) {
+      std::cout << k << std::endl;
+   }
+
+   if (_parent) {
+      std::cout << "PARENT" << std::endl;
+      _parent->dump_env();
+   }
 }
 
 } // namespace sauros

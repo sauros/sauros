@@ -307,11 +307,13 @@ cell_ptr processor_c::process_lambda(cell_ptr cell, cells_t &cells,
 
    // Create the lambda env
    auto lambda_env = std::make_shared<environment_c>(
-       environment_c(cell->list[0]->list, exps, env));
+       environment_c(cell->list[0]->list, exps, cell->inner_env));
+   //lambda_env->dump_env();
 
    if (!_sub_processor) {
       _sub_processor = new processor_c();
    }
+
 
    auto result = _sub_processor->process_cell(lambda_cell, lambda_env);
    _sub_processor->reset();
@@ -326,9 +328,9 @@ cell_ptr processor_c::clone_box(cell_ptr cell) {
 #endif
 
    cell_c new_box(cell_type_e::BOX);
-   new_box.box_env = std::shared_ptr<environment_c>(new environment_c());
-   for (auto [key, value] : cell->box_env->get_map()) {
-      new_box.box_env->set(key, value->clone());
+   new_box.inner_env = std::shared_ptr<environment_c>(new environment_c());
+   for (auto [key, value] : cell->inner_env->get_map()) {
+      new_box.inner_env->set(key, value->clone());
    }
    return std::make_shared<cell_c>(new_box);
 }
@@ -368,7 +370,7 @@ processor_c::retrieve_box_data(cell_ptr &cell,
 
       // Check if we need to move the environment "in" to the next box
       if (result->type == cell_type_e::BOX) {
-         moving_env = result->box_env;
+         moving_env = result->inner_env;
       }
    }
    return {result, accessors.back(), moving_env};

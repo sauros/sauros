@@ -80,12 +80,12 @@ extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
    void_cell->deletion_cb = handle_deletion_callback;
 
    auto box = std::make_shared<cell_c>(cell_type_e::BOX, cells[0]->location);
-   box->box_env = std::make_shared<sauros::environment_c>();
+   box->inner_env = std::make_shared<sauros::environment_c>();
    box->list.push_back(void_cell);
 
    fc->name = *c_api_process_cell(cells[1], env)->data.s;
 
-   box->box_env->set(
+   box->inner_env->set(
        "open", std::make_shared<cell_c>(
                    [fc](cells_t &cells,
                         std::shared_ptr<environment_c> env) -> cell_ptr {
@@ -112,7 +112,7 @@ extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
                       return std::make_shared<sauros::cell_c>(CELL_TRUE);
                    }));
 
-   box->box_env->set("close",
+   box->inner_env->set("close",
                      std::make_shared<cell_c>(
                          [fc](cells_t &cells,
                               std::shared_ptr<environment_c> env) -> cell_ptr {
@@ -128,7 +128,7 @@ extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
                             return std::make_shared<sauros::cell_c>(CELL_TRUE);
                          }));
 
-   box->box_env->set(
+   box->inner_env->set(
        "seek", std::make_shared<cell_c>(
                    [fc](cells_t &cells,
                         std::shared_ptr<environment_c> env) -> cell_ptr {
@@ -151,7 +151,7 @@ extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
                       return std::make_shared<sauros::cell_c>(CELL_TRUE);
                    }));
 
-   box->box_env->set(
+   box->inner_env->set(
        "get_pos", std::make_shared<cell_c>(
                       [fc](cells_t &cells,
                            std::shared_ptr<environment_c> env) -> cell_ptr {
@@ -167,7 +167,7 @@ extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
                              cells[0]->location);
                       }));
 
-   box->box_env->set(
+   box->inner_env->set(
        "get_size", std::make_shared<cell_c>(
                        [fc](cells_t &cells,
                             std::shared_ptr<environment_c> env) -> cell_ptr {
@@ -190,7 +190,7 @@ extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
                               cell_type_e::INTEGER, length, cells[0]->location);
                        }));
 
-   box->box_env->set(
+   box->inner_env->set(
        "get_n", std::make_shared<cell_c>(
                     [fc](cells_t &cells,
                          std::shared_ptr<environment_c> env) -> cell_ptr {
@@ -222,7 +222,7 @@ extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
                        return result;
                     }));
 
-   box->box_env->set(
+   box->inner_env->set(
        "get_line", std::make_shared<cell_c>(
                        [fc](cells_t &cells,
                             std::shared_ptr<environment_c> env) -> cell_ptr {
@@ -242,7 +242,7 @@ extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
                           return result;
                        }));
 
-   box->box_env->set(
+   box->inner_env->set(
        "write_string",
        std::make_shared<cell_c>(
            [fc](cells_t &cells,

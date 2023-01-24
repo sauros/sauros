@@ -1,5 +1,29 @@
-[use "fmt"]
 [use "math"]
+[use "fmt"]
+
+[box test [block
+    [var inner_thing 33]
+    [var x [lambda [] [block
+        [yield inner_thing]
+    ]]]
+]]
+
+[var thing test]
+
+[set thing.inner_thing 4]
+
+[assert "nope" [== 4 [thing.x]]]
+
+
+;
+;   Lambdas in boxes are having the env set to the
+;   env of the definition of the box
+;
+;   Would need to clone the env suring the creation of the box
+;   instance.... need to think
+
+;
+
 
 [putln [math.log 5]]
 
@@ -7,29 +31,10 @@
     [putln [fmt.string "\n\n\t[SUCCESS]\n\n"]]
 ]]]
 
-;  X isn't found becuase its scoped to test_req
-;  and the caller of the lambda exists outside test_req
-;  meaning that when the lambda is called it is operating 
-;  under the environment of caller
-
-
-;
-;   Best way to handle this 
-;   would be to tag the cell with information
-;   regarding where it exists relative to the caller
-;   so when lambdas are executed they operate within
-;   their defined context
-;
-;   Could leverage the cell box_env
-;   and change how lambdas are constructed.
-;   they could construct within their own env
-;   and when called they could operate 
-;   within their box
-;
-;   Would need to add to env a means to "set parent"
-;   so it could access outer members
-;
-
 [var test [lambda [] [block
     [x]
 ]]]
+
+
+
+[test]

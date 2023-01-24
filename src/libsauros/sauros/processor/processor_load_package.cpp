@@ -40,7 +40,7 @@ void processor_c::load_package(const std::string &target, location_s *location,
 
    // Make the cell that will encompass all imports
    auto boxed_cell = std::make_shared<cell_c>(cell_type_e::BOX);
-   boxed_cell->box_env = std::make_shared<environment_c>();
+   boxed_cell->inner_env = std::make_shared<environment_c>();
 
    //
    //    Load the library
@@ -80,23 +80,29 @@ void processor_c::load_package(const std::string &target, location_s *location,
           cells_t &, std::shared_ptr<environment_c>)>(fn_ptr);
 
       // Add to env
-      boxed_cell->box_env->set(f, std::make_shared<cell_c>(fn));
+      boxed_cell->inner_env->set(f, std::make_shared<cell_c>(fn));
    }
 
    //
    //    Load the source files
    //
 
+  // auto x = boxed_cell->inner_env->get_map();
+  // for(auto [k, v] : x ) {
+  //    std::cout << k << std::endl;
+  // }
    for (auto &f : pkg.source_file_list) {
 
       // std::cout << "Loading source file : " << f << std::endl;
 
-      sauros::file_executor_c file_executor(boxed_cell->box_env);
+      sauros::file_executor_c file_executor(boxed_cell->inner_env);
       if (0 != file_executor.run(f)) {
          throw runtime_exception_c(
              "unable to open file " + std::string(f),
              std::make_shared<cell_c>(cell_type_e::STRING, "", location));
       }
+
+
    }
 
    //

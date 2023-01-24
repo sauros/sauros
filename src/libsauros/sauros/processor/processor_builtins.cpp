@@ -488,9 +488,19 @@ void processor_c::populate_standard_builtins() {
 #endif
           // First item following lambda must be a list of parameters
           cells_t body(cells.begin() + 1, cells.end());
+
           cell_ptr lambda = std::make_shared<cell_c>(body);
           lambda->type = cell_type_e::LAMBDA;
-          //   lambda->data.s = new std::string(*cells[1]->data.s);
+
+
+          
+          lambda->inner_env = std::make_shared<environment_c>(env);
+   
+   auto x = lambda->inner_env->get_map();
+   for(auto [k, v] : x ) {
+      std::cout << k << std::endl;
+   }
+
           return {lambda};
        });
 
@@ -766,10 +776,10 @@ void processor_c::populate_standard_builtins() {
           }
 
           auto object_cell = std::make_shared<cell_c>(cell_type_e::BOX);
-          object_cell->box_env = std::make_shared<sauros::environment_c>(env);
+          object_cell->inner_env = std::make_shared<sauros::environment_c>(env);
 
           // Result of loading object body is
-          process_cell(cells[2], object_cell->box_env);
+          process_cell(cells[2], object_cell->inner_env);
 
           env->set(variable_name, object_cell);
           return std::make_shared<cell_c>(CELL_TRUE);
@@ -1319,13 +1329,13 @@ void processor_c::populate_standard_builtins() {
           auto box =
               std::make_shared<cell_c>(cell_type_e::BOX, cells[0]->location);
 
-          box->box_env = std::make_shared<sauros::environment_c>();
+          box->inner_env = std::make_shared<sauros::environment_c>();
 
           // Point the box.wait variable at the wait function of the async cell
-          box->box_env->set("wait", async_cell->wait_fn);
+          box->inner_env->set("wait", async_cell->wait_fn);
 
           // Point the box.wait variable at the wait function of the async cell
-          box->box_env->set("get", async_cell->get_fn);
+          box->inner_env->set("get", async_cell->get_fn);
 
           // Kick off the async
           async_cell->future =
@@ -1365,11 +1375,11 @@ void processor_c::populate_standard_builtins() {
           auto box =
               std::make_shared<cell_c>(cell_type_e::BOX, cells[0]->location);
 
-          box->box_env = std::make_shared<sauros::environment_c>();
-          box->box_env->set("is_joinable", thread_cell->is_joinable);
-          box->box_env->set("join", thread_cell->join);
-          box->box_env->set("detach", thread_cell->detach);
-          box->box_env->set("get_id", thread_cell->get_id);
+          box->inner_env = std::make_shared<sauros::environment_c>();
+          box->inner_env->set("is_joinable", thread_cell->is_joinable);
+          box->inner_env->set("join", thread_cell->join);
+          box->inner_env->set("detach", thread_cell->detach);
+          box->inner_env->set("get_id", thread_cell->get_id);
 
           thread_cell->thread =
               std::thread(&processor_c::process_cell, thread_cell->processor,
@@ -1397,11 +1407,11 @@ void processor_c::populate_standard_builtins() {
 
           auto box =
               std::make_shared<cell_c>(cell_type_e::BOX, cells[0]->location);
-          box->box_env = std::make_shared<sauros::environment_c>();
-          box->box_env->set("put", chan_cell->put_fn);
-          box->box_env->set("get", chan_cell->get_fn);
-          box->box_env->set("has_data", chan_cell->has_data_fn);
-          box->box_env->set("drain", chan_cell->drain_fn);
+          box->inner_env = std::make_shared<sauros::environment_c>();
+          box->inner_env->set("put", chan_cell->put_fn);
+          box->inner_env->set("get", chan_cell->get_fn);
+          box->inner_env->set("has_data", chan_cell->has_data_fn);
+          box->inner_env->set("drain", chan_cell->drain_fn);
           box->list.push_back(chan_cell);
           env->set(variable_name, box);
           return std::make_shared<cell_c>(CELL_TRUE);
@@ -1435,9 +1445,9 @@ void processor_c::populate_standard_builtins() {
 
           auto box =
               std::make_shared<cell_c>(cell_type_e::BOX, cells[0]->location);
-          box->box_env = std::make_shared<sauros::environment_c>();
-          box->box_env->set("put", ref_cell->put_fn);
-          box->box_env->set("get", ref_cell->get_fn);
+          box->inner_env = std::make_shared<sauros::environment_c>();
+          box->inner_env->set("put", ref_cell->put_fn);
+          box->inner_env->set("get", ref_cell->get_fn);
           box->list.push_back(ref_cell);
           env->set(variable_name, box);
           return std::make_shared<cell_c>(CELL_TRUE);

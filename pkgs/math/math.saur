@@ -2,8 +2,7 @@
 [var phi 1.61803398875]
 [var e 2.71828182845]
 
-[var log [lambda [x] [math._sauros_pkg_math_log_ x]]]
-[var log [lambda [x] [math._sauros_pkg_math_log_ x]]]
+[var log [lambda [x] [_sauros_pkg_math_log_ x]]]
 [var log2 [lambda [x] [math._sauros_pkg_math_log2_ x]]]
 [var log10 [lambda [x] [math._sauros_pkg_math_log10_ x]]]
 [var sin [lambda [x] [math._sauros_pkg_math_sin_ x]]]
