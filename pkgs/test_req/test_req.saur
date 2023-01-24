@@ -20,6 +20,14 @@
 ;   so when lambdas are executed they operate within
 ;   their defined context
 ;
+;   Could leverage the cell box_env
+;   and change how lambdas are constructed.
+;   they could construct within their own env
+;   and when called they could operate 
+;   within their box
+;
+;   Would need to add to env a means to "set parent"
+;   so it could access outer members
 ;
 
 [var test [lambda [] [block
