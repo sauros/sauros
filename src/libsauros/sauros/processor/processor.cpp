@@ -308,12 +308,11 @@ cell_ptr processor_c::process_lambda(cell_ptr cell, cells_t &cells,
    // Create the lambda env
    auto lambda_env = std::make_shared<environment_c>(
        environment_c(cell->list[0]->list, exps, env));
-   //lambda_env->dump_env();
+   // lambda_env->dump_env();
 
    if (!_sub_processor) {
       _sub_processor = new processor_c();
    }
-
 
    auto result = _sub_processor->process_cell(lambda_cell, lambda_env);
    _sub_processor->reset();

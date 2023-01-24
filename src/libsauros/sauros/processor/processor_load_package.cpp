@@ -1,7 +1,7 @@
-#include "sauros/driver.hpp"
-#include "sauros/profiler.hpp"
-#include "sauros/package/package.hpp"
 #include "processor.hpp"
+#include "sauros/driver.hpp"
+#include "sauros/package/package.hpp"
+#include "sauros/profiler.hpp"
 #include <filesystem>
 #include <iostream>
 
@@ -30,7 +30,7 @@ void processor_c::load_package(const std::string &target, location_s *location,
    auto pkg = package::load(target, _system, location, env);
 
    // Load any required packages
-   for(auto &required_package : pkg.requires_list) {
+   for (auto &required_package : pkg.requires_list) {
       load_package(required_package, location, env);
    }
 

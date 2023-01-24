@@ -111,8 +111,7 @@ class environment_c {
 
    void push_parent(std::shared_ptr<environment_c> outer);
 
-
-    void dump_env();
+   void dump_env();
 
  private:
    std::shared_ptr<environment_c> _parent{nullptr};

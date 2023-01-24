@@ -40,7 +40,8 @@ sauros::cell_ptr
 _pkg_time_diff_sec_(sauros::cells_t &cells,
                     std::shared_ptr<sauros::environment_c> env) {
    return std::make_shared<sauros::cell_c>(
-       sauros::cell_type_e::INTEGER, (sauros::cell_int_t)(diff(cells, env) / 1000));
+       sauros::cell_type_e::INTEGER,
+       (sauros::cell_int_t)(diff(cells, env) / 1000));
 }
 
 sauros::cell_ptr

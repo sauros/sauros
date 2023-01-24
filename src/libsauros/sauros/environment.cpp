@@ -98,15 +98,13 @@ void environment_c::save_package(const std::string &name,
    _loaded_packages[name] = lib;
 }
 
-
 void environment_c::push_parent(std::shared_ptr<environment_c> outer) {
    _parent = outer;
 }
 
 void environment_c::dump_env() {
 
-
-   for(auto [k, v] : _env ) {
+   for (auto [k, v] : _env) {
       std::cout << k << std::endl;
    }
 

@@ -112,21 +112,21 @@ extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
                       return std::make_shared<sauros::cell_c>(CELL_TRUE);
                    }));
 
-   box->inner_env->set("close",
-                     std::make_shared<cell_c>(
-                         [fc](cells_t &cells,
-                              std::shared_ptr<environment_c> env) -> cell_ptr {
-                            SIZE_CHECK("file_io > close", 1)
-                            SELF_CHECK
+   box->inner_env->set(
+       "close", std::make_shared<cell_c>(
+                    [fc](cells_t &cells,
+                         std::shared_ptr<environment_c> env) -> cell_ptr {
+                       SIZE_CHECK("file_io > close", 1)
+                       SELF_CHECK
 
-                            if (fc->stream) {
-                               fc->stream->close();
-                               delete fc->stream;
-                               fc->stream = nullptr;
-                            }
+                       if (fc->stream) {
+                          fc->stream->close();
+                          delete fc->stream;
+                          fc->stream = nullptr;
+                       }
 
-                            return std::make_shared<sauros::cell_c>(CELL_TRUE);
-                         }));
+                       return std::make_shared<sauros::cell_c>(CELL_TRUE);
+                    }));
 
    box->inner_env->set(
        "seek", std::make_shared<cell_c>(
