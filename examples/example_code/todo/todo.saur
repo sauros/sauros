@@ -94,16 +94,16 @@
 ]]]
 
 [loop [] [true] [] [block
-   [std::switch [io.get_string "$: "] [list
-      [std::case "help" show_help]
-      [std::case "new" new]
-      [std::case "complete" complete]
-      [std::case "delete" delete]
-      [std::case "show" show_todos]
-      [std::case "todo" todo]
-      [std::case "done" done]
-      [std::case "clear" os.clear_screen]
-      [std::case "exit" [lambda [] [block
+   [std.match::item [io.get_string "$: "] [list
+      [std.match::pattern "help" show_help]
+      [std.match::pattern "new" new]
+      [std.match::pattern "complete" complete]
+      [std.match::pattern "delete" delete]
+      [std.match::pattern "show" show_todos]
+      [std.match::pattern "todo" todo]
+      [std.match::pattern "done" done]
+      [std.match::pattern "clear" os.clear_screen]
+      [std.match::pattern "exit" [lambda [] [block
          [putln "Goodbye"]
          [exit 0]
       ]]]

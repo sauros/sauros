@@ -370,7 +370,8 @@ _pkg_os_clear_screen_(sauros::cells_t &cells,
    return std::make_shared<sauros::cell_c>(sauros::CELL_NIL);
 #endif
    return std::make_shared<sauros::cell_c>(
-       sauros::cell_type_e::INTEGER, std::to_string(std::system(command)));
+       sauros::cell_type_e::INTEGER,
+       (sauros::cell_int_t)(std::system(command)));
 }
 
 sauros::cell_ptr _pkg_os_get_env_(sauros::cells_t &cells,

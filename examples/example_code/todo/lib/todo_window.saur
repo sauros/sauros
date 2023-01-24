@@ -1,5 +1,5 @@
-[import "lib/todo_entry.saur"]
-[import "std/switch"]
+[import "todo_entry.saur"]
+[use "std"]
 [use "io"]
 [use "os"]
 
@@ -51,12 +51,12 @@
     [var value]
     [loop [var continue_loop 1] [continue_loop] [] [block
         [var selection [io.get_string "[n] [p] [<int>]: "]]
-        [std::switch selection [list
-            [std::case "n" [lambda [] [block
+        [std.match::item selection [list
+            [std.match::pattern "n" [lambda [] [block
                     [set value "n"]
                     [set continue_loop 0]
                 ]]]
-            [std::case "p" [lambda [] [block
+            [std.match::pattern "p" [lambda [] [block
                     [set value "p"]
                     [set continue_loop 0]
                 ]]]
@@ -91,16 +91,16 @@
     [var value]
     [loop [var continue_loop 1] [continue_loop] [] [block
         [var selection [io.get_string "[n] [p] [d]: "]]
-        [std::switch selection [list
-            [std::case "n" [lambda [] [block
+        [std.match::item selection [list
+            [std.match::pattern "n" [lambda [] [block
                     [set value "n"]
                     [set continue_loop 0]
                 ]]]
-            [std::case "p" [lambda [] [block
+            [std.match::pattern "p" [lambda [] [block
                     [set value "p"]
                     [set continue_loop 0]
                 ]]]
-            [std::case "d" [lambda [] [block
+            [std.match::pattern "d" [lambda [] [block
                     [set value "d"]
                     [set continue_loop 0]
                 ]]]

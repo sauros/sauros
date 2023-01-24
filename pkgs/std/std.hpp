@@ -1,5 +1,5 @@
-#ifndef SAUROS_PKG_EXT
-#define SAUROS_PKG_EXT
+#ifndef SAUROS_PKG_STD
+#define SAUROS_PKG_STD
 
 #include <sauros/sauros.hpp>
 
@@ -13,12 +13,12 @@ extern "C" {
 
 API_EXPORT
 extern sauros::cell_ptr
-_pkg_list_ext_make_assigned_(sauros::cells_t &cells,
+_pkg_std_list_make_assigned_(sauros::cells_t &cells,
                              std::shared_ptr<sauros::environment_c> env);
 
 API_EXPORT
 extern sauros::cell_ptr
-_pkg_list_ext_sort_(sauros::cells_t &cells,
+_pkg_std_list_sort_(sauros::cells_t &cells,
                     std::shared_ptr<sauros::environment_c> env);
 }
 

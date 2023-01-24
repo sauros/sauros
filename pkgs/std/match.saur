@@ -1,31 +1,31 @@
 ;  Author: Bosley
-;  About:  This file provides a "switch" structure that allows
+;  About:  This file provides a "match/pattern" structure that allows
 ;          easy string matching.
 ;
 ;  Example usage:
 ;
 ;           [var x "c"]
-;           [std::switch [x] [list
-;              [std::case "a" [lambda [] [putln "got a"]]] 
-;              [std::case "b" [lambda [] [putln "got b"]]] 
-;              [std::case "c" [lambda [] [putln "got c"]]]
+;           [std.match::item [x] [list
+;              [std.match::pattern "a" [lambda [] [putln "got a"]]] 
+;              [std.match::pattern "b" [lambda [] [putln "got b"]]] 
+;              [std.match::pattern "c" [lambda [] [putln "got c"]]]
 ;           ] [lambda [] [
 ;              putln "default reached"
 ;           ]]]
 
 ;  An entry that ties a pattern to a
 ;  lambda to be executed upon match
-[box __::switch::case::entry [block
+[box __::match::pattern::entry [block
    [var pattern]
    [var body]
 ]]
 
-;  The switch itsself is just a lambda that takes in 
-;  the item to match, a list of entries and a default
+;  The match itsself is just a lambda that takes in 
+;  the pattern to match, a list of entries and a default
 ;  lambda that gets called if no matches are found
-[var std::switch [lambda [item patterns default] [block
+[var match::item [lambda [item patterns default] [block
    [if [not [seq "list" [type patterns]]] [
-      [throw "Expected patterns parameter to be a list of cases"]
+      [throw "Expected patterns parameter to be a list of match::patterns"]
    ]]
    [if [not [seq "lambda" [type default]]] [
       [throw "Expected default parameter to be a lambda"]
@@ -42,15 +42,15 @@
 
 ;  Create an entry that ties a pattern to a 
 ;  lambda that will be executed on a match
-[var std::case [lambda [pattern body] [block
+[var match::pattern [lambda [pattern body] [block
    [if [not [seq "string" [type pattern]]] [
       [throw "Expected pattern parameter to be a string"]
    ]]
    [if [not [seq "lambda" [type body]]] [
       [throw "Expected body parameter to be a lambda"]
    ]]
-   [var new_case __::switch::case::entry]
-   [set new_case.pattern pattern]
-   [set new_case.body body]
-   [new_case]
+   [var new_pattern std.__::match::pattern::entry]
+   [set new_pattern.pattern pattern]
+   [set new_pattern.body body]
+   [new_pattern]
 ]]]

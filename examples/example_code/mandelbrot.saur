@@ -3,7 +3,7 @@
 ;  was made and I hope to expand this one to be a viewer that 
 ;  shows an evolving mandelbrot set
 
-[use "list_ext"]
+[use "std"]
 
 [box screen::struct [block
    [var grid]
@@ -16,7 +16,7 @@
 [var screen::new [lambda [] [block
    [var s screen::struct]
    [loop [var h 0] [< h screen::height] [set h [+ 1 h]] [block
-      [push s.grid [list_ext.make_assigned " " screen::width]]
+      [push s.grid [std.list::make_assigned " " screen::width]]
    ]]
    [yield s]
 ]]]

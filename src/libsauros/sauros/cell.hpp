@@ -234,7 +234,7 @@ class cell_c {
       }
       proc = other.proc;
       list = other.list;
-      box_env = other.box_env;
+      inner_env = other.inner_env;
       builtin_encoding = other.builtin_encoding;
       origin = other.origin;
    }
@@ -283,7 +283,7 @@ class cell_c {
    location_s *location{nullptr};
    proc_f proc{nullptr};
    cells_t list;
-   std::shared_ptr<environment_c> box_env{nullptr};
+   std::shared_ptr<environment_c> inner_env{nullptr};
    uint8_t builtin_encoding{BUILTIN_DEFAULT_VAL};
    std::shared_ptr<std::string> origin{nullptr};
 };

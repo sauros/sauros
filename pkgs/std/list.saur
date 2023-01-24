@@ -1,0 +1,10 @@
+;  Author: bosley
+;  About:  List extensions 
+
+;  Generate a list of a particular size given a value for all elements
+;
+[var list::make_assigned [lambda [value size] [std._pkg_std_list_make_assigned_ value size]]]
+
+;  Sort a list of numerical data
+;
+[var list::sort [lambda [data] [std._pkg_std_list_sort_ data]]]

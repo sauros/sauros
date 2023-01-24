@@ -33,14 +33,15 @@ uint64_t diff(sauros::cells_t &cells,
 sauros::cell_ptr _pkg_time_stamp_(sauros::cells_t &cells,
                                   std::shared_ptr<sauros::environment_c> env) {
    return std::make_shared<sauros::cell_c>(sauros::cell_type_e::INTEGER,
-                                           std::to_string(get_stamp()));
+                                           (sauros::cell_int_t)(get_stamp()));
 }
 
 sauros::cell_ptr
 _pkg_time_diff_sec_(sauros::cells_t &cells,
                     std::shared_ptr<sauros::environment_c> env) {
    return std::make_shared<sauros::cell_c>(
-       sauros::cell_type_e::INTEGER, std::to_string(diff(cells, env) / 1000));
+       sauros::cell_type_e::INTEGER,
+       (sauros::cell_int_t)(diff(cells, env) / 1000));
 }
 
 sauros::cell_ptr

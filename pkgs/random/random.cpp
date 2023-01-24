@@ -162,7 +162,7 @@ _pkg_random_uniform_int_(sauros::cells_t &cells,
    std::uniform_int_distribution<int> dist(min_i, max_i);
 
    return std::make_shared<sauros::cell_c>(sauros::cell_type_e::INTEGER,
-                                           std::to_string(dist(mt)));
+                                           (sauros::cell_int_t)(dist(mt)));
 }
 
 sauros::cell_ptr
@@ -206,5 +206,5 @@ _pkg_random_uniform_real_(sauros::cells_t &cells,
    std::uniform_real_distribution<double> dist(min_i, max_i);
 
    return std::make_shared<sauros::cell_c>(sauros::cell_type_e::REAL,
-                                           std::to_string(dist(mt)));
+                                           (sauros::cell_real_t)(dist(mt)));
 }

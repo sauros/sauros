@@ -109,6 +109,10 @@ class environment_c {
    //!        Used to help in error recovery
    cell_ptr get_last_good_cell() const { return _last_good_cell; };
 
+   void push_parent(std::shared_ptr<environment_c> outer);
+
+   void dump_env();
+
  private:
    std::shared_ptr<environment_c> _parent{nullptr};
    cell_map_t _env;

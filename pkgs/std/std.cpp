@@ -1,10 +1,10 @@
-#include "list_ext.hpp"
+#include "std.hpp"
 
 #include <sauros/capi/capi.hpp>
 #include <string>
 
 sauros::cell_ptr
-_pkg_list_ext_make_assigned_(sauros::cells_t &cells,
+_pkg_std_list_make_assigned_(sauros::cells_t &cells,
                              std::shared_ptr<sauros::environment_c> env) {
    auto value = c_api_process_cell(cells[1], env);
    auto size = c_api_process_cell(cells[2], env);
@@ -21,7 +21,7 @@ _pkg_list_ext_make_assigned_(sauros::cells_t &cells,
 }
 
 sauros::cell_ptr
-_pkg_list_ext_sort_(sauros::cells_t &cells,
+_pkg_std_list_sort_(sauros::cells_t &cells,
                     std::shared_ptr<sauros::environment_c> env) {
    auto data = c_api_process_cell(cells[1], env);
 

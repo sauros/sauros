@@ -1,8 +1,8 @@
-[import "std/loop"]
+[use "std"]
 [use "os"]
 
 [var receiver_lambda [lambda [] [block
-  [std::auto_loop >= 4 0 [lambda [i] [block 
+  [std.loop::auto >= 4 0 [lambda [i] [block 
      [os.sleep_ms 1000]
   ]]]
   [yield 42]
