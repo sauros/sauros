@@ -34,9 +34,7 @@ void processor_c::load_package(const std::string &target, location_s *location,
       load_package(required_package, location, env);
    }
 
-
    auto package_rll = std::make_shared<rll_wrapper_c>();
-
 
    // Make the cell that will encompass all imports
    auto boxed_cell = std::make_shared<cell_c>(cell_type_e::BOX);
@@ -45,7 +43,6 @@ void processor_c::load_package(const std::string &target, location_s *location,
    //
    //    Load the library
    //
-
    try {
       package_rll->load(pkg.library_file.c_str());
    } catch (rll_wrapper_c::library_loading_error_c &e) {
@@ -60,14 +57,7 @@ void processor_c::load_package(const std::string &target, location_s *location,
           std::make_shared<cell_c>(cell_type_e::STRING, "", location));
    }
 
-   ;
-
-   // std::cout << "Library loaded\n";
-
    for (auto &f : pkg.library_function_list) {
-
-      // std::cout << "Loading function : " << f << std::endl;
-
       if (!package_rll->has_symbol(f)) {
          throw runtime_exception_c(
              "error loading `" + target + "`: listed function `" + f +
@@ -86,11 +76,6 @@ void processor_c::load_package(const std::string &target, location_s *location,
    //
    //    Load the source files
    //
-
-  // auto x = boxed_cell->inner_env->get_map();
-  // for(auto [k, v] : x ) {
-  //    std::cout << k << std::endl;
-  // }
    for (auto &f : pkg.source_file_list) {
 
       // std::cout << "Loading source file : " << f << std::endl;
@@ -101,8 +86,6 @@ void processor_c::load_package(const std::string &target, location_s *location,
              "unable to open file " + std::string(f),
              std::make_shared<cell_c>(cell_type_e::STRING, "", location));
       }
-
-
    }
 
    //

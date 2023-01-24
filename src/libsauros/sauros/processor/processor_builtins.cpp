@@ -492,15 +492,6 @@ void processor_c::populate_standard_builtins() {
           cell_ptr lambda = std::make_shared<cell_c>(body);
           lambda->type = cell_type_e::LAMBDA;
 
-
-          
-          lambda->inner_env = std::make_shared<environment_c>(env);
-   
-   auto x = lambda->inner_env->get_map();
-   for(auto [k, v] : x ) {
-      std::cout << k << std::endl;
-   }
-
           return {lambda};
        });
 
