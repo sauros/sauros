@@ -36,7 +36,7 @@ constexpr uint8_t BUILTIN_SNEQ = 19;
 constexpr uint8_t BUILTIN_ASSERT = 20;
 constexpr uint8_t BUILTIN_LOOP = 21;
 constexpr uint8_t BUILTIN_TYPE = 22;
-constexpr uint8_t BUILTIN_IMPORT = 23;
+constexpr uint8_t BUILTIN_RESERVED_SPACE = 23; // Unused slot for later
 constexpr uint8_t BUILTIN_USE = 24;
 constexpr uint8_t BUILTIN_ITER = 25;
 constexpr uint8_t BUILTIN_NOT = 26;
@@ -108,7 +108,6 @@ static std::unordered_map<std::string, uint8_t> BUILTIN_STRING_TO_ENCODING{
     {"assert", BUILTIN_ASSERT},
     {"loop", BUILTIN_LOOP},
     {"type", BUILTIN_TYPE},
-    {"import", BUILTIN_IMPORT},
     {"use", BUILTIN_USE},
     {"not", BUILTIN_NOT},
     {"or", BUILTIN_OR},

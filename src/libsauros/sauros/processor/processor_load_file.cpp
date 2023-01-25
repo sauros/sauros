@@ -1,7 +1,7 @@
 #include "processor.hpp"
-
 #include "sauros/driver.hpp"
 #include "sauros/format.hpp"
+#include "sauros/profiler.hpp"
 
 #include <filesystem>
 
@@ -9,6 +9,10 @@ namespace sauros {
 
 bool processor_c::load_file(std::string file, cell_ptr cell,
                             std::shared_ptr<environment_c> env) {
+#ifdef PROFILER_ENABLED
+   profiler_c::get_profiler()->hit("processor_c::load_file");
+#endif
+
    file_executor_c loader(env);
 
    // std::cout << "cell value : " << cell_value << std::endl;
