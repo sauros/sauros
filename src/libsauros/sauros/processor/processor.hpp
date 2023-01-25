@@ -132,6 +132,9 @@ class processor_c {
    void load_package(const std::string &target, location_s *location,
                      std::shared_ptr<environment_c> env);
 
+   bool load_file(std::string file, cell_ptr cell,
+                  std::shared_ptr<environment_c> env);
+
    static std::vector<std::string> retrieve_accessors(cell_ptr &cell);
 
    static std::tuple<cell_ptr, std::string, std::shared_ptr<environment_c>>

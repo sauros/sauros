@@ -1,0 +1,5 @@
+[use "importable/alpha.saur"]
+[use "importable/beta.saur"]
+
+[assert "use_file.saur > alpha imported" alpha::imported]
+[assert "use_file.saur > beta imported" beta::imported]

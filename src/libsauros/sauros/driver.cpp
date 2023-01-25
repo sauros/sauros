@@ -267,9 +267,8 @@ void repl_c::start() {
    std::unordered_map<std::string, std::vector<std::string>> completion_map = {
        {"[u", {"[use "}},
        {"[v", {"[var "}},
-       {"[i", {"[import ", "[is_nil ", "[if ", "[iter "}},
+       {"[i", {"[is_nil ", "[if ", "[iter "}},
        {"[it", {"[iter "}},
-       {"[im", {"[import "}},
        {"[is", {"[is_nil "}},
        {"[p", {"[put ", "[putln ", "[push ", "[pop "}},
        {"[c", {"[compose ", "[clear "}},

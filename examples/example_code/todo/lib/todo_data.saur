@@ -1,4 +1,4 @@
-[import "todo_entry.saur"]
+[use "todo_entry.saur"]
 
 [use "os"]
 

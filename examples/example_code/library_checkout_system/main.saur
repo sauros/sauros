@@ -7,8 +7,8 @@
 [use "os"]
 [use "fmt"]
 [use "std"]
-[import "database/db.saur"]
-[import "database/entry.saur"]
+[use "database/db.saur"]
+[use "database/entry.saur"]
 
 ;  Load the database file from the @args list
 ;

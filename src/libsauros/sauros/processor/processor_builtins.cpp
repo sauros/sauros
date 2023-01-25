@@ -67,61 +67,6 @@ void processor_c::populate_standard_builtins() {
       return (*cell->data.s);
    };
 
-   _builtins[BUILTIN_IMPORT] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
-#ifdef PROFILER_ENABLED
-          profiler_c::get_profiler()->hit("processor_builtin::IMPORT");
-#endif
-          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "import");
-
-          auto perform_load =
-              [this, env](std::string cell_value,
-                          std::shared_ptr<std::string> origin,
-                          std::optional<std::string> sauros_dir) -> bool {
-             file_executor_c loader(env);
-
-             // std::cout << "cell value : " << cell_value << std::endl;
-             //  Try direct
-             if (!loader.run(cell_value)) {
-                return true;
-             }
-
-             // Try with cell origin in front of it
-             std::filesystem::path full_path = (*origin);
-             full_path.remove_filename();
-             full_path /= cell_value;
-
-             // std::cout << "full path value : " << full_path << std::endl;
-             if (!loader.run(full_path)) {
-                return true;
-             }
-
-             // Try std/
-             if (sauros_dir.has_value()) {
-                std::filesystem::path p = (*sauros_dir);
-                p /= cell_value;
-                // std::cout << "attempting : " << p << std::endl;
-                return !loader.run(p);
-             }
-             // std::cout << "fail\n";
-             return false;
-          };
-
-          for (auto i = cells.begin() + 1; i < cells.end(); i++) {
-             if ((*i)->type != sauros::cell_type_e::STRING) {
-                throw sauros::processor_c::runtime_exception_c(
-                    "Import objects are expected to be raw strings", (*i));
-             }
-
-             if (!perform_load((*(*i)->data.s), cells[0]->origin,
-                               _system.get_sauros_directory())) {
-                throw sauros::processor_c::runtime_exception_c(
-                    "Unable to load import: " + (*(*i)->data.s), (*i));
-             }
-          }
-          return std::make_shared<cell_c>(CELL_TRUE);
-       });
-
    _builtins[BUILTIN_USE] = std::make_shared<cell_c>(
        [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
@@ -135,6 +80,12 @@ void processor_c::populate_standard_builtins() {
                     "use command expects parameters to be raw strings", (*i));
              }
 
+             // Check if  the item is a file first
+             if (load_file((*(*i)->data.s), (*i), env)) {
+                return std::make_shared<cell_c>(CELL_TRUE);
+             }
+
+             // If not assume its a package
              load_package((*(*i)->data.s), (*i)->location, env);
           }
 
