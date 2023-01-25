@@ -1,0 +1,6 @@
+[var pkg_name "local_pkg"]
+
+; Files to include under the current pkg
+[var source_files [list
+   "local_pkg.saur"
+]]

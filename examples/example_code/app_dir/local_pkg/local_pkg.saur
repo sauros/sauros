@@ -1,0 +1,3 @@
+[var fn [lambda [] [
+    [putln "Hello from local_pkg!"]
+]]]

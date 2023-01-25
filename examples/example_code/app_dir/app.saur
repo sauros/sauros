@@ -1,0 +1,16 @@
+[var app_name "Example-app"]
+
+[var authors "Bosley"]
+[var license "MIT"]
+
+[var requires [list 
+    "std"
+]]
+
+; Inner packages (optional)
+[var package_list [list
+    "local_pkg"
+]]
+
+
+[var entry "main.saur"]

@@ -80,7 +80,7 @@ extern pkg_s load(const std::string &target, sauros::system_c &system,
                PACKAGE_CHECK(
                    (author->type == cell_type_e::STRING),
                    "author name in pkg authors list must be of type `string`")
-               package.requires_list.push_back(author->data_as_str());
+               package.authors_list.push_back(author->data_as_str());
             }
          }
       }

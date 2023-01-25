@@ -1,11 +1,15 @@
 #include <sauros/sauros.hpp>
 
+#include <string>
+#include <vector>
 #include <filesystem>
 #include <iostream>
 
 #include <hwinfo/hwinfo.h>
 
 #include "creator.hpp"
+#include "dir_loader.hpp"
+
 namespace {
 std::shared_ptr<sauros::environment_c> env =
     std::make_shared<sauros::environment_c>();
@@ -26,6 +30,15 @@ void run_file(const std::string &file) {
 
    // Indicate that we are about to quit
    file_executor->finish();
+}
+
+void run_directory(std::filesystem::path dir) {
+
+   // Change active dir to the app dir
+   std::filesystem::current_path(dir);
+
+   // Launch the app
+   run_file(app::load_dir(env));
 }
 
 void show_help() {
@@ -188,6 +201,17 @@ int main(int argc, char **argv) {
    }
    env->set("@piped", piped_cell);
 
-   run_file(args[0]);
+   std::filesystem::path target(args[0]);
+
+   if (!std::filesystem::exists(target)) {
+      std::cerr << "Given target: " << target << " does not exist" << std::endl;
+      return 1;
+   }
+
+   if (std::filesystem::is_directory(target)) {
+      run_directory(target);
+   } else {
+      run_file(args[0]);
+   }
    return 0;
 }
