@@ -1,5 +1,5 @@
-[import "lib/todo_data.saur"]
-[import "lib/todo_window.saur"]
+[use "lib/todo_data.saur"]
+[use "lib/todo_window.saur"]
 
 [if [not [len @args]] [block
     [putln "Please provide a file for todo data"]
