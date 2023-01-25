@@ -22,15 +22,17 @@ bool processor_c::load_file(std::string file, cell_ptr cell,
       return true;
    }
 
-   // Try with cell origin in front of it
-   std::filesystem::path full_path = (*cell->origin);
-   full_path.remove_filename();
-   full_path /= file;
+   if (cell->origin) {
+      // Try with cell origin in front of it
+      std::filesystem::path full_path = (*cell->origin);
+      full_path.remove_filename();
+      full_path /= file;
 
-   // std::cout << "full path value : " << full_path << std::endl;
-   if (!loader.run(full_path)) {
-      // success
-      return true;
+      // std::cout << "full path value : " << full_path << std::endl;
+      if (!loader.run(full_path)) {
+         // success
+         return true;
+      }
    }
 
    auto sauros_dir = _system.get_sauros_directory();
