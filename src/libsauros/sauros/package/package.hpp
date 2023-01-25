@@ -21,8 +21,8 @@ struct pkg_s {
 };
 
 //! \brief Attempt to load a package from a target directory
-extern pkg_s load(const std::string &target, sauros::system_c &system,
-                  location_s *location, std::shared_ptr<environment_c> env);
+extern pkg_s load(cell_ptr cell, sauros::system_c &system, location_s *location,
+                  std::shared_ptr<environment_c> env);
 } // namespace package
 } // namespace sauros
 #endif

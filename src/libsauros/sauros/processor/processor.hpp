@@ -129,7 +129,7 @@ class processor_c {
                                std::shared_ptr<environment_c> env,
                                bool force_double = false);
 
-   void load_package(const std::string &target, location_s *location,
+   void load_package(cell_ptr cell, location_s *location,
                      std::shared_ptr<environment_c> env);
 
    static std::vector<std::string> retrieve_accessors(cell_ptr &cell);

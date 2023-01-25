@@ -113,10 +113,12 @@ void processor_c::populate_standard_builtins() {
                     "Import objects are expected to be raw strings", (*i));
              }
 
-             if (!perform_load((*(*i)->data.s), cells[0]->origin,
-                               _system.get_sauros_directory())) {
-                throw sauros::processor_c::runtime_exception_c(
-                    "Unable to load import: " + (*(*i)->data.s), (*i));
+             if (cells[0]->origin) {
+                if (!perform_load((*(*i)->data.s), cells[0]->origin,
+                                  _system.get_sauros_directory())) {
+                   throw sauros::processor_c::runtime_exception_c(
+                       "Unable to load import: " + (*(*i)->data.s), (*i));
+                }
              }
           }
           return std::make_shared<cell_c>(CELL_TRUE);
@@ -135,7 +137,7 @@ void processor_c::populate_standard_builtins() {
                     "use command expects parameters to be raw strings", (*i));
              }
 
-             load_package((*(*i)->data.s), (*i)->location, env);
+             load_package((*i), (*i)->location, env);
           }
 
           return std::make_shared<cell_c>(CELL_TRUE);

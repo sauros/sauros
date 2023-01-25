@@ -2,8 +2,13 @@
 
 #include <filesystem>
 #include <iostream>
+#include <string>
+#include <vector>
 
 #include <hwinfo/hwinfo.h>
+
+#include "creator.hpp"
+#include "dir_loader.hpp"
 
 namespace {
 std::shared_ptr<sauros::environment_c> env =
@@ -27,14 +32,27 @@ void run_file(const std::string &file) {
    file_executor->finish();
 }
 
+void run_directory(std::filesystem::path dir) {
+
+   // Change active dir to the app dir
+   std::filesystem::current_path(dir);
+
+   // Launch the app
+   run_file(app::load_dir(env));
+}
+
 void show_help() {
 
    std::string help = R"(
 
-<filename>           Execute file
---help      -h       Show help
---version   -v       Show version info
---system    -s       Retrieve system information (for bug reports)
+<filename>               Execute file
+--help      -h           Show help
+--version   -v           Show version info
+--system    -s           Retrieve system information (for bug reports)
+--new-cpp-package <name> Create a new package with cpp shared-lib boilerplate
+--new-package     <name> Create a new package
+--new-app         <name> Create a new sauros application
+
    )";
    std::cout << help << std::endl;
 }
@@ -138,6 +156,35 @@ int main(int argc, char **argv) {
          system_report();
          return 0;
       }
+
+      if (args[i] == "--new-package") {
+         if (i + 1 >= args.size()) {
+            std::cerr << "Expected <name> for command `--new-package`"
+                      << std::endl;
+            return 1;
+         }
+         i++;
+         return app::create_package(args[i]);
+      }
+
+      if (args[i] == "--new-cpp-package") {
+         if (i + 1 >= args.size()) {
+            std::cerr << "Expected <name> for command `--new-cpp-package`"
+                      << std::endl;
+            return 1;
+         }
+         i++;
+         return app::create_package(args[i], true);
+      }
+
+      if (args[i] == "--new-app") {
+         if (i + 1 >= args.size()) {
+            std::cerr << "Expected <name> for command `--new-app`" << std::endl;
+            return 1;
+         }
+         i++;
+         return app::create_app(args[i]);
+      }
    }
 
    env->set("@version",
@@ -176,6 +223,17 @@ int main(int argc, char **argv) {
    }
    env->set("@piped", piped_cell);
 
-   run_file(args[0]);
+   std::filesystem::path target(args[0]);
+
+   if (!std::filesystem::exists(target)) {
+      std::cerr << "Given target: " << target << " does not exist" << std::endl;
+      return 1;
+   }
+
+   if (std::filesystem::is_directory(target)) {
+      run_directory(target);
+   } else {
+      run_file(args[0]);
+   }
    return 0;
 }
