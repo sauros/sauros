@@ -5,6 +5,7 @@
 
 #include <hwinfo/hwinfo.h>
 
+#include "creator.hpp"
 namespace {
 std::shared_ptr<sauros::environment_c> env =
     std::make_shared<sauros::environment_c>();
@@ -35,6 +36,7 @@ void show_help() {
 --help      -h       Show help
 --version   -v       Show version info
 --system    -s       Retrieve system information (for bug reports)
+--new-package <name> Create a new package
    )";
    std::cout << help << std::endl;
 }
@@ -137,6 +139,16 @@ int main(int argc, char **argv) {
       if (args[i] == "--system" || args[i] == "-s") {
          system_report();
          return 0;
+      }
+
+      if (args[i] == "--new-package") {
+         if (i + 1 >= args.size()) {
+            std::cerr << "Expected <name> for command `--new-package`"
+                      << std::endl;
+            return 1;
+         }
+         i++;
+         return app::create_package(args[i]);
       }
    }
 

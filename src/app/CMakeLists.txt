@@ -46,6 +46,7 @@ add_subdirectory(src/third_party/hwinfo)
 # Setup sauros app
 #
 add_executable(sauros
+  src/creator.cpp
   src/main.cpp
 )
 
