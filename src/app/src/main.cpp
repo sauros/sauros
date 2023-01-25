@@ -51,6 +51,7 @@ void show_help() {
 --system    -s           Retrieve system information (for bug reports)
 --new-cpp-package <name> Create a new package with cpp shared-lib boilerplate
 --new-package     <name> Create a new package
+--new-app         <name> Create a new sauros application
 
    )";
    std::cout << help << std::endl;
@@ -174,6 +175,15 @@ int main(int argc, char **argv) {
          }
          i++;
          return app::create_package(args[i], true);
+      }
+
+      if (args[i] == "--new-app") {
+         if (i + 1 >= args.size()) {
+            std::cerr << "Expected <name> for command `--new-app`" << std::endl;
+            return 1;
+         }
+         i++;
+         return app::create_app(args[i]);
       }
    }
 

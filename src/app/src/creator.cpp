@@ -132,6 +132,26 @@ std::string generate_named_saur_cpp(std::string package_name) {
 
 } // namespace package
 
+namespace application {
+
+std::string main_saur = "\n\n[putln \"Hello, World!\"]\n";
+
+std::string app_saur = "[var app_name \"Hello_World\"]\n"
+                       "\n"
+                       "; [var authors \"NAME\"]\n"
+                       "; [var license \"LICENSE\"]\n"
+                       "\n"
+                       "; Optional `requirements` list that will be\n"
+                       "; used to ensure target machine has required\n"
+                       "; packages installd\n"
+                       "; [var requires [list \n"
+                       ";     \"std\"\n"
+                       "; ]]\n"
+                       "\n"
+                       "[var entry \"main.saur\"]\n";
+
+} // namespace application
+
 bool write(std::string file, std::string contents) {
    std::ofstream s;
    s.open(file);
@@ -157,7 +177,7 @@ int create_package(std::string &file, bool with_cpp) {
 
    auto package_name = path.filename().string();
 
-   std::cout << "name: " << package_name << std::endl;
+   std::cout << "New package name: " << package_name << std::endl;
    ;
 
    if (!std::filesystem::create_directory(path)) {
@@ -222,7 +242,45 @@ int create_package(std::string &file, bool with_cpp) {
       }
    }
 
-   return 1;
+   return 0;
+}
+
+int create_app(std::string &file) {
+
+   std::cout << "Create application: " << file << std::endl;
+
+   auto path = std::filesystem::path(file);
+
+   if (std::filesystem::exists(path)) {
+      std::cerr << "Given path: " << file
+                << " already exists. Can not create application" << std::endl;
+      return 1;
+   }
+
+   auto app_name = path.filename().string();
+
+   std::cout << "New application nam: " << app_name << std::endl;
+
+   if (!std::filesystem::create_directory(path)) {
+      std::cerr << "Unable to create directory: " << file << std::endl;
+      return 1;
+   }
+
+   {
+      auto current_file = path / "main.saur";
+      if (!write(current_file.c_str(), application::main_saur)) {
+         std::cerr << "Unable to write file: " << current_file << std::endl;
+         return 1;
+      }
+   }
+   {
+      auto current_file = path / "app.saur";
+      if (!write(current_file.c_str(), application::app_saur)) {
+         std::cerr << "Unable to write file: " << current_file << std::endl;
+         return 1;
+      }
+   }
+   return 0;
 }
 
 } // namespace app
