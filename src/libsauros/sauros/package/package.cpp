@@ -17,8 +17,8 @@ namespace package {
           msg__, std::make_shared<cell_c>(cell_type_e::STRING, "", location)); \
    }
 
-extern pkg_s load(const std::string &target, sauros::system_c &system,
-                  location_s *location, std::shared_ptr<environment_c> env) {
+extern pkg_s load(cell_ptr cell, sauros::system_c &system, location_s *location,
+                  std::shared_ptr<environment_c> env) {
 
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("package::load");
@@ -30,13 +30,28 @@ extern pkg_s load(const std::string &target, sauros::system_c &system,
                  "sauros home directory not found. please set "
                  "SAUROS_HOME environment variable.")
 
-   std::filesystem::path target_manifest_file = (*sauros_home);
-   target_manifest_file /= "pkgs";
-   target_manifest_file /= target;
+   auto target = cell->data_as_str();
 
-   auto root = target_manifest_file;
+   std::filesystem::path root;
+   std::filesystem::path target_manifest_file;
 
-   target_manifest_file /= "pkg.saur";
+   // Prefer the local package to an installed one
+   if (cell->origin) {
+      target_manifest_file = (*cell->origin);
+      target_manifest_file.remove_filename();
+      target_manifest_file /= target;
+      root = target_manifest_file;
+      target_manifest_file /= "pkg.saur";
+   }
+
+   // If a local one doesn't exist then we target install location
+   if (!std::filesystem::is_regular_file(target_manifest_file)) {
+      target_manifest_file = (*cell->origin);
+      target_manifest_file /= "pkgs";
+      target_manifest_file /= target;
+      root = target_manifest_file;
+      target_manifest_file /= "pkg.saur";
+   }
 
    // std::cout << "looking for package : " << target_manifest_file.c_str()
    //  << std::endl;

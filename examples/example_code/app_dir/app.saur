@@ -5,12 +5,7 @@
 
 [var requires [list 
     "std"
-]]
-
-; Inner packages (optional)
-[var package_list [list
     "local_pkg"
 ]]
-
 
 [var entry "main.saur"]

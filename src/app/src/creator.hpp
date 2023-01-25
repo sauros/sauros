@@ -5,7 +5,7 @@
 
 namespace app {
 
-extern int create_package(std::string &name);
+extern int create_package(std::string &name, bool with_cpp = false);
 
 }
 

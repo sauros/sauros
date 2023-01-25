@@ -1,9 +1,9 @@
 #include <sauros/sauros.hpp>
 
-#include <string>
-#include <vector>
 #include <filesystem>
 #include <iostream>
+#include <string>
+#include <vector>
 
 #include <hwinfo/hwinfo.h>
 
@@ -45,11 +45,13 @@ void show_help() {
 
    std::string help = R"(
 
-<filename>           Execute file
---help      -h       Show help
---version   -v       Show version info
---system    -s       Retrieve system information (for bug reports)
---new-package <name> Create a new package
+<filename>               Execute file
+--help      -h           Show help
+--version   -v           Show version info
+--system    -s           Retrieve system information (for bug reports)
+--new-cpp-package <name> Create a new package with cpp shared-lib boilerplate
+--new-package     <name> Create a new package
+
    )";
    std::cout << help << std::endl;
 }
@@ -162,6 +164,16 @@ int main(int argc, char **argv) {
          }
          i++;
          return app::create_package(args[i]);
+      }
+
+      if (args[i] == "--new-cpp-package") {
+         if (i + 1 >= args.size()) {
+            std::cerr << "Expected <name> for command `--new-cpp-package`"
+                      << std::endl;
+            return 1;
+         }
+         i++;
+         return app::create_package(args[i], true);
       }
    }
 

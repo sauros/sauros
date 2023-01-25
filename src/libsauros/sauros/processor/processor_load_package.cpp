@@ -16,22 +16,25 @@ namespace sauros {
 
 // Investigating the issue is backlogged.
 
-void processor_c::load_package(const std::string &target, location_s *location,
+void processor_c::load_package(cell_ptr cell, location_s *location,
                                std::shared_ptr<environment_c> env) {
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::load_package");
 #endif
 
+   auto target = cell->data_as_str();
    // Check to see if its already loaded
    if (env->package_loaded(target)) {
       return;
    }
 
-   auto pkg = package::load(target, _system, location, env);
+   auto pkg = package::load(cell, _system, location, env);
 
    // Load any required packages
    for (auto &required_package : pkg.requires_list) {
-      load_package(required_package, location, env);
+      load_package(std::make_shared<cell_c>(cell_type_e::STRING,
+                                            required_package, cell->location),
+                   location, env);
    }
 
    auto package_rll = std::make_shared<rll_wrapper_c>();

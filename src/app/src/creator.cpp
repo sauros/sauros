@@ -54,7 +54,7 @@ std::string generate_cmake_lists(std::string package_name) {
                          package_name);
 }
 
-std::string generate_pkg_saur(std::string package_name) {
+std::string generate_pkg_saur_cpp(std::string package_name) {
    return sauros::format("[var pkg_name \"%\"]\n"
                          "\n"
                          "; Optional auhor/license fields\n"
@@ -81,7 +81,35 @@ std::string generate_pkg_saur(std::string package_name) {
                          package_name, package_name, package_name);
 }
 
+std::string generate_pkg_saur(std::string package_name) {
+   return sauros::format("[var pkg_name \"%\"]\n"
+                         "\n"
+                         "; Optional auhor/license fields\n"
+                         ";\n"
+                         ";[var authors \"<AUTHOR>\"]\n"
+                         ";[var license \"<LICENSE>\"]\n"
+                         "\n"
+                         "; Optional requirements for package\n"
+                         "; that will trigger the search for\n"
+                         "; required packages upon loading\n"
+                         ";\n"
+                         "; [var requires [list \"std\"]]\n"
+                         "\n"
+                         "; Files to include under the current pkg\n"
+                         "[var source_files [list\n"
+                         "   \"%.saur\"\n"
+                         "]]\n",
+                         package_name, package_name);
+}
+
 std::string generate_named_saur(std::string package_name) {
+
+   return sauros::format(
+       "[var callable [lambda [] [putln \"hello from \" \"%\"] ]]\n",
+       package_name);
+}
+
+std::string generate_named_saur_cpp(std::string package_name) {
 
    return sauros::format(
        "; While not required, it is common practice to name callable c++ "
@@ -115,7 +143,7 @@ bool write(std::string file, std::string contents) {
    return true;
 }
 
-int create_package(std::string &file) {
+int create_package(std::string &file, bool with_cpp) {
 
    std::cout << "Create package: " << file << std::endl;
 
@@ -137,42 +165,60 @@ int create_package(std::string &file) {
       return 1;
    }
 
-   {
+   if (with_cpp) {
       auto current_file = path / "CMakeLists.txt";
       if (!write(current_file.c_str(),
                  package::generate_cmake_lists(package_name))) {
          std::cerr << "Unable to write file: " << current_file << std::endl;
          return 1;
       }
-   }
-   {
-      auto current_file = path / "package.hpp";
-      if (!write(current_file.c_str(), package::header)) {
-         std::cerr << "Unable to write file: " << current_file << std::endl;
-         return 1;
+      {
+         auto current_file = path / "package.hpp";
+         if (!write(current_file.c_str(), package::header)) {
+            std::cerr << "Unable to write file: " << current_file << std::endl;
+            return 1;
+         }
       }
-   }
-   {
-      auto current_file = path / "package.cpp";
-      if (!write(current_file.c_str(), package::source)) {
-         std::cerr << "Unable to write file: " << current_file << std::endl;
-         return 1;
+      {
+         auto current_file = path / "package.cpp";
+         if (!write(current_file.c_str(), package::source)) {
+            std::cerr << "Unable to write file: " << current_file << std::endl;
+            return 1;
+         }
       }
-   }
-   {
-      auto current_file = path / "pkg.saur";
-      if (!write(current_file.c_str(),
-                 package::generate_pkg_saur(package_name))) {
-         std::cerr << "Unable to write file: " << current_file << std::endl;
-         return 1;
+      {
+         auto current_file = path / "pkg.saur";
+         if (!write(current_file.c_str(),
+                    package::generate_pkg_saur_cpp(package_name))) {
+            std::cerr << "Unable to write file: " << current_file << std::endl;
+            return 1;
+         }
       }
-   }
-   {
-      auto current_file = path / (package_name + ".saur");
-      if (!write(current_file.c_str(),
-                 package::generate_named_saur(package_name))) {
-         std::cerr << "Unable to write file: " << current_file << std::endl;
-         return 1;
+      {
+         auto current_file = path / (package_name + ".saur");
+         if (!write(current_file.c_str(),
+                    package::generate_named_saur_cpp(package_name))) {
+            std::cerr << "Unable to write file: " << current_file << std::endl;
+            return 1;
+         }
+      }
+   } else {
+
+      {
+         auto current_file = path / "pkg.saur";
+         if (!write(current_file.c_str(),
+                    package::generate_pkg_saur(package_name))) {
+            std::cerr << "Unable to write file: " << current_file << std::endl;
+            return 1;
+         }
+      }
+      {
+         auto current_file = path / (package_name + ".saur");
+         if (!write(current_file.c_str(),
+                    package::generate_named_saur(package_name))) {
+            std::cerr << "Unable to write file: " << current_file << std::endl;
+            return 1;
+         }
       }
    }
 
