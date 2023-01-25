@@ -73,6 +73,7 @@ set(SAUROS_SOURCES
    ${CMAKE_SOURCE_DIR}/sauros/front/parser.cpp
    ${CMAKE_SOURCE_DIR}/sauros/package/package.cpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor.cpp
+   ${CMAKE_SOURCE_DIR}/sauros/processor/processor_load_file.cpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor_load_package.cpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor_arithmetic.cpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor_builtins.cpp

@@ -135,6 +135,12 @@ void processor_c::populate_standard_builtins() {
                     "use command expects parameters to be raw strings", (*i));
              }
 
+             // Check if  the item is a file first
+             if (load_file((*(*i)->data.s), (*i), env)) {
+                return std::make_shared<cell_c>(CELL_TRUE);
+             }
+
+             // If not assume its a package
              load_package((*(*i)->data.s), (*i)->location, env);
           }
 
