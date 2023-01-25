@@ -46,7 +46,12 @@ extern pkg_s load(cell_ptr cell, sauros::system_c &system, location_s *location,
 
    // If a local one doesn't exist then we target install location
    if (!std::filesystem::is_regular_file(target_manifest_file)) {
-      target_manifest_file = (*cell->origin);
+      auto home = system.get_sauros_directory();
+      PACKAGE_CHECK(home.has_value(),
+                    sauros::format("Unable to locate: % , SAUROS_HOME not "
+                                   "defined and package is not local",
+                                   target))
+      target_manifest_file = *home;
       target_manifest_file /= "pkgs";
       target_manifest_file /= target;
       root = target_manifest_file;
