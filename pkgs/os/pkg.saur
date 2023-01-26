@@ -22,6 +22,7 @@
    "_pkg_os_clear_screen_"
    "_pkg_os_get_env_"
    "_pkg_os_sleep_ms_"
+   "_pkg_os_system_exec_"
 ]]
 
 ; Files to include under the current pkg

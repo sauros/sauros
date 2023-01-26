@@ -409,3 +409,13 @@ sauros::cell_ptr _pkg_os_sleep_ms_(sauros::cells_t &cells,
    std::this_thread::sleep_for(std::chrono::milliseconds(time));
    return std::make_shared<sauros::cell_c>(sauros::CELL_TRUE);
 }
+
+sauros::cell_ptr
+_pkg_os_system_exec_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env) {
+
+   auto command = c_api_process_cell(cells[1], env);
+   return std::make_shared<sauros::cell_c>(
+       sauros::cell_type_e::INTEGER,
+       (sauros::cell_int_t)std::system(command->data_as_str().c_str()));
+}

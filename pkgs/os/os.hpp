@@ -155,6 +155,14 @@ API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_sleep_ms_(sauros::cells_t &cells,
                   std::shared_ptr<sauros::environment_c> env);
+
+/*
+   Run an application
+*/
+API_EXPORT
+extern sauros::cell_ptr
+_pkg_os_system_exec_(sauros::cells_t &cells,
+                     std::shared_ptr<sauros::environment_c> env);
 }
 
 #endif

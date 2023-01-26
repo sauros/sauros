@@ -115,3 +115,10 @@
 ;  Sleep for a specific number of milliseconds
 ;
 [var sleep_ms [lambda [time] [os._pkg_os_sleep_ms_ time]]]
+
+;  Simple system execution
+;
+[var system_exec [lambda [command] [block
+    [assert "Expected command to be of type `string`" [seq "string" [type command]]]
+    [os._pkg_os_system_exec_ command]
+]]]
