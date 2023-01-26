@@ -27,8 +27,8 @@
 
 [var my_channel [chan]]
 
-[thread receiver_handle [receiver_lambda my_channel]]
-[thread sender_handle [sender_lambda my_channel]]
+[var receiver_handle [thread [receiver_lambda my_channel]]]
+[var sender_handle [thread [sender_lambda my_channel]]]
 
 [sender_handle.join]
 [receiver_handle.join]
