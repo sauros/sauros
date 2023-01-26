@@ -8,7 +8,7 @@
   [yield 42]
 ]]]
 
-[async handle [receiver_lambda]]
+[var handle [async [receiver_lambda]]]
 
 [os.sleep_ms 10000]
 

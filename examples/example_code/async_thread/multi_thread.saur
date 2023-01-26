@@ -25,7 +25,7 @@
     [putln "broke out of threaded sender"]
 ]]]
 
-[chan my_channel]
+[var my_channel [chan]]
 
 [thread receiver_handle [receiver_lambda my_channel]]
 [thread sender_handle [sender_lambda my_channel]]
