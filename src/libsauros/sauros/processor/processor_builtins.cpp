@@ -1345,13 +1345,11 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::THREAD");
 #endif
-          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 3, "thread");
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "thread");
 
-          auto variable_name = expect_var_get_name(cells[1]);
-
-          if (cells[2]->type != cell_type_e::LIST) {
+          if (cells[1]->type != cell_type_e::LIST) {
              throw runtime_exception_c(
-                 "thread parameter required to be of type `list`\n", cells[2]);
+                 "thread parameter required to be of type `list`\n", cells[1]);
           }
 
           // Setup thread cell
@@ -1370,13 +1368,11 @@ void processor_c::populate_standard_builtins() {
 
           thread_cell->thread =
               std::thread(&processor_c::process_cell, thread_cell->processor,
-                          cells[2], env);
+                          cells[1], env);
 
           box->list.push_back(thread_cell);
-          box->list.push_back(cells[1]);
 
-          env->set(variable_name, box);
-          return std::make_shared<cell_c>(CELL_TRUE);
+          return box;
        });
 
    _builtins[BUILTIN_CHAN] = std::make_shared<cell_c>(

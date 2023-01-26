@@ -14,7 +14,7 @@
     [putln "broke out of threaded loop"]
 ]]]
 
-[thread handle [receiver_lambda]]
+[var  handle [thread [receiver_lambda]]]
 [loop [var idx 0] [< idx 10] [set idx [+ idx 1]] [block
     [os.sleep_ms 5000]
     [my_channel.put idx]

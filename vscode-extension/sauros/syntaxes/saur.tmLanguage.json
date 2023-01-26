@@ -26,7 +26,7 @@
         "patterns": [
            {
            "name": "keyword.control.saur",
-           "match": "\\b(set_at|rev|throw|try|as_list|as_int|as_str|as_real|yield|iter|true|false|nil|is_nil|box|compose|decompose|exit|clear|at|var|front|back|push|pop|list|set|block|len|put|putln|if|assert|loop|type|break)\\b"
+           "match": "\\b(throw|iter|try|true|false|nil|compose|decompose|if|loop|break)\\b"
            },
            {
            "name": "keyword.operator.saur",
@@ -38,7 +38,7 @@
         "patterns": [
            {
            "name": "entity.name.function",
-           "match": "\\b(lambda|async|chan|import|use)\\b"
+           "match": "\\b(assert|block|set|list|len|box|put|putln|type|lambda|thread|ref|is_nil|async|chan|import|use|set_at|rev|as_list|as_int|as_str|as_real|yield|exit|clear|at|var|front|back|push|pop)\\b"
            }
         ]
      },
