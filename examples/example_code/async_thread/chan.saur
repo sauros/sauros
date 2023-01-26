@@ -1,7 +1,7 @@
 [use "std"]
 [use "os"]
 
-[chan my_channel]
+[var my_channel [chan]]
 
 [var receiver_lambda [lambda [] [block
     [std.loop::main [lambda [idx] [block
@@ -13,7 +13,7 @@
     ]]]
 ]]]
 
-[async handle [receiver_lambda]]
+[var handle [async [receiver_lambda]]]
 [var counter 0]
 
 [std.loop::main [lambda [idx] [block

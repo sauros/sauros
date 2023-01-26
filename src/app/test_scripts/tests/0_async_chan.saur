@@ -8,7 +8,7 @@
    [loop [var count 0] [true] [set count [+ 1 count]] [body count]]
 ]]]
 
-[chan my_channel]
+[var my_channel [chan]]
 
 [var receiver_lambda [lambda [] [block
     [std::main_loop [lambda [main_loop_idx] [block
@@ -20,7 +20,7 @@
     ]]]
 ]]]
 
-[async handle [receiver_lambda]]
+[var handle [async [receiver_lambda]]]
 [loop [var counter 0] [< counter 10] [set counter [+ 1 counter]] [block
     [os.sleep_ms 500]
     [my_channel.put counter]

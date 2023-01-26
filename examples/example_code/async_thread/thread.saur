@@ -1,6 +1,6 @@
 [use "os"]
 
-[chan my_channel]
+[var my_channel [chan]]
 
 [var receiver_lambda [lambda [] [block
     [loop [var counter 0] [< counter 30] [set counter [+ counter 1]] [block
