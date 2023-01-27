@@ -19,10 +19,10 @@
 
 ; boxs
 
-[var composed_box [compose [box box_that_is_composed [block
+[var composed_box [compose [var box_that_is_composed [box [block
   [var sum [lambda [a b c] [+ a b c]]]
   [var number 42]
-]]]]
+]]]]]
 
 [decompose composed_box]
 

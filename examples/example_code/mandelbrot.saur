@@ -5,9 +5,9 @@
 
 [use "std"]
 
-[box screen::struct [block
+[var screen::struct [box [block
    [var grid]
-]]
+]]]
 
 [var screen::height 50]
 [var screen::width 100]
@@ -56,10 +56,10 @@
 ]]]
 
 
-[box mandelbrot::pair [block
+[var mandelbrot::pair [box [block
    [var start]
    [var end]
-]]
+]]]
 
 [var mandelbrot::new_pair [lambda[start end] [block
    [var se mandelbrot::pair]

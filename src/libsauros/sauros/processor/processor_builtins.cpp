@@ -758,24 +758,14 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::BOX");
 #endif
-          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 3, "box");
-
-          auto &variable_name = *cells[1]->data.s;
-
-          if (cells[1]->builtin_encoding != BUILTIN_DEFAULT_VAL) {
-             throw runtime_exception_c("Attempting to define a key symbol: " +
-                                           variable_name,
-                                       cells[1]);
-          }
+          SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "box");
 
           auto object_cell = std::make_shared<cell_c>(cell_type_e::BOX);
           object_cell->inner_env = std::make_shared<sauros::environment_c>(env);
 
           // Result of loading object body is
-          process_cell(cells[2], object_cell->inner_env);
-
-          env->set(variable_name, object_cell);
-          return std::make_shared<cell_c>(CELL_TRUE);
+          process_cell(cells[1], object_cell->inner_env);
+          return object_cell;
        });
 
    _builtins[BUILTIN_TRUE] = std::make_shared<cell_c>(

@@ -1,4 +1,4 @@
-[box x [var y 100]]
+[var x [box [var y 100]]]
 
 [var a [x]]
 [var b [x]]

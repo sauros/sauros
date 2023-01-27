@@ -3,10 +3,10 @@
 [use "io"]
 [use "os"]
 
-[box __::anonymous::todo::window::entry [block
+[var __::anonymous::todo::window::entry [box [block
     [var origin_idx 0]
     [var value ""]
-]]
+]]]
 
 [var __::anonymous::todo::window::build_pages 
 [lambda [data_set max_per_screen] [block
