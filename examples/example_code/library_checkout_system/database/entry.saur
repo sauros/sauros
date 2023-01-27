@@ -8,11 +8,11 @@
 
 ;  A database entry
 ;
-[box database::entry [block
+[var database::entry [box [block
    [var title]
    [var description]
    [var status]
-]]
+]]]
 
 ;  Create a new entry
 ;

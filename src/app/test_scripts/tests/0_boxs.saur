@@ -1,7 +1,7 @@
-[box my_box [block
+[var my_box [box [block
   [var sum [lambda [a b c] [+ a b c]]]
   [var number 42]
-]]
+]]]
 
 [var obj my_box]
 [assert "boxs.saur > box access method" [== 6 [obj.sum 1 2 3]]]
@@ -22,26 +22,26 @@
 ; Nested Boxes
 
 [var outer_definition 100]
-[box outer_box [block
+[var outer_box [box [block
 
    ; Definition of an inner box
-   [box inner_one [block
+   [var inner_one [box [block
 
       [var q 2000]
 
-      [box inner_two [block
+      [var inner_two [box [block
          [var x 2]
          [var y outer_definition]
          [var parent_q q]
-      ]]
+      ]]]
 
       [var x 1]
       [var inner_box inner_two]  ; Instantiation of an inner_two in inner_one
-   ]]
+   ]]]
 
    [var inner_box inner_one]     ; Instantiation of an inner_one in outer_box
    [var x outer_definition]      ; use of a term outside of the definition
-]]
+]]]
 
 [var box_one outer_box]
 

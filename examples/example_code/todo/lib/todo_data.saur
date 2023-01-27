@@ -2,10 +2,10 @@
 
 [use "os"]
 
-[box todo_data [block
+[var todo_data [box [block
     [var disk_path ""]
     [var entries]
-]]
+]]]
 
 [var todo_data::new [lambda [file entries] [block
     [var x todo_data]

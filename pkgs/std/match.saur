@@ -15,10 +15,10 @@
 
 ;  An entry that ties a pattern to a
 ;  lambda to be executed upon match
-[box __::match::pattern::entry [block
+[var __::match::pattern::entry [box [block
    [var pattern]
    [var body]
-]]
+]]]
 
 ;  The match itsself is just a lambda that takes in 
 ;  the pattern to match, a list of entries and a default

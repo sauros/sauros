@@ -1,12 +1,12 @@
 [use "time"]
 [use "fmt"]
 
-[box __::anonymous::todo::entry::struct [block
+[var __::anonymous::todo::entry::struct [box [block
     [var created ""]
     [var title ""]
     [var description ""]
     [var completed 0]
-]]
+]]]
 
 [var todo::entry::new [lambda [title description] [block
     [var x __::anonymous::todo::entry::struct]
