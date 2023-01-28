@@ -58,7 +58,7 @@ _pkg_fmt_format_encode_(sauros::cells_t &cells,
           "format string expects source cell to be a string", raw_target);
    }
 
-   auto target = *raw_target->data.s;
+   auto target = raw_target->data_as_str();
 
    sauros::cells_t source_cells;
    {
@@ -119,7 +119,7 @@ _pkg_fmt_format_string_(sauros::cells_t &cells,
           "format string expects source cell to be a string", raw_target);
    }
 
-   auto target = *raw_target->data.s;
+   auto target = raw_target->data_as_str();
 
    std::string buffer;
    for (auto i = 0; i < target.size(); i++) {

@@ -3,6 +3,7 @@
 
 [var authors "Bosley"]
 [var license "MIT"]
+[var version "0.0.0"]
 
 ; C++ shared lib to link to
 [var library_file "time.lib"]

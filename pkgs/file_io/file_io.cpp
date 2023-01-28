@@ -83,7 +83,7 @@ extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
    box->inner_env = std::make_shared<sauros::environment_c>();
    box->list.push_back(void_cell);
 
-   fc->name = *c_api_process_cell(cells[1], env)->data.s;
+   fc->name = c_api_process_cell(cells[1], env)->data_as_str();
 
    box->inner_env->set(
        "open", std::make_shared<cell_c>(
@@ -258,7 +258,7 @@ extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
                  return std::make_shared<sauros::cell_c>(CELL_NIL);
               }
 
-              (*fc->stream) << line->data.s;
+              (*fc->stream) << line->data_as_str();
 
               return std::make_shared<sauros::cell_c>(CELL_TRUE);
            }));
