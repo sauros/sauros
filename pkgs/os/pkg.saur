@@ -1,6 +1,10 @@
 ; Pkg name
 [var pkg_name "os"]
 
+[var authors "Bosley"]
+[var license "MIT"]
+[var version "0.0.0"]
+
 ; C++ shared lib to link to
 [var library_file "os.lib"]
 [var library_functions [list

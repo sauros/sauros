@@ -13,6 +13,7 @@ struct pkg_s {
    std::string name;
    std::string library_file;
    std::string license;
+   std::string version;
    std::vector<std::string> authors_list;
    std::vector<std::string> library_function_list;
    std::vector<std::string> source_file_list;

@@ -88,6 +88,7 @@ std::string generate_pkg_saur(std::string package_name) {
                          ";\n"
                          ";[var authors \"<AUTHOR>\"]\n"
                          ";[var license \"<LICENSE>\"]\n"
+                         "[var version \"0.0.0\"]\n"
                          "\n"
                          "; Optional requirements for package\n"
                          "; that will trigger the search for\n"

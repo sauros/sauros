@@ -7,13 +7,13 @@
 ;
 
 [use "fmt"]
-[use "list_ext"]
+[use "std"]
 
 [var n 4]
 
 [var nsieve [lambda [max] [block
    [var count 0]
-   [var flags [list_ext.make_assigned 0 max]]
+   [var flags [std.list::make_assigned 0 max]]
    [loop [var value 2] [< value max] [set value [+ 1 value]] [block
       [if [not [at value flags]] [block
          [set count [+ 1 count]]
