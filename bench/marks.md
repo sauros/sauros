@@ -100,3 +100,21 @@ primality.saur >> averaged an execution time of  0.6962s ( 696.1787ms )  after  
 mandelbrot.saur >> averaged an execution time of  0.1345s ( 134.5026ms )  after  50  executions
 4sieve.saur >> averaged an execution time of  0.656s ( 656.0264ms )  after  50  executions
 ```
+
+## 28-January-2022
+
+I got a new laptop that I will be using for development so I am placing the
+new benchmarks here. Its an older Thinkpad T490 so I suspect it will be slower
+than the asus tuf that was being used before.
+
+```
+primality.saur >> averaged an execution time of  1.3249s ( 1324.9109ms )  after  50  executions
+mandelbrot.saur >> averaged an execution time of  0.2413s ( 241.2618ms )  after  50  executions
+4sieve.saur >> averaged an execution time of  1.1085s ( 1108.4888ms )  after  50  executions
+```
+
+.. yeah its a bit slower 
+
+
+
+

@@ -309,6 +309,7 @@ class variant_cell_c : public cell_c {
  public:
    variant_cell_c(cell_variant_type_e type, location_s *location)
        : cell_c(cell_type_e::VARIANT, location), variant_type(type) {}
+   virtual ~variant_cell_c() {}
    cell_variant_type_e variant_type;
 };
 
@@ -378,7 +379,7 @@ class void_cell_c : public variant_cell_c {
    // The entity that utilizes this pointer
    // is responsible for maintaining the
    // data it points
-   void *ptr{nullptr};
+   void *ptr{nullptr}; // use void* instead of std::any as its 8 bytes smaller
 
    // Callback that, if set, will be executed upon
    // the destruction of the cell

@@ -509,7 +509,7 @@ void processor_c::populate_standard_builtins() {
              throw runtime_exception_c(
                  "first parameter to iter needs to be a symbol", cells[1]);
           }
-          auto iter_var = *cells[1]->data.s;
+          auto iter_var = cells[1]->data_as_str();
 
           auto processed_list = load_potential_variable(cells[2], env);
           if (processed_list->type != cell_type_e::LIST) {
@@ -1228,7 +1228,7 @@ void processor_c::populate_standard_builtins() {
                 } else if (r->type == cell_type_e::REAL) {
                    result += std::to_string(r->data.d);
                 } else {
-                   result += *r->data.s;
+                   result += r->data_as_str();
                 }
              }
              return std::make_shared<cell_c>(cell_type_e::STRING, result);
@@ -1280,7 +1280,7 @@ void processor_c::populate_standard_builtins() {
           } else if (result->type == cell_type_e::REAL) {
              item = std::to_string(result->data.d);
           } else {
-             item = *result->data.s;
+             item = result->data_as_str();
           }
           for (auto c : item) {
              std::string as_individual = std::string(1, c);

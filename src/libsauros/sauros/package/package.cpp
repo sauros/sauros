@@ -58,9 +58,6 @@ extern pkg_s load(cell_ptr cell, sauros::system_c &system, location_s *location,
       target_manifest_file /= "pkg.saur";
    }
 
-   // std::cout << "looking for package : " << target_manifest_file.c_str()
-   //  << std::endl;
-
    PACKAGE_CHECK(std::filesystem::is_regular_file(target_manifest_file),
                  sauros::format("unable to locate package for: %", target))
 
@@ -84,6 +81,12 @@ extern pkg_s load(cell_ptr cell, sauros::system_c &system, location_s *location,
           package.env->exists("pkg_name"),
           sauros::format(
               "target: % does not contain the required field `pkg_name`",
+              target))
+
+      PACKAGE_CHECK(
+          package.env->exists("version"),
+          sauros::format(
+              "target: % does not contain the required field `version`",
               target))
 
       // Optional
@@ -120,7 +123,13 @@ extern pkg_s load(cell_ptr cell, sauros::system_c &system, location_s *location,
       PACKAGE_CHECK((package_name_cell->type == cell_type_e::STRING),
                     "pkg_name field in pkg must be of type `string`")
 
+      auto version_cell = package.env->get("version");
+
+      PACKAGE_CHECK((version_cell->type == cell_type_e::STRING),
+                    "version field in pkg must be of type `string`")
+
       package.name = package_name_cell->data_as_str();
+      package.version = version_cell->data_as_str();
 
       auto package_file = root;
       package_file /= "pkg.saur";
@@ -146,12 +155,9 @@ extern pkg_s load(cell_ptr cell, sauros::system_c &system, location_s *location,
          PACKAGE_CHECK((package_name_cell->type == cell_type_e::STRING),
                        "library_file field in pkg must be of type `string`")
 
-         // std::cout << "\t[library file] " << library_file_cell->data
-         //  << std::endl;
-
          {
             auto library_file_actual = root;
-            library_file_actual /= *library_file_cell->data.s;
+            library_file_actual /= library_file_cell->data_as_str();
 
             PACKAGE_CHECK(
                 (std::filesystem::is_regular_file(library_file_actual)),
@@ -174,7 +180,7 @@ extern pkg_s load(cell_ptr cell, sauros::system_c &system, location_s *location,
              (library_functions_cell->type == cell_type_e::LIST),
              "library_functions_cell field in pkg must be of type `list`")
 
-         // Load teh functions
+         // Load the functions
          for (auto &function_name_cell : library_functions_cell->list) {
 
             PACKAGE_CHECK((function_name_cell->type == cell_type_e::STRING),
@@ -183,9 +189,6 @@ extern pkg_s load(cell_ptr cell, sauros::system_c &system, location_s *location,
 
             package.library_function_list.push_back(
                 function_name_cell->data_as_str());
-
-            // std::cout << "\t[library function] " << function_name_cell->data
-            //   << std::endl;
          }
       }
 
@@ -196,7 +199,7 @@ extern pkg_s load(cell_ptr cell, sauros::system_c &system, location_s *location,
          PACKAGE_CHECK((source_files_cell->type == cell_type_e::LIST),
                        "source_files field in pkg must be of type `list`")
 
-         // Load teh functions
+         // Load the functions
          for (auto &file_name_cell : source_files_cell->list) {
             PACKAGE_CHECK(
                 (file_name_cell->type == cell_type_e::STRING),
@@ -204,7 +207,7 @@ extern pkg_s load(cell_ptr cell, sauros::system_c &system, location_s *location,
 
             {
                auto file_actual = root;
-               file_actual /= *file_name_cell->data.s;
+               file_actual /= file_name_cell->data_as_str();
 
                PACKAGE_CHECK(
                    (std::filesystem::is_regular_file(file_actual)),
@@ -214,9 +217,6 @@ extern pkg_s load(cell_ptr cell, sauros::system_c &system, location_s *location,
 
                package.source_file_list.push_back(file_actual);
             }
-
-            // std::cout << "\t[source file] " << *file_name_cell->data.s
-            //    << std::endl;
          }
       }
 
