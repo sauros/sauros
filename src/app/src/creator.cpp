@@ -61,6 +61,7 @@ std::string generate_pkg_saur_cpp(std::string package_name) {
                          ";\n"
                          ";[var authors \"<AUTHOR>\"]\n"
                          ";[var license \"<LICENSE>\"]\n"
+                         "[var version \"0.0.0\"]\n"
                          "\n"
                          "; C++ shared lib to link to\n"
                          "[var library_file \"%.lib\"]\n"
