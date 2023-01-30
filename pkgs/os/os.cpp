@@ -271,7 +271,8 @@ sauros::cell_ptr _pkg_os_copy_(sauros::cells_t &cells,
    }
 
    std::filesystem::copy(source->data_as_str(), dest->data_as_str(),
-                         std::filesystem::copy_options::overwrite_existing);
+                         std::filesystem::copy_options::overwrite_existing | 
+                         std::filesystem::copy_options::recursive);
    if (std::filesystem::exists(dest->data_as_str())) {
       return std::make_shared<sauros::cell_c>(sauros::CELL_TRUE);
    }
