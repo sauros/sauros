@@ -1197,16 +1197,22 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::AS_INT");
 #endif
-
           SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "as_int");
-          return conversion_fn(cells[1], env, [](cell_ptr target) -> cell_ptr {
-             double check = target->data.d;
-             if (target->type == cell_type_e::INTEGER) {
-                check = target->data.i;
-             }
-             return std::make_shared<cell_c>(cell_type_e::INTEGER,
-                                             static_cast<cell_int_t>(check));
-          });
+          return conversion_fn(
+              cells[1], env, [this, env](cell_ptr target) -> cell_ptr {
+                 auto processed_target = this->process_cell(target, env);
+
+                 double check = processed_target->data.d;
+                 if (processed_target->type == cell_type_e::STRING) {
+                    check = std::stod(processed_target->data_as_str());
+                 }
+
+                 if (processed_target->type == cell_type_e::INTEGER) {
+                    check = processed_target->data.i;
+                 }
+                 return std::make_shared<cell_c>(
+                     cell_type_e::INTEGER, static_cast<cell_int_t>(check));
+              });
        });
 
    _builtins[BUILTIN_AS_STR] = std::make_shared<cell_c>(
@@ -1249,13 +1255,21 @@ void processor_c::populate_standard_builtins() {
           profiler_c::get_profiler()->hit("processor_builtin::AS_REAL");
 #endif
           SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "as_real");
-          return conversion_fn(cells[1], env, [](cell_ptr target) -> cell_ptr {
-             double check = target->data.d;
-             if (target->type == cell_type_e::INTEGER) {
-                check = target->data.i;
-             }
-             return std::make_shared<cell_c>(cell_type_e::REAL, check);
-          });
+          return conversion_fn(
+              cells[1], env, [this, env](cell_ptr target) -> cell_ptr {
+                 auto processed_target = this->process_cell(target, env);
+
+                 double check = processed_target->data.d;
+                 if (processed_target->type == cell_type_e::STRING) {
+                    check = std::stod(processed_target->data_as_str());
+                 }
+
+                 if (processed_target->type == cell_type_e::INTEGER) {
+                    check = processed_target->data.i;
+                 }
+                 return std::make_shared<cell_c>(
+                     cell_type_e::REAL, static_cast<cell_real_t>(check));
+              });
        });
 
    _builtins[BUILTIN_AS_LIST] = std::make_shared<cell_c>(
