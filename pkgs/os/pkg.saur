@@ -27,6 +27,8 @@
    "_pkg_os_get_env_"
    "_pkg_os_sleep_ms_"
    "_pkg_os_system_exec_"
+   "_pkg_os_path_join_"
+   "_pkg_os_path_get_file_"
 ]]
 
 ; Files to include under the current pkg
