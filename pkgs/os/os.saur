@@ -122,3 +122,18 @@
     [assert "Expected command to be of type `string`" [seq "string" [type command]]]
     [os._pkg_os_system_exec_ command]
 ]]]
+
+;  Join a path in an os agnostic way
+;
+[var path_join [lambda [lhs rhs] [block
+    [assert "Expected lhs param to be of type `string`" [seq "string" [type lhs]]]
+    [assert "Expected rhs param to be of type `string`" [seq "string" [type rhs]]]
+    [os._pkg_os_path_join_ lhs rhs]
+]]]
+
+;  Join a path in an os agnostic way
+;
+[var path_get_filename [lambda [path] [block
+    [assert "Expected path param to be of type `string`" [seq "string" [type path]]]
+    [os._pkg_os_path_get_file_ path]
+]]]

@@ -271,8 +271,8 @@ sauros::cell_ptr _pkg_os_copy_(sauros::cells_t &cells,
    }
 
    std::filesystem::copy(source->data_as_str(), dest->data_as_str(),
-                         std::filesystem::copy_options::overwrite_existing | 
-                         std::filesystem::copy_options::recursive);
+                         std::filesystem::copy_options::overwrite_existing |
+                             std::filesystem::copy_options::recursive);
    if (std::filesystem::exists(dest->data_as_str())) {
       return std::make_shared<sauros::cell_c>(sauros::CELL_TRUE);
    }
@@ -419,4 +419,33 @@ _pkg_os_system_exec_(sauros::cells_t &cells,
    return std::make_shared<sauros::cell_c>(
        sauros::cell_type_e::INTEGER,
        (sauros::cell_int_t)std::system(command->data_as_str().c_str()));
+}
+
+sauros::cell_ptr
+_pkg_os_path_join_(sauros::cells_t &cells,
+                   std::shared_ptr<sauros::environment_c> env) {
+
+   std::string lhs = c_api_process_cell(cells[1], env)->data_as_str();
+   std::string rhs = c_api_process_cell(cells[2], env)->data_as_str();
+
+   std::filesystem::path lhs_path(lhs);
+
+   lhs_path /= rhs;
+
+   auto command = c_api_process_cell(cells[1], env);
+   return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING,
+                                           lhs_path);
+}
+
+sauros::cell_ptr
+_pkg_os_path_get_file_(sauros::cells_t &cells,
+                       std::shared_ptr<sauros::environment_c> env) {
+
+   std::string x = c_api_process_cell(cells[1], env)->data_as_str();
+
+   std::filesystem::path x_path(x);
+
+   auto command = c_api_process_cell(cells[1], env);
+   return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING,
+                                           x_path.filename().string());
 }

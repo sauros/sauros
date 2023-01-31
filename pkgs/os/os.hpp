@@ -163,6 +163,22 @@ API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_system_exec_(sauros::cells_t &cells,
                      std::shared_ptr<sauros::environment_c> env);
+
+/*
+   Join path
+*/
+API_EXPORT
+extern sauros::cell_ptr
+_pkg_os_path_join_(sauros::cells_t &cells,
+                   std::shared_ptr<sauros::environment_c> env);
+
+/*
+   Get file
+*/
+API_EXPORT
+extern sauros::cell_ptr
+_pkg_os_path_get_file_(sauros::cells_t &cells,
+                       std::shared_ptr<sauros::environment_c> env);
 }
 
 #endif

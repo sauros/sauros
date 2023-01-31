@@ -1,0 +1,4 @@
+[use "os"]
+
+[assert "Failed to obtain file on path" [seq "moot.txt" [os.path_get_filename "/tmp/moot.txt"]]]
+[assert "Failed to join paths" [seq "/tmp/moot.txt" [os.path_join "/tmp" "moot.txt"]]]
