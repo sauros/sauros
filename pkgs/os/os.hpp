@@ -179,6 +179,14 @@ API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_path_get_file_(sauros::cells_t &cells,
                        std::shared_ptr<sauros::environment_c> env);
+
+/*
+   Get absolute path
+*/
+API_EXPORT
+extern sauros::cell_ptr
+_pkg_os_path_get_abs_(sauros::cells_t &cells,
+                      std::shared_ptr<sauros::environment_c> env);
 }
 
 #endif

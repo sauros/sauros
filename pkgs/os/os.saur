@@ -137,3 +137,10 @@
     [assert "Expected path param to be of type `string`" [seq "string" [type path]]]
     [os._pkg_os_path_get_file_ path]
 ]]]
+
+;  Get the absolute path of something
+;
+[var path_get_abs [lambda [path] [block
+    [assert "Expected path param to be of type `string`" [seq "string" [type path]]]
+    [os._pkg_os_path_get_abs_ path]
+]]]

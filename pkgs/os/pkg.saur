@@ -29,6 +29,7 @@
    "_pkg_os_system_exec_"
    "_pkg_os_path_join_"
    "_pkg_os_path_get_file_"
+   "_pkg_os_path_get_abs_"
 ]]
 
 ; Files to include under the current pkg

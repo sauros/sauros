@@ -449,3 +449,23 @@ _pkg_os_path_get_file_(sauros::cells_t &cells,
    return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING,
                                            x_path.filename().string());
 }
+
+sauros::cell_ptr
+_pkg_os_path_get_abs_(sauros::cells_t &cells,
+                      std::shared_ptr<sauros::environment_c> env) {
+   std::string x = c_api_process_cell(cells[1], env)->data_as_str();
+
+   if (x.empty()) {
+      x = "./";
+   }
+
+   auto p = std::filesystem::absolute(std::filesystem::path(x));
+
+   if (x == "./") {
+      p = std::filesystem::current_path();
+   }
+
+   auto command = c_api_process_cell(cells[1], env);
+   return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING,
+                                           p.string());
+}
