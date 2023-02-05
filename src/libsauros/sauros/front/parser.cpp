@@ -310,9 +310,9 @@ void segment_parser_c::indicate_complete() {
    }
 
    for (auto *tok : _tokens) {
-      //  if (tok) {
-      //     delete tok;
-      //  }
+      if (tok) {
+         delete tok;
+      }
    }
 }
 
