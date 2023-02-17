@@ -1289,12 +1289,12 @@ void processor_c::populate_standard_builtins() {
 
           cell_ptr result = std::make_shared<cell_c>(cell_type_e::LIST);
           std::string item;
-          if (result->type == cell_type_e::INTEGER) {
-             item = std::to_string(result->data.i);
-          } else if (result->type == cell_type_e::REAL) {
-             item = std::to_string(result->data.d);
+          if (target->type == cell_type_e::INTEGER) {
+             item = std::to_string(target->data.i);
+          } else if (target->type == cell_type_e::REAL) {
+             item = std::to_string(target->data.d);
           } else {
-             item = result->data_as_str();
+             item = target->data_as_str();
           }
           for (auto c : item) {
              std::string as_individual = std::string(1, c);
