@@ -15,7 +15,7 @@ processor_c::~processor_c() {
 }
 
 void processor_c::cell_to_string(std::string &out, cell_ptr cell,
-                                 std::shared_ptr<environment_c> env,
+                                 env_ptr env,
                                  bool show_space) {
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::cell_to_string");
@@ -80,7 +80,7 @@ void processor_c::cell_to_string(std::string &out, cell_ptr cell,
 }
 
 void processor_c::quote_cell(std::string &out, cell_ptr cell,
-                             std::shared_ptr<environment_c> env) {
+                             env_ptr env) {
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::quote_cell");
 #endif
@@ -152,7 +152,7 @@ void processor_c::quote_cell(std::string &out, cell_ptr cell,
 }
 
 cell_ptr processor_c::process_list(cells_t &cells,
-                                   std::shared_ptr<environment_c> env) {
+                                   env_ptr env) {
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::process_list");
 #endif
@@ -212,7 +212,7 @@ cell_ptr processor_c::process_list(cells_t &cells,
 }
 
 cell_ptr processor_c::process_cell(cell_ptr cell,
-                                   std::shared_ptr<environment_c> env) {
+                                   env_ptr env) {
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::process_cell");
 #endif
@@ -281,7 +281,7 @@ cell_ptr processor_c::process_cell(cell_ptr cell,
 }
 
 cell_ptr processor_c::process_lambda(cell_ptr cell, cells_t &cells,
-                                     std::shared_ptr<environment_c> env) {
+                                     env_ptr env) {
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::process_lambda");
 #endif
@@ -377,7 +377,7 @@ processor_c::retrieve_box_data(cell_ptr &cell,
 
 cell_ptr
 processor_c::load_potential_variable(cell_ptr cell,
-                                     std::shared_ptr<environment_c> env) {
+                                     env_ptr env) {
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::load_potential_variable");
 #endif

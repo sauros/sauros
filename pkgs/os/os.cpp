@@ -18,7 +18,7 @@ using command = std::function<bool(std::string)>;
    operate with
 */
 sauros::cells_t populate_source(sauros::cells_t &cells, size_t cell_sources,
-                                std::shared_ptr<sauros::environment_c> env) {
+                                sauros::env_ptr env) {
    auto raw_source = c_api_process_cell(cells[cell_sources], env);
    sauros::cells_t source_cells;
    {
@@ -36,7 +36,7 @@ sauros::cells_t populate_source(sauros::cells_t &cells, size_t cell_sources,
 }
 
 sauros::cell_ptr execute_commands(sauros::cells_t &cells,
-                                  std::shared_ptr<sauros::environment_c> env,
+                                  sauros::env_ptr env,
                                   const std::string cmd_name, command cmd) {
    sauros::cells_t sources = populate_source(cells, 1, env);
 
@@ -68,13 +68,13 @@ sauros::cell_ptr execute_commands(sauros::cells_t &cells,
 }
 
 sauros::cell_ptr _pkg_os_cwd_(sauros::cells_t &cells,
-                              std::shared_ptr<sauros::environment_c> env) {
+                              sauros::env_ptr env) {
    return std::make_shared<sauros::cell_c>(
        sauros::cell_type_e::STRING, std::filesystem::current_path().string());
 }
 
 sauros::cell_ptr _pkg_os_ls_(sauros::cells_t &cells,
-                             std::shared_ptr<sauros::environment_c> env) {
+                             sauros::env_ptr env) {
    // If they didn't give use anything other than ls we assume its the cwd
    // otherwise we need to populate a list of them so we treat them as a list
    // throughout
@@ -113,7 +113,7 @@ sauros::cell_ptr _pkg_os_ls_(sauros::cells_t &cells,
 }
 
 sauros::cell_ptr _pkg_os_chdir_(sauros::cells_t &cells,
-                                std::shared_ptr<sauros::environment_c> env) {
+                                sauros::env_ptr env) {
 
    auto raw_dest = c_api_process_cell(cells[1], env);
    if (raw_dest->type != sauros::cell_type_e::STRING) {
@@ -139,7 +139,7 @@ sauros::cell_ptr _pkg_os_chdir_(sauros::cells_t &cells,
 }
 
 sauros::cell_ptr _pkg_os_endian_(sauros::cells_t &cells,
-                                 std::shared_ptr<sauros::environment_c> env) {
+                                 sauros::env_ptr env) {
    if constexpr (std::endian::native == std::endian::big) {
       return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING,
                                               "big");
@@ -153,7 +153,7 @@ sauros::cell_ptr _pkg_os_endian_(sauros::cells_t &cells,
 }
 
 sauros::cell_ptr _pkg_os_os_name_(sauros::cells_t &cells,
-                                  std::shared_ptr<sauros::environment_c> env) {
+                                  sauros::env_ptr env) {
 #ifdef _WIN32
    return std::make_shared<sauros::cell_c>(sauros::cell_type_e::STRING,
                                            "windows-32");
@@ -178,7 +178,7 @@ sauros::cell_ptr _pkg_os_os_name_(sauros::cells_t &cells,
 }
 
 sauros::cell_ptr _pkg_os_is_file_(sauros::cells_t &cells,
-                                  std::shared_ptr<sauros::environment_c> env) {
+                                  sauros::env_ptr env) {
 
    auto raw_dest = c_api_process_cell(cells[1], env);
    if (raw_dest->type != sauros::cell_type_e::STRING) {
@@ -195,7 +195,7 @@ sauros::cell_ptr _pkg_os_is_file_(sauros::cells_t &cells,
 }
 
 sauros::cell_ptr _pkg_os_is_dir_(sauros::cells_t &cells,
-                                 std::shared_ptr<sauros::environment_c> env) {
+                                 sauros::env_ptr env) {
 
    auto raw_dest = c_api_process_cell(cells[1], env);
    if (raw_dest->type != sauros::cell_type_e::STRING) {
@@ -210,7 +210,7 @@ sauros::cell_ptr _pkg_os_is_dir_(sauros::cells_t &cells,
 }
 
 sauros::cell_ptr _pkg_os_exists_(sauros::cells_t &cells,
-                                 std::shared_ptr<sauros::environment_c> env) {
+                                 sauros::env_ptr env) {
 
    auto raw_dest = c_api_process_cell(cells[1], env);
    if (raw_dest->type != sauros::cell_type_e::STRING) {
@@ -225,14 +225,14 @@ sauros::cell_ptr _pkg_os_exists_(sauros::cells_t &cells,
 }
 
 sauros::cell_ptr _pkg_os_mkdir_(sauros::cells_t &cells,
-                                std::shared_ptr<sauros::environment_c> env) {
+                                sauros::env_ptr env) {
    return execute_commands(cells, env, "mkdir", [](std::string target) -> bool {
       return std::filesystem::create_directory(target);
    });
 }
 
 sauros::cell_ptr _pkg_os_delete_(sauros::cells_t &cells,
-                                 std::shared_ptr<sauros::environment_c> env) {
+                                 sauros::env_ptr env) {
    return execute_commands(cells, env, "delete",
                            [](std::string target) -> bool {
                               try {
@@ -245,7 +245,7 @@ sauros::cell_ptr _pkg_os_delete_(sauros::cells_t &cells,
 
 sauros::cell_ptr
 _pkg_os_delete_all_(sauros::cells_t &cells,
-                    std::shared_ptr<sauros::environment_c> env) {
+                    sauros::env_ptr env) {
    return execute_commands(cells, env, "delete_all",
                            [](std::string target) -> bool {
                               return std::filesystem::remove_all(target);
@@ -253,7 +253,7 @@ _pkg_os_delete_all_(sauros::cells_t &cells,
 }
 
 sauros::cell_ptr _pkg_os_copy_(sauros::cells_t &cells,
-                               std::shared_ptr<sauros::environment_c> env) {
+                               sauros::env_ptr env) {
    auto source = c_api_process_cell(cells[1], env);
    if (source->type != sauros::cell_type_e::STRING) {
       throw sauros::processor_c::runtime_exception_c(
@@ -281,7 +281,7 @@ sauros::cell_ptr _pkg_os_copy_(sauros::cells_t &cells,
 
 sauros::cell_ptr
 _pkg_os_file_append_(sauros::cells_t &cells,
-                     std::shared_ptr<sauros::environment_c> env) {
+                     sauros::env_ptr env) {
    auto file = c_api_process_cell(cells[1], env);
    if (file->type != sauros::cell_type_e::STRING) {
       throw sauros::processor_c::runtime_exception_c(
@@ -308,7 +308,7 @@ _pkg_os_file_append_(sauros::cells_t &cells,
 
 sauros::cell_ptr
 _pkg_os_file_write_(sauros::cells_t &cells,
-                    std::shared_ptr<sauros::environment_c> env) {
+                    sauros::env_ptr env) {
    auto file = c_api_process_cell(cells[1], env);
    if (file->type != sauros::cell_type_e::STRING) {
       throw sauros::processor_c::runtime_exception_c(
@@ -335,7 +335,7 @@ _pkg_os_file_write_(sauros::cells_t &cells,
 
 sauros::cell_ptr
 _pkg_os_file_read_(sauros::cells_t &cells,
-                   std::shared_ptr<sauros::environment_c> env) {
+                   sauros::env_ptr env) {
    auto file = c_api_process_cell(cells[1], env);
    if (file->type != sauros::cell_type_e::STRING) {
       throw sauros::processor_c::runtime_exception_c(
@@ -362,7 +362,7 @@ _pkg_os_file_read_(sauros::cells_t &cells,
 
 sauros::cell_ptr
 _pkg_os_clear_screen_(sauros::cells_t &cells,
-                      std::shared_ptr<sauros::environment_c> env) {
+                      sauros::env_ptr env) {
 #if _WIN32 || _WIN64
    const char *command = "cls";
 #elif __APPLE__ || __MACH__ || __linux__ || __FreeBSD__ || __unix || __unix__
@@ -376,7 +376,7 @@ _pkg_os_clear_screen_(sauros::cells_t &cells,
 }
 
 sauros::cell_ptr _pkg_os_get_env_(sauros::cells_t &cells,
-                                  std::shared_ptr<sauros::environment_c> env) {
+                                  sauros::env_ptr env) {
 
    auto var_string = c_api_process_cell(cells[1], env);
    if (var_string->type != sauros::cell_type_e::STRING) {
@@ -393,7 +393,7 @@ sauros::cell_ptr _pkg_os_get_env_(sauros::cells_t &cells,
 }
 
 sauros::cell_ptr _pkg_os_sleep_ms_(sauros::cells_t &cells,
-                                   std::shared_ptr<sauros::environment_c> env) {
+                                   sauros::env_ptr env) {
 
    auto ms_cell = c_api_process_cell(cells[1], env);
    if (ms_cell->type != sauros::cell_type_e::INTEGER &&
@@ -413,7 +413,7 @@ sauros::cell_ptr _pkg_os_sleep_ms_(sauros::cells_t &cells,
 
 sauros::cell_ptr
 _pkg_os_system_exec_(sauros::cells_t &cells,
-                     std::shared_ptr<sauros::environment_c> env) {
+                     sauros::env_ptr env) {
 
    auto command = c_api_process_cell(cells[1], env);
    return std::make_shared<sauros::cell_c>(
@@ -423,7 +423,7 @@ _pkg_os_system_exec_(sauros::cells_t &cells,
 
 sauros::cell_ptr
 _pkg_os_path_join_(sauros::cells_t &cells,
-                   std::shared_ptr<sauros::environment_c> env) {
+                   sauros::env_ptr env) {
 
    std::string lhs = c_api_process_cell(cells[1], env)->data_as_str();
    std::string rhs = c_api_process_cell(cells[2], env)->data_as_str();
@@ -439,7 +439,7 @@ _pkg_os_path_join_(sauros::cells_t &cells,
 
 sauros::cell_ptr
 _pkg_os_path_get_file_(sauros::cells_t &cells,
-                       std::shared_ptr<sauros::environment_c> env) {
+                       sauros::env_ptr env) {
 
    std::string x = c_api_process_cell(cells[1], env)->data_as_str();
 
@@ -452,7 +452,7 @@ _pkg_os_path_get_file_(sauros::cells_t &cells,
 
 sauros::cell_ptr
 _pkg_os_path_get_abs_(sauros::cells_t &cells,
-                      std::shared_ptr<sauros::environment_c> env) {
+                      sauros::env_ptr env) {
    std::string x = c_api_process_cell(cells[1], env)->data_as_str();
 
    if (x.empty()) {

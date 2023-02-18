@@ -18,7 +18,7 @@ namespace package {
    }
 
 extern pkg_s load(cell_ptr cell, sauros::system_c &system, location_s *location,
-                  std::shared_ptr<environment_c> env) {
+                  env_ptr env) {
 
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("package::load");

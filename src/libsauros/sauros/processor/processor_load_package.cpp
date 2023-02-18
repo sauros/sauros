@@ -17,7 +17,7 @@ namespace sauros {
 // Investigating the issue is backlogged.
 
 void processor_c::load_package(cell_ptr cell, location_s *location,
-                               std::shared_ptr<environment_c> env) {
+                               env_ptr env) {
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::load_package");
 #endif

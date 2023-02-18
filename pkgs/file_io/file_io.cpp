@@ -60,7 +60,7 @@ void handle_deletion_callback(void *ptr) {
 }
 
 extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
-                                         std::shared_ptr<environment_c> env) {
+                                         env_ptr env) {
 
    // Here we leverage the void_cell to keep a pointer to
    // a file_cell_c so we can manage the memory it takes up
@@ -88,7 +88,7 @@ extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
    box->inner_env->set(
        "open", std::make_shared<cell_c>(
                    [fc](cells_t &cells,
-                        std::shared_ptr<environment_c> env) -> cell_ptr {
+                        env_ptr env) -> cell_ptr {
                       SIZE_CHECK("file_io > open", 1)
                       SELF_CHECK
 
@@ -115,7 +115,7 @@ extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
    box->inner_env->set(
        "close", std::make_shared<cell_c>(
                     [fc](cells_t &cells,
-                         std::shared_ptr<environment_c> env) -> cell_ptr {
+                         env_ptr env) -> cell_ptr {
                        SIZE_CHECK("file_io > close", 1)
                        SELF_CHECK
 
@@ -131,7 +131,7 @@ extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
    box->inner_env->set(
        "seek", std::make_shared<cell_c>(
                    [fc](cells_t &cells,
-                        std::shared_ptr<environment_c> env) -> cell_ptr {
+                        env_ptr env) -> cell_ptr {
                       SIZE_CHECK("file_io > seek", 2)
                       SELF_CHECK
 
@@ -154,7 +154,7 @@ extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
    box->inner_env->set(
        "get_pos", std::make_shared<cell_c>(
                       [fc](cells_t &cells,
-                           std::shared_ptr<environment_c> env) -> cell_ptr {
+                           env_ptr env) -> cell_ptr {
                          SIZE_CHECK("file_io > get_pos", 1)
                          SELF_CHECK
 
@@ -170,7 +170,7 @@ extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
    box->inner_env->set(
        "get_size", std::make_shared<cell_c>(
                        [fc](cells_t &cells,
-                            std::shared_ptr<environment_c> env) -> cell_ptr {
+                            env_ptr env) -> cell_ptr {
                           SIZE_CHECK("file_io > get_size", 1)
                           SELF_CHECK
 
@@ -193,7 +193,7 @@ extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
    box->inner_env->set(
        "get_n", std::make_shared<cell_c>(
                     [fc](cells_t &cells,
-                         std::shared_ptr<environment_c> env) -> cell_ptr {
+                         env_ptr env) -> cell_ptr {
                        SIZE_CHECK("file_io > get_n", 2)
                        SELF_CHECK
 
@@ -225,7 +225,7 @@ extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
    box->inner_env->set(
        "get_line", std::make_shared<cell_c>(
                        [fc](cells_t &cells,
-                            std::shared_ptr<environment_c> env) -> cell_ptr {
+                            env_ptr env) -> cell_ptr {
                           SIZE_CHECK("file_io > get_line", 1)
                           SELF_CHECK
 
@@ -246,7 +246,7 @@ extern cell_ptr _pkg_file_io_get_handle_(cells_t &cells,
        "write_string",
        std::make_shared<cell_c>(
            [fc](cells_t &cells,
-                std::shared_ptr<environment_c> env) -> cell_ptr {
+                env_ptr env) -> cell_ptr {
               SIZE_CHECK("file_io > write_string", 2)
               SELF_CHECK
 

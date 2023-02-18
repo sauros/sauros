@@ -120,6 +120,7 @@ class environment_c {
    cell_ptr _last_good_cell{nullptr};
 };
 
+
 } // namespace sauros
 
 #endif

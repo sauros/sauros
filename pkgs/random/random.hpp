@@ -14,27 +14,27 @@ extern "C" {
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_random_string_(sauros::cells_t &cells,
-                    std::shared_ptr<sauros::environment_c> env);
+                    sauros::env_ptr env);
 
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_random_alpha_string_(sauros::cells_t &cells,
-                          std::shared_ptr<sauros::environment_c> env);
+                          sauros::env_ptr env);
 
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_random_sourced_string_(sauros::cells_t &cells,
-                            std::shared_ptr<sauros::environment_c> env);
+                            sauros::env_ptr env);
 
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_random_uniform_int_(sauros::cells_t &cells,
-                         std::shared_ptr<sauros::environment_c> env);
+                         sauros::env_ptr env);
 
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_random_uniform_real_(sauros::cells_t &cells,
-                          std::shared_ptr<sauros::environment_c> env);
+                          sauros::env_ptr env);
 }
 
 #endif

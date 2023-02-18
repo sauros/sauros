@@ -18,14 +18,14 @@ extern "C" {
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_cwd_(sauros::cells_t &cells,
-             std::shared_ptr<sauros::environment_c> env);
+             sauros::env_ptr env);
 
 /*
    List current directory
 */
 API_EXPORT
 extern sauros::cell_ptr _pkg_os_ls_(sauros::cells_t &cells,
-                                    std::shared_ptr<sauros::environment_c> env);
+                                    sauros::env_ptr env);
 
 /*
    Change working directory
@@ -33,7 +33,7 @@ extern sauros::cell_ptr _pkg_os_ls_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_chdir_(sauros::cells_t &cells,
-               std::shared_ptr<sauros::environment_c> env);
+               sauros::env_ptr env);
 
 /*
    Check if system is little endian
@@ -41,7 +41,7 @@ _pkg_os_chdir_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_endian_(sauros::cells_t &cells,
-                std::shared_ptr<sauros::environment_c> env);
+                sauros::env_ptr env);
 
 /*
    Get the name of the os
@@ -49,7 +49,7 @@ _pkg_os_endian_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_os_name_(sauros::cells_t &cells,
-                 std::shared_ptr<sauros::environment_c> env);
+                 sauros::env_ptr env);
 
 /*
    Check if an item is a file
@@ -57,7 +57,7 @@ _pkg_os_os_name_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_is_file_(sauros::cells_t &cells,
-                 std::shared_ptr<sauros::environment_c> env);
+                 sauros::env_ptr env);
 
 /*
    Check if an item is a directory
@@ -65,7 +65,7 @@ _pkg_os_is_file_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_is_dir_(sauros::cells_t &cells,
-                std::shared_ptr<sauros::environment_c> env);
+                sauros::env_ptr env);
 
 /*
    Check if a path exists
@@ -73,7 +73,7 @@ _pkg_os_is_dir_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_exists_(sauros::cells_t &cells,
-                std::shared_ptr<sauros::environment_c> env);
+                sauros::env_ptr env);
 
 /*
    Create one or more dirs (string vs list of strings)
@@ -81,7 +81,7 @@ _pkg_os_exists_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_mkdir_(sauros::cells_t &cells,
-               std::shared_ptr<sauros::environment_c> env);
+               sauros::env_ptr env);
 
 /*
    Delete one or more files or directories  (string vs list of strings)
@@ -89,7 +89,7 @@ _pkg_os_mkdir_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_delete_(sauros::cells_t &cells,
-                std::shared_ptr<sauros::environment_c> env);
+                sauros::env_ptr env);
 
 /*
    Delete one or more files or directories recursively  (string vs list of
@@ -98,7 +98,7 @@ _pkg_os_delete_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_delete_all_(sauros::cells_t &cells,
-                    std::shared_ptr<sauros::environment_c> env);
+                    sauros::env_ptr env);
 
 /*
    Copy files or directories
@@ -106,7 +106,7 @@ _pkg_os_delete_all_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_copy_(sauros::cells_t &cells,
-              std::shared_ptr<sauros::environment_c> env);
+              sauros::env_ptr env);
 
 /*
    Append data to a file
@@ -114,7 +114,7 @@ _pkg_os_copy_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_file_append_(sauros::cells_t &cells,
-                     std::shared_ptr<sauros::environment_c> env);
+                     sauros::env_ptr env);
 
 /*
    Append data to a file
@@ -122,7 +122,7 @@ _pkg_os_file_append_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_file_write_(sauros::cells_t &cells,
-                    std::shared_ptr<sauros::environment_c> env);
+                    sauros::env_ptr env);
 
 /*
    Read data from a file
@@ -130,7 +130,7 @@ _pkg_os_file_write_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_file_read_(sauros::cells_t &cells,
-                   std::shared_ptr<sauros::environment_c> env);
+                   sauros::env_ptr env);
 
 /*
    Clear the screen
@@ -138,7 +138,7 @@ _pkg_os_file_read_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_clear_screen_(sauros::cells_t &cells,
-                      std::shared_ptr<sauros::environment_c> env);
+                      sauros::env_ptr env);
 
 /*
    Get an environment variable
@@ -146,7 +146,7 @@ _pkg_os_clear_screen_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_get_env_(sauros::cells_t &cells,
-                 std::shared_ptr<sauros::environment_c> env);
+                 sauros::env_ptr env);
 
 /*
    Sleep ms
@@ -154,7 +154,7 @@ _pkg_os_get_env_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_sleep_ms_(sauros::cells_t &cells,
-                  std::shared_ptr<sauros::environment_c> env);
+                  sauros::env_ptr env);
 
 /*
    Run an application
@@ -162,7 +162,7 @@ _pkg_os_sleep_ms_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_system_exec_(sauros::cells_t &cells,
-                     std::shared_ptr<sauros::environment_c> env);
+                     sauros::env_ptr env);
 
 /*
    Join path
@@ -170,7 +170,7 @@ _pkg_os_system_exec_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_path_join_(sauros::cells_t &cells,
-                   std::shared_ptr<sauros::environment_c> env);
+                   sauros::env_ptr env);
 
 /*
    Get file
@@ -178,7 +178,7 @@ _pkg_os_path_join_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_path_get_file_(sauros::cells_t &cells,
-                       std::shared_ptr<sauros::environment_c> env);
+                       sauros::env_ptr env);
 
 /*
    Get absolute path
@@ -186,7 +186,7 @@ _pkg_os_path_get_file_(sauros::cells_t &cells,
 API_EXPORT
 extern sauros::cell_ptr
 _pkg_os_path_get_abs_(sauros::cells_t &cells,
-                      std::shared_ptr<sauros::environment_c> env);
+                      sauros::env_ptr env);
 }
 
 #endif
