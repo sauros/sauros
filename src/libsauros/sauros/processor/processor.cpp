@@ -334,30 +334,24 @@ cell_ptr processor_c::clone_box(cell_ptr cell) {
    return std::make_shared<cell_c>(new_box);
 }
 
-std::vector<std::string> processor_c::retrieve_accessors(cell_ptr &cell) {
-#ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_c::retrieve_accessors");
-#endif
-   std::vector<std::string> accessors;
-   std::string accessor;
-   std::stringstream source(*cell->data.s);
-   while (std::getline(source, accessor, '.')) {
-      accessors.push_back(accessor);
-   }
-   if (accessors.size() <= 1) {
-      throw runtime_exception_c("Malformed accessor", cell);
-   }
-   return accessors;
-}
-
-std::tuple<cell_ptr, std::string, std::shared_ptr<environment_c>>
+std::tuple<cell_ptr, std::string, env_ptr>
 processor_c::retrieve_box_data(cell_ptr &cell,
                                std::shared_ptr<environment_c> &env) {
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::retrieve_box_data");
 #endif
 
-   auto accessors = retrieve_accessors(cell);
+   std::vector<std::string> accessors;
+   {
+      std::string accessor;
+      std::stringstream source(*cell->data.s);
+      while (std::getline(source, accessor, '.')) {
+         accessors.push_back(accessor);
+      }
+      if (accessors.size() <= 1) {
+         throw runtime_exception_c("Malformed accessor", cell);
+      }
+   }
 
    cell_ptr result;
    std::shared_ptr<environment_c> moving_env = env;

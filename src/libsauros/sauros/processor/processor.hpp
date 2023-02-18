@@ -127,18 +127,12 @@ class processor_c {
    void load_package(cell_ptr cell, location_s *location,
                      env_ptr env);
 
-   static std::vector<std::string> retrieve_accessors(cell_ptr &cell);
-
-   static std::tuple<cell_ptr, std::string, std::shared_ptr<environment_c>>
+   static std::tuple<cell_ptr, std::string, env_ptr>
    retrieve_box_data(cell_ptr &cell, std::shared_ptr<environment_c> &env);
 
    bool _break_loop{false};
    cell_ptr _yield_cell{nullptr};
    processor_c *_sub_processor{nullptr};
-
-
-
-
 };
 
 } // namespace sauros

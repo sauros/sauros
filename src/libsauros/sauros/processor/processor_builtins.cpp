@@ -1,7 +1,6 @@
 #include "processor.hpp"
 #include "sauros/driver.hpp"
 #include "sauros/profiler.hpp"
-#include "sauros/cell.hpp"
 #include <algorithm>
 #include <filesystem>
 #include <iostream>
@@ -948,9 +947,10 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::LT");
 #endif
+          constexpr auto fn = [](double lhs, double rhs) -> double { return lhs < rhs; };
           PERFORM_ARITH(
               "<", cells,
-              [](double lhs, double rhs) -> double { return lhs < rhs; }, env, false);
+              fn, env, false);
        });
 
    _builtins[BUILTIN_LT_EQ] = std::make_shared<cell_c>(
@@ -958,9 +958,10 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::LT_EQ");
 #endif
+            constexpr auto fn = [](double lhs, double rhs) -> double { return lhs <= rhs; };
           PERFORM_ARITH(
               "<=", cells,
-              [](double lhs, double rhs) -> double { return lhs <= rhs; },
+              fn,
               env, false);
        });
 
@@ -969,9 +970,10 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::GT");
 #endif
+          constexpr auto fn = [](double lhs, double rhs) -> double { return lhs > rhs; };
           PERFORM_ARITH(
               ">", cells,
-              [](double lhs, double rhs) -> double { return lhs > rhs; }, env, false);
+              fn, env, false);
        });
 
    _builtins[BUILTIN_GT_EQ] = std::make_shared<cell_c>(
@@ -979,9 +981,10 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::GT_EQ");
 #endif
+          constexpr auto fn = [](double lhs, double rhs) -> double { return lhs >= rhs; };
           PERFORM_ARITH(
               ">=", cells,
-              [](double lhs, double rhs) -> double { return lhs >= rhs; },
+              fn,
               env, false);
        });
 
@@ -990,11 +993,12 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::EQ_EQ");
 #endif
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+                 return SAUROS_DOUBLES_EQUAL(lhs, rhs);
+              };
           PERFORM_ARITH(
               "==", cells,
-              [](double lhs, double rhs) -> double {
-                 return SAUROS_DOUBLES_EQUAL(lhs, rhs);
-              },
+              fn,
               env, false);
        });
 
@@ -1003,9 +1007,10 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::NOT_EQ");
 #endif
+          constexpr auto fn = 
+              [](double lhs, double rhs) -> double { return lhs != rhs; };
           PERFORM_ARITH(
-              "!=", cells,
-              [](double lhs, double rhs) -> double { return lhs != rhs; },
+              "!=", cells,fn,
               env, false);
        });
 
@@ -1014,9 +1019,12 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::ADD");
 #endif
+         
+        constexpr auto fn = [](double lhs, double rhs) -> double { return lhs + rhs; };
+
           PERFORM_ARITH(
               "+", cells,
-              [](double lhs, double rhs) -> double { return lhs + rhs; }, env, false);
+              fn, env, false);
        });
 
    _builtins[BUILTIN_SUB] = std::make_shared<cell_c>(
@@ -1024,9 +1032,10 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::SUB");
 #endif
+          constexpr auto fn = [](double lhs, double rhs) -> double { return lhs - rhs; };
           PERFORM_ARITH(
               "-", cells,
-              [](double lhs, double rhs) -> double { return lhs - rhs; }, env, false);
+              fn, env, false);
        });
 
    _builtins[BUILTIN_DIV] = std::make_shared<cell_c>(
@@ -1034,15 +1043,16 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::DIV");
 #endif
-          PERFORM_ARITH(
-              "/", cells,
-              [=](double lhs, double rhs) -> double {
+          constexpr auto fn = [](double lhs, double rhs) -> double {
                  if (rhs == 0.0) {
                     return 0.0;
                  }
 
                  return lhs / rhs;
-              },
+              };
+          PERFORM_ARITH(
+              "/", cells,
+              fn,
               env, true);
        });
 
@@ -1051,9 +1061,10 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::MUL");
 #endif
+          constexpr auto fn = [](double lhs, double rhs) -> double { return lhs * rhs; };
           PERFORM_ARITH(
               "*", cells,
-              [](double lhs, double rhs) -> double { return lhs * rhs; }, env, false);
+              fn, env, false);
        });
 
    _builtins[BUILTIN_MOD] = std::make_shared<cell_c>(
@@ -1061,12 +1072,13 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::MOD");
 #endif
-          PERFORM_ARITH(
-              "%", cells,
-              [](double lhs, double rhs) -> double {
+          constexpr auto fn = [](double lhs, double rhs) -> double {
                  return static_cast<cell_int_t>(lhs) %
                         static_cast<cell_int_t>(rhs);
-              },
+              };
+          PERFORM_ARITH(
+              "%", cells,
+              fn,
               env, false);
        });
 
@@ -1075,14 +1087,15 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::OR");
 #endif
-          PERFORM_ARITH(
-              "%", cells,
-              [](double lhs, double rhs) -> double {
+          constexpr auto fn = [](double lhs, double rhs) -> double {
                  bool result =
                      (static_cast<bool>(lhs) || static_cast<bool>(rhs)) ? true
                                                                         : false;
                  return result;
-              },
+              };
+          PERFORM_ARITH(
+              "%", cells,
+              fn,
               env, false);
        });
 
@@ -1091,14 +1104,16 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::AND");
 #endif
-          PERFORM_ARITH(
-              "%", cells,
-              [](double lhs, double rhs) -> double {
+          constexpr auto fn = [](double lhs, double rhs) -> double {
                  bool result =
                      (static_cast<bool>(lhs) && static_cast<bool>(rhs)) ? true
                                                                         : false;
                  return result;
-              },
+              };
+
+          PERFORM_ARITH(
+              "%", cells,
+              fn,
               env, false);
        });
 
@@ -1107,15 +1122,17 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::XOR");
 #endif
-          PERFORM_ARITH(
-              "%", cells,
-              [](double lhs, double rhs) -> double {
+          constexpr auto fn = [](double lhs, double rhs) -> double {
                  auto _lhs = static_cast<bool>(lhs);
                  auto _rhs = static_cast<bool>(rhs);
                  bool result =
                      ((_lhs && !_rhs) || (_rhs && !_lhs)) ? true : false;
                  return result;
-              },
+              };
+
+          PERFORM_ARITH(
+              "%", cells,
+              fn,
               env, false);
        });
 
@@ -1124,11 +1141,13 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::BW_AND");
 #endif
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+                 return static_cast<uint64_t>(lhs) & static_cast<uint64_t>(rhs);
+              };
+
           PERFORM_ARITH(
               "%", cells,
-              [](double lhs, double rhs) -> double {
-                 return static_cast<uint64_t>(lhs) & static_cast<uint64_t>(rhs);
-              },
+              fn,
               env, false);
        });
 
@@ -1137,11 +1156,12 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::BW_OR");
 #endif
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+                 return static_cast<uint64_t>(lhs) | static_cast<uint64_t>(rhs);
+              };
           PERFORM_ARITH(
               "%", cells,
-              [](double lhs, double rhs) -> double {
-                 return static_cast<uint64_t>(lhs) | static_cast<uint64_t>(rhs);
-              },
+              fn,
               env, false);
        });
 
@@ -1150,12 +1170,13 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::BW_LSH");
 #endif
-          PERFORM_ARITH(
-              "%", cells,
-              [](double lhs, double rhs) -> double {
+          constexpr auto fn = [](double lhs, double rhs) -> double {
                  return static_cast<uint64_t>(lhs)
                         << static_cast<uint64_t>(rhs);
-              },
+              };
+          PERFORM_ARITH(
+              "%", cells,
+              fn,
               env, false);
        });
 
@@ -1164,12 +1185,13 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::BW_RSH");
 #endif
-          PERFORM_ARITH(
-              "%", cells,
-              [](double lhs, double rhs) -> double {
+          constexpr auto fn = [](double lhs, double rhs) -> double {
                  return static_cast<uint64_t>(lhs) >>
                         static_cast<uint64_t>(rhs);
-              },
+              };
+          PERFORM_ARITH(
+              "%", cells,
+              fn,
               env, false);
        });
 
@@ -1178,11 +1200,12 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::BW_XOR");
 #endif
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+                 return static_cast<uint64_t>(lhs) ^ static_cast<uint64_t>(rhs);
+              };
           PERFORM_ARITH(
               "%", cells,
-              [](double lhs, double rhs) -> double {
-                 return static_cast<uint64_t>(lhs) ^ static_cast<uint64_t>(rhs);
-              },
+              fn,
               env, false);
        });
 
