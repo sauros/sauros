@@ -115,6 +115,12 @@ mandelbrot.saur >> averaged an execution time of  0.2413s ( 241.2618ms )  after 
 
 .. yeah its a bit slower 
 
+## 18-Feb-2023
 
+A little bit of work to try to optimize things
 
-
+```
+primality.saur >> averaged an execution time of  1.1859s ( 1185.9115ms )  after  50  executions
+mandelbrot.saur >> averaged an execution time of  0.2254s ( 225.4281ms )  after  50  executions
+4sieve.saur >> averaged an execution time of  1.0611s ( 1061.1067ms )  after  50  executions
+```
