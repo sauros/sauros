@@ -118,8 +118,8 @@ void processor_c::quote_cell(std::string &out, cell_ptr cell, env_ptr env) {
       out += lambda_name + "[ ";
 
       if (!cells[0]->data.s) {
-         throw runtime_exception_c("Accessed data item unknown",
-                                   env->get_last_good_cell());
+         throw exceptions::runtime_c("Accessed data item unknown",
+                                     env->get_last_good_cell());
       }
 
       auto target_lambda =
@@ -205,7 +205,7 @@ cell_ptr processor_c::process_list(cells_t &cells, env_ptr env) {
    default:
       break;
    }
-   throw runtime_exception_c("Unknown cell type", cells[0]);
+   throw exceptions::runtime_c("Unknown cell type", cells[0]);
 }
 
 cell_ptr processor_c::process_cell(cell_ptr cell, env_ptr env) {
@@ -229,8 +229,8 @@ cell_ptr processor_c::process_cell(cell_ptr cell, env_ptr env) {
       // If not built in maybe it is in the environment
       //
       if (!cell->data.s) {
-         throw runtime_exception_c("Accessed data item unknown",
-                                   env->get_last_good_cell());
+         throw exceptions::runtime_c("Accessed data item unknown",
+                                     env->get_last_good_cell());
       }
       auto env_with_data = env->find(*cell->data.s, cell);
       auto r = env_with_data->get(*cell->data.s);
@@ -244,7 +244,7 @@ cell_ptr processor_c::process_cell(cell_ptr cell, env_ptr env) {
    case cell_type_e::ENCODED_SYMBOL: {
       if (cell->builtin_encoding == BUILTIN_DEFAULT_VAL ||
           cell->builtin_encoding >= BUILTIN_ENTRY_COUNT) {
-         throw runtime_exception_c(
+         throw exceptions::runtime_c(
              "Invalid encoded symbol for : " + *cell->data.s, cell);
       }
 
@@ -273,7 +273,7 @@ cell_ptr processor_c::process_cell(cell_ptr cell, env_ptr env) {
       break;
    }
 
-   throw runtime_exception_c("internal error -> no processable cell", cell);
+   throw exceptions::runtime_c("internal error -> no processable cell", cell);
 }
 
 cell_ptr processor_c::process_lambda(cell_ptr cell, cells_t &cells,
@@ -287,7 +287,7 @@ cell_ptr processor_c::process_lambda(cell_ptr cell, cells_t &cells,
    }
 
    if (cell->list[0]->list.size() != exps.size()) {
-      throw runtime_exception_c(
+      throw exceptions::runtime_c(
           "Invalid number of paramters given to lambda: " + *cells[0]->data.s +
               ". " + std::to_string(exps.size()) + " parameters given, but " +
               std::to_string(cell->list[0]->list.size()) + " were expected.",
@@ -345,7 +345,7 @@ processor_c::retrieve_box_data(cell_ptr &cell,
          accessors.push_back(accessor);
       }
       if (accessors.size() <= 1) {
-         throw runtime_exception_c("Malformed accessor", cell);
+         throw exceptions::runtime_c("Malformed accessor", cell);
       }
    }
 
@@ -380,8 +380,8 @@ cell_ptr processor_c::load_potential_variable(cell_ptr cell, env_ptr env) {
    }
 
    if (!cell->data.s) {
-      throw runtime_exception_c("Accessed data item unknown",
-                                env->get_last_good_cell());
+      throw exceptions::runtime_c("Accessed data item unknown",
+                                  env->get_last_good_cell());
    }
 
    auto &variable_name = *cell->data.s;

@@ -46,7 +46,7 @@ sauros::cell_ptr execute_commands(sauros::cells_t &cells, sauros::env_ptr env,
           std::make_shared<sauros::cell_c>(sauros::cell_type_e::LIST);
 
       if (s->type != sauros::cell_type_e::STRING) {
-         throw sauros::processor_c::runtime_exception_c(
+         throw sauros::exceptions::runtime_c(
              cmd_name + " command expectes strings for all items", cells[0]);
       }
       // Indicate the path being listed
@@ -84,7 +84,7 @@ sauros::cell_ptr _pkg_os_ls_(sauros::cells_t &cells, sauros::env_ptr env) {
           std::make_shared<sauros::cell_c>(sauros::cell_type_e::LIST);
 
       if (s->type != sauros::cell_type_e::STRING) {
-         throw sauros::processor_c::runtime_exception_c(
+         throw sauros::exceptions::runtime_c(
              "ls command expectes strings for all sources to list", cells[0]);
       }
       // Indicate the path being listed
@@ -113,7 +113,7 @@ sauros::cell_ptr _pkg_os_chdir_(sauros::cells_t &cells, sauros::env_ptr env) {
 
    auto raw_dest = c_api_process_cell(cells[1], env);
    if (raw_dest->type != sauros::cell_type_e::STRING) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "chdir command expects parameter to be a string", cells[0]);
    }
 
@@ -175,7 +175,7 @@ sauros::cell_ptr _pkg_os_is_file_(sauros::cells_t &cells, sauros::env_ptr env) {
 
    auto raw_dest = c_api_process_cell(cells[1], env);
    if (raw_dest->type != sauros::cell_type_e::STRING) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "is_file command expects parameter to be a string", cells[0]);
    }
 
@@ -191,7 +191,7 @@ sauros::cell_ptr _pkg_os_is_dir_(sauros::cells_t &cells, sauros::env_ptr env) {
 
    auto raw_dest = c_api_process_cell(cells[1], env);
    if (raw_dest->type != sauros::cell_type_e::STRING) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "is_dir command expects parameter to be a string", cells[0]);
    }
 
@@ -205,7 +205,7 @@ sauros::cell_ptr _pkg_os_exists_(sauros::cells_t &cells, sauros::env_ptr env) {
 
    auto raw_dest = c_api_process_cell(cells[1], env);
    if (raw_dest->type != sauros::cell_type_e::STRING) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "is_file command expects parameter to be a string", cells[0]);
    }
 
@@ -243,7 +243,7 @@ sauros::cell_ptr _pkg_os_delete_all_(sauros::cells_t &cells,
 sauros::cell_ptr _pkg_os_copy_(sauros::cells_t &cells, sauros::env_ptr env) {
    auto source = c_api_process_cell(cells[1], env);
    if (source->type != sauros::cell_type_e::STRING) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "copy command expects source parameter to be a string", cells[1]);
    }
 
@@ -252,7 +252,7 @@ sauros::cell_ptr _pkg_os_copy_(sauros::cells_t &cells, sauros::env_ptr env) {
    }
    auto dest = c_api_process_cell(cells[2], env);
    if (dest->type != sauros::cell_type_e::STRING) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "copy command expects destination parameter to be a string",
           cells[2]);
    }
@@ -270,7 +270,7 @@ sauros::cell_ptr _pkg_os_file_append_(sauros::cells_t &cells,
                                       sauros::env_ptr env) {
    auto file = c_api_process_cell(cells[1], env);
    if (file->type != sauros::cell_type_e::STRING) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "file operation expects file name to be a string", cells[1]);
    }
 
@@ -296,7 +296,7 @@ sauros::cell_ptr _pkg_os_file_write_(sauros::cells_t &cells,
                                      sauros::env_ptr env) {
    auto file = c_api_process_cell(cells[1], env);
    if (file->type != sauros::cell_type_e::STRING) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "file operation expects file name to be a string", cells[1]);
    }
 
@@ -322,7 +322,7 @@ sauros::cell_ptr _pkg_os_file_read_(sauros::cells_t &cells,
                                     sauros::env_ptr env) {
    auto file = c_api_process_cell(cells[1], env);
    if (file->type != sauros::cell_type_e::STRING) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "file operation expects file name to be a string", cells[1]);
    }
 
@@ -362,7 +362,7 @@ sauros::cell_ptr _pkg_os_get_env_(sauros::cells_t &cells, sauros::env_ptr env) {
 
    auto var_string = c_api_process_cell(cells[1], env);
    if (var_string->type != sauros::cell_type_e::STRING) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "get_env operation expects name to be a string", cells[1]);
    }
 
@@ -380,7 +380,7 @@ sauros::cell_ptr _pkg_os_sleep_ms_(sauros::cells_t &cells,
    auto ms_cell = c_api_process_cell(cells[1], env);
    if (ms_cell->type != sauros::cell_type_e::INTEGER &&
        ms_cell->type != sauros::cell_type_e::REAL) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "sleep_ms operation expects name to be a numerical value", cells[1]);
    }
 

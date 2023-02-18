@@ -13,7 +13,7 @@ namespace package {
 
 #define PACKAGE_CHECK(condition__, msg__)                                      \
    if (!(condition__)) {                                                       \
-      throw sauros::processor_c::runtime_exception_c(                          \
+      throw sauros::exceptions::runtime_c(                                     \
           msg__, std::make_shared<cell_c>(cell_type_e::STRING, "", location)); \
    }
 

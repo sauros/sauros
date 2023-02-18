@@ -176,11 +176,11 @@ void driver_if::execute(parser::segment_parser_c::segment_s segment) {
       }
       auto result = _list_processor.process_cell((*parser_result), _env);
       cell_returned(result);
-   } catch (sauros::processor_c::runtime_exception_c &e) {
+   } catch (sauros::exceptions::runtime_c &e) {
       except(e);
-   } catch (sauros::processor_c::assertion_exception_c &e) {
+   } catch (sauros::exceptions::assertion_c &e) {
       except(e);
-   } catch (sauros::environment_c::unknown_identifier_c &e) {
+   } catch (sauros::exceptions::unknown_identifier_c &e) {
       except(e);
    } catch (sauros::parser::parser_exception_c &e) {
       except(e);
@@ -193,11 +193,11 @@ void driver_if::execute(const char *source, uint64_t line_number,
       auto result = _list_processor.process_cell(
           sauros::parser::parse_line(source, line_number, line), _env);
       cell_returned(result);
-   } catch (sauros::processor_c::runtime_exception_c &e) {
+   } catch (sauros::exceptions::runtime_c &e) {
       except(e);
-   } catch (sauros::processor_c::assertion_exception_c &e) {
+   } catch (sauros::exceptions::assertion_c &e) {
       except(e);
-   } catch (sauros::environment_c::unknown_identifier_c &e) {
+   } catch (sauros::exceptions::unknown_identifier_c &e) {
       except(e);
    } catch (sauros::parser::parser_exception_c &e) {
       except(e);
@@ -243,19 +243,19 @@ void file_executor_c::except(sauros::parser::parser_exception_c &e) {
    std::exit(1);
 }
 
-void file_executor_c::except(sauros::processor_c::runtime_exception_c &e) {
+void file_executor_c::except(sauros::exceptions::runtime_c &e) {
    std::cout << rang::fg::red << e.what() << rang::fg::reset << std::endl;
    display_error_from_file(e.get_origin(), e.get_location());
    std::exit(1);
 }
 
-void file_executor_c::except(sauros::processor_c::assertion_exception_c &e) {
+void file_executor_c::except(sauros::exceptions::assertion_c &e) {
    std::cout << rang::fg::red << e.what() << rang::fg::reset << std::endl;
    display_error_from_file(e.get_origin(), e.get_location());
    std::exit(1);
 }
 
-void file_executor_c::except(sauros::environment_c::unknown_identifier_c &e) {
+void file_executor_c::except(sauros::exceptions::unknown_identifier_c &e) {
    std::cout << rang::fg::red << e.what() << rang::fg::reset << ": "
              << e.get_id() << std::endl;
    display_error_from_file(e.get_origin(), e.get_location());
@@ -384,15 +384,15 @@ void repl_c::except(sauros::parser::parser_exception_c &e) {
    std::cout << rang::fg::red << e.what() << rang::fg::reset << std::endl;
 }
 
-void repl_c::except(sauros::processor_c::runtime_exception_c &e) {
+void repl_c::except(sauros::exceptions::runtime_c &e) {
    std::cout << rang::fg::red << e.what() << rang::fg::reset << std::endl;
 }
 
-void repl_c::except(sauros::processor_c::assertion_exception_c &e) {
+void repl_c::except(sauros::exceptions::assertion_c &e) {
    std::cout << rang::fg::red << e.what() << rang::fg::reset << std::endl;
 }
 
-void repl_c::except(sauros::environment_c::unknown_identifier_c &e) {
+void repl_c::except(sauros::exceptions::unknown_identifier_c &e) {
 
    std::cout << rang::fg::red << e.what() << rang::fg::reset << ": "
              << e.get_id() << std::endl;
@@ -406,19 +406,19 @@ void eval_c::except(sauros::parser::parser_exception_c &e) {
    std::exit(1);
 }
 
-void eval_c::except(sauros::processor_c::runtime_exception_c &e) {
+void eval_c::except(sauros::exceptions::runtime_c &e) {
    std::cout << rang::fg::yellow << "[decomposed item] : " << rang::fg::red
              << e.what() << rang::fg::reset << std::endl;
    std::exit(1);
 }
 
-void eval_c::except(sauros::processor_c::assertion_exception_c &e) {
+void eval_c::except(sauros::exceptions::assertion_c &e) {
    std::cout << rang::fg::yellow << "[decomposed item] : " << rang::fg::red
              << e.what() << rang::fg::reset << std::endl;
    std::exit(1);
 }
 
-void eval_c::except(sauros::environment_c::unknown_identifier_c &e) {
+void eval_c::except(sauros::exceptions::unknown_identifier_c &e) {
    std::cout << rang::fg::yellow << "[decomposed item] : " << rang::fg::red
              << e.what() << rang::fg::reset << ": " << e.get_id() << std::endl;
    std::exit(1);

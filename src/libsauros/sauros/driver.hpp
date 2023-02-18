@@ -2,6 +2,7 @@
 #define SAUROS_DRIVER_HPP
 
 #include "environment.hpp"
+#include "exceptions.hpp"
 #include "front/parser.hpp"
 #include "processor/processor.hpp"
 #include <fstream>
@@ -29,9 +30,9 @@ class driver_if {
                 std::string &line);
    void execute(parser::segment_parser_c::segment_s segment);
    virtual void cell_returned(cell_ptr cell) = 0;
-   virtual void except(sauros::processor_c::runtime_exception_c &e) = 0;
-   virtual void except(sauros::processor_c::assertion_exception_c &e) = 0;
-   virtual void except(sauros::environment_c::unknown_identifier_c &e) = 0;
+   virtual void except(sauros::exceptions::runtime_c &e) = 0;
+   virtual void except(sauros::exceptions::assertion_c &e) = 0;
+   virtual void except(sauros::exceptions::unknown_identifier_c &e) = 0;
    virtual void except(sauros::parser::parser_exception_c &e) = 0;
 
    std::shared_ptr<sauros::environment_c> _env;
@@ -61,12 +62,10 @@ class file_executor_c : private driver_if {
 
  private:
    virtual void cell_returned(cell_ptr cell) override final;
+   virtual void except(sauros::exceptions::runtime_c &e) override final;
+   virtual void except(sauros::exceptions::assertion_c &e) override final;
    virtual void
-   except(sauros::processor_c::runtime_exception_c &e) override final;
-   virtual void
-   except(sauros::processor_c::assertion_exception_c &e) override final;
-   virtual void
-   except(sauros::environment_c::unknown_identifier_c &e) override final;
+   except(sauros::exceptions::unknown_identifier_c &e) override final;
    virtual void except(sauros::parser::parser_exception_c &e) override final;
    std::fstream _fs;
    std::string _file;
@@ -93,12 +92,10 @@ class repl_c : private driver_if {
  private:
    bool _do{true};
    virtual void cell_returned(cell_ptr cell) override final;
+   virtual void except(sauros::exceptions::runtime_c &e) override final;
+   virtual void except(sauros::exceptions::assertion_c &e) override final;
    virtual void
-   except(sauros::processor_c::runtime_exception_c &e) override final;
-   virtual void
-   except(sauros::processor_c::assertion_exception_c &e) override final;
-   virtual void
-   except(sauros::environment_c::unknown_identifier_c &e) override final;
+   except(sauros::exceptions::unknown_identifier_c &e) override final;
    virtual void except(sauros::parser::parser_exception_c &e) override final;
 };
 
@@ -119,12 +116,10 @@ class eval_c : private driver_if {
  private:
    std::function<void(cell_ptr cell)> _cb;
    virtual void cell_returned(cell_ptr cell) override final;
+   virtual void except(sauros::exceptions::runtime_c &e) override final;
+   virtual void except(sauros::exceptions::assertion_c &e) override final;
    virtual void
-   except(sauros::processor_c::runtime_exception_c &e) override final;
-   virtual void
-   except(sauros::processor_c::assertion_exception_c &e) override final;
-   virtual void
-   except(sauros::environment_c::unknown_identifier_c &e) override final;
+   except(sauros::exceptions::unknown_identifier_c &e) override final;
    virtual void except(sauros::parser::parser_exception_c &e) override final;
 };
 } // namespace sauros

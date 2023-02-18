@@ -130,13 +130,13 @@ TEST(sauros_tests, piecemeal) {
          proc.cell_to_string(stringed_result, cell_result, env, false);
 
          CHECK_EQUAL(tc.expected_output, stringed_result);
-      } catch (sauros::processor_c::runtime_exception_c &e) {
+      } catch (sauros::exceptions::runtime_c &e) {
          std::cout << e.what() << std::endl;
          FAIL("exception");
-      } catch (sauros::processor_c::assertion_exception_c &e) {
+      } catch (sauros::exceptions::assertion_c &e) {
          std::cout << e.what() << std::endl;
          FAIL("exception");
-      } catch (sauros::environment_c::unknown_identifier_c &e) {
+      } catch (sauros::exceptions::unknown_identifier_c &e) {
          std::cout << e.what() << " : " << e.get_id() << std::endl;
          FAIL("exception");
       } catch (sauros::parser::parser_exception_c &e) {

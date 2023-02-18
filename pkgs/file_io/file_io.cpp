@@ -9,26 +9,26 @@ using namespace sauros;
 
 #define SIZE_CHECK(item__, size__)                                             \
    if (cells.size() != size__) {                                               \
-      throw processor_c::runtime_exception_c(                                  \
+      throw exceptions::runtime_c(                                             \
           sauros::format("`%` expects % parameters", item__, size__ - 1),      \
           cells[0]);                                                           \
    }
 
 #define SELF_CHECK                                                             \
    if (!fc) {                                                                  \
-      throw processor_c::runtime_exception_c(                                  \
+      throw exceptions::runtime_c(                                             \
           "file_io > Target file cell no longer exists", cells[0]);            \
    }
 
 #define EXPECT(condition__, msg__)                                             \
    if (!condition__) {                                                         \
-      throw processor_c::runtime_exception_c(msg__, cells[0]);                 \
+      throw exceptions::runtime_c(msg__, cells[0]);                            \
    }
 
 #define EXPECT_CB(condition__, msg__, cb__)                                    \
    if (!condition__) {                                                         \
       cb__();                                                                  \
-      throw processor_c::runtime_exception_c(msg__, cells[0]);                 \
+      throw exceptions::runtime_c(msg__, cells[0]);                            \
    }
 
 class file_cell_c {

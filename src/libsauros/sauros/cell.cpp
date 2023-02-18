@@ -35,8 +35,7 @@ thread_cell_c::thread_cell_c(location_s *location)
           try {
              thread.join();
           } catch (...) {
-             throw processor_c::runtime_exception_c("unable to join thread",
-                                                    cells[0]);
+             throw exceptions::runtime_c("unable to join thread", cells[0]);
           }
           return std::make_shared<cell_c>(CELL_TRUE);
        });
@@ -112,8 +111,8 @@ ref_cell_c::ref_cell_c(location_s *location)
    put_fn = std::make_shared<cell_c>(
        [this](cells_t &cells, env_ptr env) -> cell_ptr {
           if (cells.size() != 2) {
-             throw processor_c::runtime_exception_c(
-                 "ref_cell.put expects 1 parameters", cells[0]);
+             throw exceptions::runtime_c("ref_cell.put expects 1 parameters",
+                                         cells[0]);
           }
           const std::lock_guard<std::mutex> lock(ref_mut);
           ref_value = cells[1];
@@ -123,8 +122,8 @@ ref_cell_c::ref_cell_c(location_s *location)
    get_fn = std::make_shared<cell_c>(
        [this](cells_t &cells, env_ptr env) -> cell_ptr {
           if (cells.size() != 1) {
-             throw processor_c::runtime_exception_c(
-                 "ref_cell.get expects no parameters", cells[0]);
+             throw exceptions::runtime_c("ref_cell.get expects no parameters",
+                                         cells[0]);
           }
           const std::lock_guard<std::mutex> lock(ref_mut);
           return ref_value;

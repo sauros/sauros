@@ -1,8 +1,8 @@
 #include "environment.hpp"
-
+#include "exceptions.hpp"
 #include "profiler.hpp"
-#include <iostream>
 
+#include <iostream>
 #include <sstream>
 #include <vector>
 
@@ -63,7 +63,7 @@ environment_c *environment_c::find(const std::string &var,
       return _parent->find(var, origin_cell);
    }
 
-   throw unknown_identifier_c(var, origin_cell);
+   throw exceptions::unknown_identifier_c(var, origin_cell);
 }
 
 bool environment_c::package_loaded(const std::string &package) {
