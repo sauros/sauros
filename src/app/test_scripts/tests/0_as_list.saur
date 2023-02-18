@@ -1,0 +1,28 @@
+
+[var string_item [as_list "STRING"]]
+[var integer_item [as_list 420]]
+[var real_item [as_list 4.20]]
+
+[assert "as_list.saur > String not listed correctly" [== 6 [len string_item]]]
+
+[assert "as_list.saur > Improper value" [seq "S" [at 0 string_item]]]
+[assert "as_list.saur > Improper value" [seq "T" [at 1 string_item]]]
+[assert "as_list.saur > Improper value" [seq "R" [at 2 string_item]]]
+[assert "as_list.saur > Improper value" [seq "I" [at 3 string_item]]]
+[assert "as_list.saur > Improper value" [seq "N" [at 4 string_item]]]
+[assert "as_list.saur > Improper value" [seq "G" [at 5 string_item]]]
+
+[assert "as_list.saur > String not listed correctly" [== 3 [len integer_item]]]
+[assert "as_list.saur > Improper value" [seq "4" [at 0 integer_item]]]
+[assert "as_list.saur > Improper value" [seq "2" [at 1 integer_item]]]
+[assert "as_list.saur > Improper value" [seq "0" [at 2 integer_item]]]
+
+[assert "as_list.saur > String not listed correctly" [== 8 [len real_item]]]
+[assert "as_list.saur > Improper value" [seq "4" [at 0 real_item]]]
+[assert "as_list.saur > Improper value" [seq "." [at 1 real_item]]]
+[assert "as_list.saur > Improper value" [seq "2" [at 2 real_item]]]
+[assert "as_list.saur > Improper value" [seq "0" [at 3 real_item]]]
+[assert "as_list.saur > Improper value" [seq "0" [at 4 real_item]]]
+[assert "as_list.saur > Improper value" [seq "0" [at 5 real_item]]]
+[assert "as_list.saur > Improper value" [seq "0" [at 6 real_item]]]
+[assert "as_list.saur > Improper value" [seq "0" [at 7 real_item]]]
