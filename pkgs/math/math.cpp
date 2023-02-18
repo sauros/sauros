@@ -8,7 +8,7 @@ sauros::cell_ptr single_arithmetic(sauros::cells_t &cells,
                                    std::function<double(double)> fn,
                                    std::shared_ptr<sauros::environment_c> env) {
    if (cells.size() < 2) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "given math function expects 1 parameter, but " +
               std::to_string(cells.size() - 1) + " were given",
           cells[0]);
@@ -19,7 +19,7 @@ sauros::cell_ptr single_arithmetic(sauros::cells_t &cells,
       auto item = c_api_process_cell(cell, env);
       if (item->type != sauros::cell_type_e::REAL &&
           item->type != sauros::cell_type_e::INTEGER) {
-         throw sauros::processor_c::runtime_exception_c(
+         throw sauros::exceptions::runtime_c(
              "math operation expects parameter to be an integer or a double",
              cell);
       }
@@ -189,7 +189,7 @@ sauros::cell_ptr
 _sauros_pkg_math_pow_(sauros::cells_t &cells,
                       std::shared_ptr<sauros::environment_c> env) {
    if (cells.size() != 3) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "given math function expects 3 parameter, but " +
               std::to_string(cells.size()) + " were given",
           cells[0]);
@@ -200,7 +200,7 @@ _sauros_pkg_math_pow_(sauros::cells_t &cells,
       auto lhs = c_api_process_cell(lhs_, env);
       if (lhs->type != sauros::cell_type_e::REAL &&
           lhs->type != sauros::cell_type_e::INTEGER) {
-         throw sauros::processor_c::runtime_exception_c(
+         throw sauros::exceptions::runtime_c(
              "math operation expects parameter to be an integer or a double",
              lhs);
       }
@@ -208,7 +208,7 @@ _sauros_pkg_math_pow_(sauros::cells_t &cells,
       auto rhs = c_api_process_cell(rhs_, env);
       if (rhs->type != sauros::cell_type_e::REAL &&
           rhs->type != sauros::cell_type_e::INTEGER) {
-         throw sauros::processor_c::runtime_exception_c(
+         throw sauros::exceptions::runtime_c(
              "math operation expects parameter to be an integer or a double",
              rhs);
       }

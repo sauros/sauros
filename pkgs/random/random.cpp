@@ -35,7 +35,7 @@ sauros::cell_ptr
 _pkg_random_string_(sauros::cells_t &cells,
                     std::shared_ptr<sauros::environment_c> env) {
    if (cells.size() != 2) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "random::string function expects 1 parameters (length), but " +
               std::to_string(cells.size() - 1) + " were given",
           cells[0]);
@@ -44,7 +44,7 @@ _pkg_random_string_(sauros::cells_t &cells,
    auto len = c_api_process_cell(cells[1], env);
    if (len->type != sauros::cell_type_e::REAL &&
        len->type != sauros::cell_type_e::INTEGER) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "random::string expects parameter `len` to be numerical", cells[1]);
    }
 
@@ -61,7 +61,7 @@ sauros::cell_ptr
 _pkg_random_alpha_string_(sauros::cells_t &cells,
                           std::shared_ptr<sauros::environment_c> env) {
    if (cells.size() != 2) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "random::alpha_string function expects 1 parameters (length), but " +
               std::to_string(cells.size() - 1) + " were given",
           cells[0]);
@@ -70,7 +70,7 @@ _pkg_random_alpha_string_(sauros::cells_t &cells,
    auto len = c_api_process_cell(cells[1], env);
    if (len->type != sauros::cell_type_e::REAL &&
        len->type != sauros::cell_type_e::INTEGER) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "random::alpha_string expects parameter `len` to be numerical",
           cells[1]);
    }
@@ -87,7 +87,7 @@ sauros::cell_ptr
 _pkg_random_sourced_string_(sauros::cells_t &cells,
                             std::shared_ptr<sauros::environment_c> env) {
    if (cells.size() != 3) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "random::sourced_string function expects 2 parameters "
           "(source_string, "
           "length), but " +
@@ -97,7 +97,7 @@ _pkg_random_sourced_string_(sauros::cells_t &cells,
 
    auto src = c_api_process_cell(cells[1], env);
    if (src->type != sauros::cell_type_e::STRING) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "random::sourced_string expects parameter `source_string` to be a "
           "string",
           cells[1]);
@@ -106,7 +106,7 @@ _pkg_random_sourced_string_(sauros::cells_t &cells,
    auto len = c_api_process_cell(cells[2], env);
    if (len->type != sauros::cell_type_e::REAL &&
        len->type != sauros::cell_type_e::INTEGER) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "random::sourced_string expects parameter `len` to be numerical",
           cells[2]);
    }
@@ -124,7 +124,7 @@ sauros::cell_ptr
 _pkg_random_uniform_int_(sauros::cells_t &cells,
                          std::shared_ptr<sauros::environment_c> env) {
    if (cells.size() != 3) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "random::uniform_int function expects 2 parameters (min, "
           "max), but " +
               std::to_string(cells.size() - 1) + " were given",
@@ -134,7 +134,7 @@ _pkg_random_uniform_int_(sauros::cells_t &cells,
    auto min = c_api_process_cell(cells[1], env);
    if (min->type != sauros::cell_type_e::REAL &&
        min->type != sauros::cell_type_e::INTEGER) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "random::uniform_int expects parameter `min` to be numerical",
           cells[1]);
    }
@@ -142,7 +142,7 @@ _pkg_random_uniform_int_(sauros::cells_t &cells,
    auto max = c_api_process_cell(cells[2], env);
    if (max->type != sauros::cell_type_e::REAL &&
        max->type != sauros::cell_type_e::INTEGER) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "random::uniform_int expects parameter `max` to be numerical",
           cells[2]);
    }
@@ -169,7 +169,7 @@ sauros::cell_ptr
 _pkg_random_uniform_real_(sauros::cells_t &cells,
                           std::shared_ptr<sauros::environment_c> env) {
    if (cells.size() != 3) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "random::uniform_real function expects 2 parameters (min, "
           "max), but " +
               std::to_string(cells.size() - 1) + " were given",
@@ -179,7 +179,7 @@ _pkg_random_uniform_real_(sauros::cells_t &cells,
    auto min = c_api_process_cell(cells[1], env);
    if (min->type != sauros::cell_type_e::REAL &&
        min->type != sauros::cell_type_e::INTEGER) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "random::uniform_real expects parameter `min` to be numerical",
           cells[1]);
    }
@@ -187,7 +187,7 @@ _pkg_random_uniform_real_(sauros::cells_t &cells,
    auto max = c_api_process_cell(cells[2], env);
    if (max->type != sauros::cell_type_e::REAL &&
        max->type != sauros::cell_type_e::INTEGER) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "random::uniform_real expects parameter `max` to be numerical",
           cells[2]);
    }

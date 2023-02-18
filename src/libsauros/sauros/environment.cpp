@@ -1,21 +1,10 @@
 #include "environment.hpp"
-
+#include "exceptions.hpp"
 #include "profiler.hpp"
-#include <iostream>
 
+#include <iostream>
 #include <sstream>
 #include <vector>
-
-static inline std::vector<std::string>
-retrieve_accessors(const std::string &value) {
-   std::string accessor;
-   std::vector<std::string> accessor_list;
-   std::stringstream source(value);
-   while (std::getline(source, accessor, '.')) {
-      accessor_list.push_back(accessor);
-   }
-   return accessor_list;
-}
 
 namespace sauros {
 
@@ -74,7 +63,7 @@ environment_c *environment_c::find(const std::string &var,
       return _parent->find(var, origin_cell);
    }
 
-   throw unknown_identifier_c(var, origin_cell);
+   throw exceptions::unknown_identifier_c(var, origin_cell);
 }
 
 bool environment_c::package_loaded(const std::string &package) {

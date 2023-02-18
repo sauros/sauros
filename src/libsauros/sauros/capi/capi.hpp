@@ -12,13 +12,11 @@
 extern "C" {
 
 API_EXPORT
-extern sauros::cell_ptr
-c_api_process_cell(sauros::cell_ptr cell,
-                   std::shared_ptr<sauros::environment_c> env);
+extern sauros::cell_ptr c_api_process_cell(sauros::cell_ptr cell,
+                                           sauros::env_ptr env);
 
 API_EXPORT
-extern sauros::cell_ptr
-c_api_cell_to_string(sauros::cell_ptr cell,
-                     std::shared_ptr<sauros::environment_c> env);
+extern sauros::cell_ptr c_api_cell_to_string(sauros::cell_ptr cell,
+                                             sauros::env_ptr env);
 }
 #endif

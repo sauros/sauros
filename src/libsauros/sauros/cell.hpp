@@ -60,6 +60,7 @@ static const char *cell_type_to_string(const cell_type_e type) {
 
 //! \brief Forward of environment for proc_f
 class environment_c;
+using env_ptr = std::shared_ptr<environment_c>;
 
 //! \brief Forward for processor for cells with
 //!        embedded processors
@@ -70,8 +71,7 @@ class cell_c {
  public:
    //! \brief Function pointer definition for a cell
    //!        used to execute code
-   using proc_f =
-       std::function<cell_ptr(cells_t &, std::shared_ptr<environment_c> env)>;
+   using proc_f = std::function<cell_ptr(cells_t &, env_ptr env)>;
 
    //! \brief Create an empty cell
    //! \param type The type to set (Defaults to SYMBOL)

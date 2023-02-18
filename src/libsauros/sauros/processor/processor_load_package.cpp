@@ -17,7 +17,7 @@ namespace sauros {
 // Investigating the issue is backlogged.
 
 void processor_c::load_package(cell_ptr cell, location_s *location,
-                               std::shared_ptr<environment_c> env) {
+                               env_ptr env) {
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::load_package");
 #endif
@@ -49,20 +49,20 @@ void processor_c::load_package(cell_ptr cell, location_s *location,
    try {
       package_rll->load(pkg.library_file.c_str());
    } catch (rll_wrapper_c::library_loading_error_c &e) {
-      throw runtime_exception_c(
+      throw exceptions::runtime_c(
           "error loading `" + target + "`: " + e.what(),
           std::make_shared<cell_c>(cell_type_e::STRING, "", location));
    }
 
    if (!package_rll->is_loaded()) {
-      throw runtime_exception_c(
+      throw exceptions::runtime_c(
           "failed to load library: `" + pkg.library_file + "`",
           std::make_shared<cell_c>(cell_type_e::STRING, "", location));
    }
 
    for (auto &f : pkg.library_function_list) {
       if (!package_rll->has_symbol(f)) {
-         throw runtime_exception_c(
+         throw exceptions::runtime_c(
              "error loading `" + target + "`: listed function `" + f +
                  "` was not found in `" + pkg.library_file.c_str() + "`",
              std::make_shared<cell_c>(cell_type_e::STRING, "", location));
@@ -85,7 +85,7 @@ void processor_c::load_package(cell_ptr cell, location_s *location,
 
       sauros::file_executor_c file_executor(boxed_cell->inner_env);
       if (0 != file_executor.run(f)) {
-         throw runtime_exception_c(
+         throw exceptions::runtime_c(
              "unable to open file " + std::string(f),
              std::make_shared<cell_c>(cell_type_e::STRING, "", location));
       }

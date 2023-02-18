@@ -10,7 +10,7 @@ _pkg_std_list_make_assigned_(sauros::cells_t &cells,
    auto size = c_api_process_cell(cells[2], env);
 
    if (size->type != sauros::cell_type_e::INTEGER) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "size parameter expected to be of type integer", cells[2]);
    }
 
@@ -26,7 +26,7 @@ _pkg_std_list_sort_(sauros::cells_t &cells,
    auto data = c_api_process_cell(cells[1], env);
 
    if (data->type != sauros::cell_type_e::LIST) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "data parameter expected to be of type list", cells[1]);
    }
 
@@ -45,7 +45,7 @@ _pkg_std_list_sort_(sauros::cells_t &cells,
                 };
 
                 if (!is_valid_for_sorty(lhs) || !is_valid_for_sorty(rhs)) {
-                   throw sauros::processor_c::runtime_exception_c(
+                   throw sauros::exceptions::runtime_c(
                        "Unable to sort non-numerical item in list", cells[0]);
                 }
 

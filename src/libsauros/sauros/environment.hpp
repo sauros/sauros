@@ -15,34 +15,6 @@ namespace sauros {
 //! \brief An environment that contains variables / functions / etcs
 class environment_c {
  public:
-   //! \brief An exception thrown by the request for an identifier that isn't
-   //! known
-   class unknown_identifier_c : public std::exception {
-    public:
-      unknown_identifier_c() = delete;
-
-      //! \brief Create the exception
-      //! \param identifier The identifier that was unknown
-      unknown_identifier_c(std::string identifier, cell_ptr cell)
-          : _id(identifier), _cell(cell) {}
-      const char *what() const throw() { return "Unknown identifier"; }
-
-      //! \brief Retrieve the identifier that was requested
-      const std::string get_id() const { return _id; }
-
-      //! \brief Retrieve the location
-      const location_s *get_location() const { return _cell->location; }
-
-      //! \brief Retrieve the origin
-      const std::shared_ptr<std::string> get_origin() const {
-         return _cell->origin;
-      }
-
-    private:
-      std::string _id;
-      cell_ptr _cell;
-   };
-
    //! \brief Construct an environment
    //! \param outer (Optional) environment pointer that will be
    //!              the "outer" or "upper/parent" environment [super-scope]

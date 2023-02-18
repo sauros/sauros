@@ -14,8 +14,7 @@ processor_c::~processor_c() {
    }
 }
 
-void processor_c::cell_to_string(std::string &out, cell_ptr cell,
-                                 std::shared_ptr<environment_c> env,
+void processor_c::cell_to_string(std::string &out, cell_ptr cell, env_ptr env,
                                  bool show_space) {
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::cell_to_string");
@@ -79,8 +78,7 @@ void processor_c::cell_to_string(std::string &out, cell_ptr cell,
    }
 }
 
-void processor_c::quote_cell(std::string &out, cell_ptr cell,
-                             std::shared_ptr<environment_c> env) {
+void processor_c::quote_cell(std::string &out, cell_ptr cell, env_ptr env) {
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::quote_cell");
 #endif
@@ -120,8 +118,8 @@ void processor_c::quote_cell(std::string &out, cell_ptr cell,
       out += lambda_name + "[ ";
 
       if (!cells[0]->data.s) {
-         throw runtime_exception_c("Accessed data item unknown",
-                                   env->get_last_good_cell());
+         throw exceptions::runtime_c("Accessed data item unknown",
+                                     env->get_last_good_cell());
       }
 
       auto target_lambda =
@@ -151,8 +149,7 @@ void processor_c::quote_cell(std::string &out, cell_ptr cell,
    }
 }
 
-cell_ptr processor_c::process_list(cells_t &cells,
-                                   std::shared_ptr<environment_c> env) {
+cell_ptr processor_c::process_list(cells_t &cells, env_ptr env) {
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::process_list");
 #endif
@@ -208,11 +205,10 @@ cell_ptr processor_c::process_list(cells_t &cells,
    default:
       break;
    }
-   throw runtime_exception_c("Unknown cell type", cells[0]);
+   throw exceptions::runtime_c("Unknown cell type", cells[0]);
 }
 
-cell_ptr processor_c::process_cell(cell_ptr cell,
-                                   std::shared_ptr<environment_c> env) {
+cell_ptr processor_c::process_cell(cell_ptr cell, env_ptr env) {
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::process_cell");
 #endif
@@ -233,8 +229,8 @@ cell_ptr processor_c::process_cell(cell_ptr cell,
       // If not built in maybe it is in the environment
       //
       if (!cell->data.s) {
-         throw runtime_exception_c("Accessed data item unknown",
-                                   env->get_last_good_cell());
+         throw exceptions::runtime_c("Accessed data item unknown",
+                                     env->get_last_good_cell());
       }
       auto env_with_data = env->find(*cell->data.s, cell);
       auto r = env_with_data->get(*cell->data.s);
@@ -248,7 +244,7 @@ cell_ptr processor_c::process_cell(cell_ptr cell,
    case cell_type_e::ENCODED_SYMBOL: {
       if (cell->builtin_encoding == BUILTIN_DEFAULT_VAL ||
           cell->builtin_encoding >= BUILTIN_ENTRY_COUNT) {
-         throw runtime_exception_c(
+         throw exceptions::runtime_c(
              "Invalid encoded symbol for : " + *cell->data.s, cell);
       }
 
@@ -277,11 +273,11 @@ cell_ptr processor_c::process_cell(cell_ptr cell,
       break;
    }
 
-   throw runtime_exception_c("internal error -> no processable cell", cell);
+   throw exceptions::runtime_c("internal error -> no processable cell", cell);
 }
 
 cell_ptr processor_c::process_lambda(cell_ptr cell, cells_t &cells,
-                                     std::shared_ptr<environment_c> env) {
+                                     env_ptr env) {
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::process_lambda");
 #endif
@@ -291,7 +287,7 @@ cell_ptr processor_c::process_lambda(cell_ptr cell, cells_t &cells,
    }
 
    if (cell->list[0]->list.size() != exps.size()) {
-      throw runtime_exception_c(
+      throw exceptions::runtime_c(
           "Invalid number of paramters given to lambda: " + *cells[0]->data.s +
               ". " + std::to_string(exps.size()) + " parameters given, but " +
               std::to_string(cell->list[0]->list.size()) + " were expected.",
@@ -334,30 +330,24 @@ cell_ptr processor_c::clone_box(cell_ptr cell) {
    return std::make_shared<cell_c>(new_box);
 }
 
-std::vector<std::string> processor_c::retrieve_accessors(cell_ptr &cell) {
-#ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("processor_c::retrieve_accessors");
-#endif
-   std::vector<std::string> accessors;
-   std::string accessor;
-   std::stringstream source(*cell->data.s);
-   while (std::getline(source, accessor, '.')) {
-      accessors.push_back(accessor);
-   }
-   if (accessors.size() <= 1) {
-      throw runtime_exception_c("Malformed accessor", cell);
-   }
-   return accessors;
-}
-
-std::tuple<cell_ptr, std::string, std::shared_ptr<environment_c>>
+std::tuple<cell_ptr, std::string, env_ptr>
 processor_c::retrieve_box_data(cell_ptr &cell,
                                std::shared_ptr<environment_c> &env) {
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::retrieve_box_data");
 #endif
 
-   auto accessors = retrieve_accessors(cell);
+   std::vector<std::string> accessors;
+   {
+      std::string accessor;
+      std::stringstream source(*cell->data.s);
+      while (std::getline(source, accessor, '.')) {
+         accessors.push_back(accessor);
+      }
+      if (accessors.size() <= 1) {
+         throw exceptions::runtime_c("Malformed accessor", cell);
+      }
+   }
 
    cell_ptr result;
    std::shared_ptr<environment_c> moving_env = env;
@@ -375,9 +365,7 @@ processor_c::retrieve_box_data(cell_ptr &cell,
    return {result, accessors.back(), moving_env};
 }
 
-cell_ptr
-processor_c::load_potential_variable(cell_ptr cell,
-                                     std::shared_ptr<environment_c> env) {
+cell_ptr processor_c::load_potential_variable(cell_ptr cell, env_ptr env) {
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::load_potential_variable");
 #endif
@@ -392,8 +380,8 @@ processor_c::load_potential_variable(cell_ptr cell,
    }
 
    if (!cell->data.s) {
-      throw runtime_exception_c("Accessed data item unknown",
-                                env->get_last_good_cell());
+      throw exceptions::runtime_c("Accessed data item unknown",
+                                  env->get_last_good_cell());
    }
 
    auto &variable_name = *cell->data.s;

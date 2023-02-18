@@ -54,7 +54,7 @@ _pkg_fmt_format_encode_(sauros::cells_t &cells,
    auto raw_source = c_api_process_cell(cells[2], env);
 
    if (raw_target->type != sauros::cell_type_e::STRING) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "format string expects source cell to be a string", raw_target);
    }
 
@@ -82,7 +82,7 @@ _pkg_fmt_format_encode_(sauros::cells_t &cells,
 
       if (c == '\\') {
          if (i == target.size() - 1) {
-            throw sauros::processor_c::runtime_exception_c(
+            throw sauros::exceptions::runtime_c(
                 "formated string ends with escape character", cells[1]);
          }
          check_buffer(buffer, target[i + 1]);
@@ -92,7 +92,7 @@ _pkg_fmt_format_encode_(sauros::cells_t &cells,
 
       if (c == '%') {
          if (emplaced >= source_cells.size()) {
-            throw sauros::processor_c::runtime_exception_c(
+            throw sauros::exceptions::runtime_c(
                 "not enough source cells given to format string", cells[1]);
          }
 
@@ -115,7 +115,7 @@ _pkg_fmt_format_string_(sauros::cells_t &cells,
    auto raw_target = c_api_process_cell(cells[1], env);
 
    if (raw_target->type != sauros::cell_type_e::STRING) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "format string expects source cell to be a string", raw_target);
    }
 
@@ -128,7 +128,7 @@ _pkg_fmt_format_string_(sauros::cells_t &cells,
 
       if (c == '\\') {
          if (i == target.size() - 1) {
-            throw sauros::processor_c::runtime_exception_c(
+            throw sauros::exceptions::runtime_c(
                 "formated string ends with escape character", cells[1]);
          }
          check_buffer(buffer, target[i + 1]);
@@ -145,7 +145,7 @@ sauros::cell_ptr _pkg_fmt_join_(sauros::cells_t &cells,
                                 std::shared_ptr<sauros::environment_c> env) {
    auto source = c_api_process_cell(cells[1], env);
    if (source->type != sauros::cell_type_e::LIST) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "join expects source cell to be a list", cells[1]);
    }
 
@@ -178,13 +178,13 @@ sauros::cell_ptr _pkg_fmt_split_(sauros::cells_t &cells,
 
    auto source = c_api_process_cell(cells[1], env);
    if (source->type != sauros::cell_type_e::STRING) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "split expects source cell to be a string", cells[1]);
    }
 
    auto delimiter = c_api_process_cell(cells[2], env);
    if (delimiter->type != sauros::cell_type_e::STRING) {
-      throw sauros::processor_c::runtime_exception_c(
+      throw sauros::exceptions::runtime_c(
           "split expects delimiter cell to be a string", cells[2]);
    }
 

@@ -12,7 +12,7 @@ namespace sauros {
 
 #define SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells__, size__, command__)           \
    if (cells__.size() != size__) {                                             \
-      throw runtime_exception_c(                                               \
+      throw exceptions::runtime_c(                                             \
           format("`%` expects % parameters", command__, size__ - 1),           \
           cells[0]);                                                           \
    }
@@ -23,6 +23,40 @@ static constexpr double EPSILON = 0.0001;
    (std::fabs(lhs__ - rhs__) <=                                                \
     EPSILON * std::max(std::fabs(lhs__), std::fabs(rhs__)))
 
+#define PERFORM_ARITH(op, cells, fn, env, force_double)                        \
+   if (cells.size() < 3) {                                                     \
+      throw exceptions::runtime_c("Expected a list size of at least 3 items",  \
+                                  cells[0]);                                   \
+   }                                                                           \
+   bool store_as_double{false};                                                \
+   auto first_cell_value = process_cell(cells[1], env);                        \
+   if (first_cell_value->type == cell_type_e::STRING) {                        \
+      throw exceptions::runtime_c("Invalid data type given for operand",       \
+                                  cells[0]);                                   \
+   }                                                                           \
+   double result = first_cell_value->data.d;                                   \
+   if (first_cell_value->type == cell_type_e::INTEGER) {                       \
+      result = first_cell_value->data.i;                                       \
+   }                                                                           \
+   for (auto i = cells.begin() + 2; i != cells.end(); ++i) {                   \
+      auto cell_value = process_cell((*i), env);                               \
+      store_as_double = static_cast<unsigned short>(cell_value->type) == 0;    \
+      if (cell_value->type == cell_type_e::STRING) {                           \
+         throw exceptions::runtime_c("Invalid data type given for operand",    \
+                                     cells[0]);                                \
+      }                                                                        \
+      double cell_value_actual = cell_value->data.d;                           \
+      if (cell_value->type == cell_type_e::INTEGER) {                          \
+         cell_value_actual = cell_value->data.i;                               \
+      }                                                                        \
+      result = fn(result, cell_value_actual);                                  \
+   }                                                                           \
+   return (force_double || store_as_double)                                    \
+              ? std::make_shared<cell_c>(cell_type_e::REAL, result,            \
+                                         cells[0]->location)                   \
+              : std::make_shared<cell_c>(cell_type_e::INTEGER,                 \
+                                         static_cast<cell_int_t>(result),      \
+                                         cells[0]->location);
 namespace {
 
 static inline bool eval_truthy(cell_ptr cell, location_s *location) {
@@ -54,21 +88,21 @@ void processor_c::populate_standard_builtins() {
 
    auto expect_var_get_name = [this](cell_ptr cell) -> std::string {
       if (cell->type == cell_type_e::BOX_SYMBOL) {
-         throw runtime_exception_c(
+         throw exceptions::runtime_c(
              "Attempting to directly define a variable accessor " +
                  (*cell->data.s),
              cell);
       }
 
       if (cell->builtin_encoding != BUILTIN_DEFAULT_VAL) {
-         throw runtime_exception_c(
+         throw exceptions::runtime_c(
              "Attempting to define a key symbol: " + (*cell->data.s), cell);
       }
       return (*cell->data.s);
    };
 
    _builtins[BUILTIN_IMPORT] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::IMPORT");
 #endif
@@ -109,14 +143,14 @@ void processor_c::populate_standard_builtins() {
 
           for (auto i = cells.begin() + 1; i < cells.end(); i++) {
              if ((*i)->type != sauros::cell_type_e::STRING) {
-                throw sauros::processor_c::runtime_exception_c(
+                throw sauros::exceptions::runtime_c(
                     "Import objects are expected to be raw strings", (*i));
              }
 
              if (cells[0]->origin) {
                 if (!perform_load((*(*i)->data.s), cells[0]->origin,
                                   _system.get_sauros_directory())) {
-                   throw sauros::processor_c::runtime_exception_c(
+                   throw sauros::exceptions::runtime_c(
                        "Unable to load import: " + (*(*i)->data.s), (*i));
                 }
              }
@@ -125,7 +159,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_USE] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::USE");
 #endif
@@ -133,7 +167,7 @@ void processor_c::populate_standard_builtins() {
 
           for (auto i = cells.begin() + 1; i < cells.end(); i++) {
              if ((*i)->type != sauros::cell_type_e::STRING) {
-                throw sauros::processor_c::runtime_exception_c(
+                throw sauros::exceptions::runtime_c(
                     "use command expects parameters to be raw strings", (*i));
              }
 
@@ -144,7 +178,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_EXIT] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::EXIT");
 #endif
@@ -155,7 +189,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_BREAK] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::BREAK");
 #endif
@@ -165,7 +199,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_TYPE] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::TYPE");
 #endif
@@ -179,7 +213,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_FRONT] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::FRONT");
 #endif
@@ -188,8 +222,8 @@ void processor_c::populate_standard_builtins() {
           auto target = process_cell(cells[1], env);
 
           if (!(target->type == cell_type_e::LIST)) {
-             throw runtime_exception_c("Expected list parameter for front",
-                                       cells[1]);
+             throw exceptions::runtime_c("Expected list parameter for front",
+                                         cells[1]);
           }
 
           if (target->list.empty()) {
@@ -200,7 +234,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_BACK] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::BACK");
 #endif
@@ -209,8 +243,8 @@ void processor_c::populate_standard_builtins() {
           auto target = process_cell(cells[1], env);
 
           if (!(target->type == cell_type_e::LIST)) {
-             throw runtime_exception_c("Expected list parameter for back",
-                                       cells[1]);
+             throw exceptions::runtime_c("Expected list parameter for back",
+                                         cells[1]);
           }
 
           if (target->list.empty()) {
@@ -221,7 +255,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_AT] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::AT");
 #endif
@@ -229,7 +263,7 @@ void processor_c::populate_standard_builtins() {
 
           auto index = process_cell(cells[1], env);
           if (index->type != cell_type_e::INTEGER) {
-             throw runtime_exception_c(
+             throw exceptions::runtime_c(
                  "at command index must me an integer type", cells[0]);
           }
 
@@ -237,7 +271,7 @@ void processor_c::populate_standard_builtins() {
 
           if (cells[2]->type != cell_type_e::SYMBOL &&
               cells[2]->type != cell_type_e::BOX_SYMBOL) {
-             throw runtime_exception_c(
+             throw exceptions::runtime_c(
                  "Second parameter of at must be a variable", cells[2]);
           }
 
@@ -250,7 +284,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_CLEAR] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::CLEAR");
 #endif
@@ -258,7 +292,7 @@ void processor_c::populate_standard_builtins() {
 
           if (cells[1]->type != cell_type_e::SYMBOL &&
               cells[1]->type != cell_type_e::BOX_SYMBOL) {
-             throw runtime_exception_c(
+             throw exceptions::runtime_c(
                  "First parameter of clear must be a variable", cells[1]);
           }
 
@@ -268,7 +302,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_POP] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::POP");
 #endif
@@ -276,7 +310,7 @@ void processor_c::populate_standard_builtins() {
 
           if (cells[1]->type != cell_type_e::SYMBOL &&
               cells[1]->type != cell_type_e::BOX_SYMBOL) {
-             throw runtime_exception_c(
+             throw exceptions::runtime_c(
                  "First parameter of pop must be a variable", cells[1]);
           }
 
@@ -288,7 +322,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_PUSH] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::PUSH");
 #endif
@@ -296,7 +330,7 @@ void processor_c::populate_standard_builtins() {
 
           if (cells[1]->type != cell_type_e::SYMBOL &&
               cells[1]->type != cell_type_e::BOX_SYMBOL) {
-             throw runtime_exception_c(
+             throw exceptions::runtime_c(
                  "First parameter of push must be a variable", cells[1]);
           }
 
@@ -308,7 +342,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_THROW] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::THROW");
 #endif
@@ -317,17 +351,17 @@ void processor_c::populate_standard_builtins() {
           auto message = process_cell(cells[1], env);
 
           if (message->type != cell_type_e::STRING) {
-             throw runtime_exception_c(
+             throw exceptions::runtime_c(
                  "throw command expects second parameter to be a string type",
                  cells[0]);
           }
 
-          throw runtime_exception_c(*message->data.s, cells[0]);
+          throw exceptions::runtime_c(*message->data.s, cells[0]);
        });
 
-   _builtins[BUILTIN_NOT] = std::make_shared<
-       cell_c>([this](cells_t &cells,
-                      std::shared_ptr<environment_c> env) -> cell_ptr {
+   _builtins[BUILTIN_NOT] = std::make_shared<cell_c>([this](cells_t &cells,
+                                                            env_ptr env)
+                                                         -> cell_ptr {
 #ifdef PROFILER_ENABLED
       profiler_c::get_profiler()->hit("processor_builtin::NOT");
 #endif
@@ -337,7 +371,7 @@ void processor_c::populate_standard_builtins() {
 
       if (target->type != cell_type_e::INTEGER &&
           target->type != cell_type_e::REAL) {
-         throw runtime_exception_c(
+         throw exceptions::runtime_c(
              "not command expects parameter to evaluate to a numerical type",
              cells[1]);
       }
@@ -355,20 +389,20 @@ void processor_c::populate_standard_builtins() {
    });
 
    _builtins[BUILTIN_ASSERT] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::ASSERT");
 #endif
           if (cells.size() < 3) {
-             throw runtime_exception_c(
+             throw exceptions::runtime_c(
                  "assert command expects at least 3 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
                  cells[0]);
           }
 
           if (cells[1]->type != cell_type_e::STRING) {
-             throw runtime_exception_c("assertion label bust be a raw string",
-                                       cells[1]);
+             throw exceptions::runtime_c("assertion label bust be a raw string",
+                                         cells[1]);
           }
 
           for (auto c = cells.begin() + 2; c != cells.end(); c++) {
@@ -377,7 +411,7 @@ void processor_c::populate_standard_builtins() {
 
              if (static_cast<unsigned short>(result->type) >
                  static_cast<unsigned short>(cell_type_e::STRING)) {
-                throw runtime_exception_c(
+                throw exceptions::runtime_c(
                     "assertion condition did not evaluate to a direectly "
                     "comparable type (string, int, double)",
                     (*c));
@@ -385,15 +419,15 @@ void processor_c::populate_standard_builtins() {
 
              if (cell_type_e::STRING == result->type &&
                  result->data.s->empty()) {
-                throw assertion_exception_c(
+                throw exceptions::assertion_c(
                     "assertion failure: " + *cells[1]->data.s, cells[0]);
              } else if (cell_type_e::INTEGER == result->type &&
                         result->data.i < 1) {
-                throw assertion_exception_c(
+                throw exceptions::assertion_c(
                     "assertion failure: " + *cells[1]->data.s, cells[0]);
              } else if (cell_type_e::REAL == result->type &&
                         result->data.d <= 0.0) {
-                throw assertion_exception_c(
+                throw exceptions::assertion_c(
                     "assertion failure: " + *cells[1]->data.s, cells[0]);
              }
           }
@@ -401,15 +435,14 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_VAR] = std::make_shared<cell_c>(
-       [this, expect_var_get_name](
-           cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this, expect_var_get_name](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::VAR");
 #endif
 
           if (cells.size() < 2) {
-             throw runtime_exception_c("Nothing given to var command",
-                                       cells[0]);
+             throw exceptions::runtime_c("Nothing given to var command",
+                                         cells[0]);
           }
 
           auto variable_name = expect_var_get_name(cells[1]);
@@ -421,7 +454,7 @@ void processor_c::populate_standard_builtins() {
           }
 
           if (cells.size() != 3) {
-             throw runtime_exception_c(
+             throw exceptions::runtime_c(
                  "var command expects 2 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
                  cells[0]);
@@ -430,8 +463,8 @@ void processor_c::populate_standard_builtins() {
           auto value = process_cell(cells[2], env);
 
           if (value->type == cell_type_e::SYMBOL) {
-             throw runtime_exception_c("Expected list or datum value (var)",
-                                       cells[2]);
+             throw exceptions::runtime_c("Expected list or datum value (var)",
+                                         cells[2]);
           }
 
           env->set(variable_name, value);
@@ -439,7 +472,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_PUT] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::PUT");
 #endif
@@ -456,7 +489,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_YIELD] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::YIELD");
 #endif
@@ -466,7 +499,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_PUTLN] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::PUTLN");
 #endif
@@ -484,7 +517,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_LAMBDA] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::LAMBDA");
 #endif
@@ -498,7 +531,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_ITER] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::ITER");
 #endif
@@ -506,14 +539,14 @@ void processor_c::populate_standard_builtins() {
 
           if (cells[1]->type != cell_type_e::SYMBOL &&
               cells[1]->type != cell_type_e::BOX_SYMBOL) {
-             throw runtime_exception_c(
+             throw exceptions::runtime_c(
                  "first parameter to iter needs to be a symbol", cells[1]);
           }
           auto iter_var = cells[1]->data_as_str();
 
           auto processed_list = load_potential_variable(cells[2], env);
           if (processed_list->type != cell_type_e::LIST) {
-             throw runtime_exception_c(
+             throw exceptions::runtime_c(
                  "second parameter to iter needs to be a list to iterate over",
                  cells[2]);
           }
@@ -542,7 +575,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_LOOP] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::LOOP");
 #endif
@@ -590,14 +623,14 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_SET] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::SET");
 #endif
           SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 3, "set");
 
           if (!cells[1]->data.s) {
-             throw runtime_exception_c("Data unknown", cells[1]);
+             throw exceptions::runtime_c("Data unknown", cells[1]);
           }
 
           auto &variable_name = *cells[1]->data.s;
@@ -610,8 +643,8 @@ void processor_c::populate_standard_builtins() {
              auto value = process_cell(cells[2], env);
 
              if (value->type == cell_type_e::SYMBOL) {
-                throw runtime_exception_c("Expected list or datum value (set)",
-                                          cells[2]);
+                throw exceptions::runtime_c(
+                    "Expected list or datum value (set)", cells[2]);
              }
 
              target_env->set(target_variable, value);
@@ -623,8 +656,8 @@ void processor_c::populate_standard_builtins() {
              auto value = process_cell(cells[2], env);
 
              if (value->type == cell_type_e::SYMBOL) {
-                throw runtime_exception_c("Expected list or datum value (set)",
-                                          cells[2]);
+                throw exceptions::runtime_c(
+                    "Expected list or datum value (set)", cells[2]);
              }
 
              containing_env->set(variable_name, value);
@@ -633,7 +666,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_SET_AT] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::SET_AT");
 #endif
@@ -641,8 +674,8 @@ void processor_c::populate_standard_builtins() {
 
           auto idx = process_cell(cells[1], env);
           if (idx->type != cell_type_e::INTEGER) {
-             throw runtime_exception_c("set_at requires index to be an integer",
-                                       cells[1]);
+             throw exceptions::runtime_c(
+                 "set_at requires index to be an integer", cells[1]);
           }
 
           auto target_value = process_cell(cells[3], env);
@@ -655,7 +688,7 @@ void processor_c::populate_standard_builtins() {
    // used instead of `block` but its "less efficient" as it does the work to
    // construct what would be a temporary cell, while `block` does not.
    _builtins[BUILTIN_BLOCK] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::BLOCK");
 #endif
@@ -678,7 +711,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_LIST] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::LIST");
 #endif
@@ -695,7 +728,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_TRY] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::TRY");
 #endif
@@ -711,11 +744,11 @@ void processor_c::populate_standard_builtins() {
 
           try {
              return process_cell(cells[1], env);
-          } catch (sauros::processor_c::runtime_exception_c &e) {
+          } catch (sauros::exceptions::runtime_c &e) {
              return make_error(e.what());
-          } catch (sauros::processor_c::assertion_exception_c &e) {
+          } catch (sauros::exceptions::assertion_c &e) {
              return make_error(e.what());
-          } catch (sauros::environment_c::unknown_identifier_c &e) {
+          } catch (sauros::exceptions::unknown_identifier_c &e) {
              return make_error(e.what());
           } catch (sauros::parser::parser_exception_c &e) {
              return make_error(e.what());
@@ -723,7 +756,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_COMPOSE] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::COMPOSE");
 #endif
@@ -738,7 +771,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_DECOMPOSE] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::DECOMPOSE");
 #endif
@@ -754,7 +787,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_BOX] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::BOX");
 #endif
@@ -769,7 +802,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_TRUE] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::TRUE");
 #endif
@@ -777,7 +810,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_FALSE] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::FALSE");
 #endif
@@ -785,7 +818,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_NIL] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::NIL");
 #endif
@@ -793,7 +826,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_IS_NIL] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::IS_NIL");
 #endif
@@ -810,7 +843,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_LEN] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::LEN");
 #endif
@@ -823,7 +856,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_REV] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::REV");
 #endif
@@ -831,8 +864,8 @@ void processor_c::populate_standard_builtins() {
 
           auto target = process_cell(cells[1], env);
           if (target->type != cell_type_e::LIST) {
-             throw runtime_exception_c("rev expects parameter to be a list",
-                                       cells[1]);
+             throw exceptions::runtime_c("rev expects parameter to be a list",
+                                         cells[1]);
           }
 
           auto result = std::make_shared<cell_c>(cell_type_e::LIST);
@@ -842,12 +875,12 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_IF] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::IF");
 #endif
           if (cells.size() != 3 && cells.size() != 4) {
-             throw runtime_exception_c(
+             throw exceptions::runtime_c(
                  "if command expects 2-3 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
                  cells[0]);
@@ -864,7 +897,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_SEQ] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::SEQ");
 #endif
@@ -873,11 +906,11 @@ void processor_c::populate_standard_builtins() {
           auto lhs = process_cell(cells[1], env);
           auto rhs = process_cell(cells[2], env);
           if (lhs->type != cell_type_e::STRING) {
-             throw runtime_exception_c(
+             throw exceptions::runtime_c(
                  "Both operands of seq must be of type string", lhs);
           }
           if (rhs->type != cell_type_e::STRING) {
-             throw runtime_exception_c(
+             throw exceptions::runtime_c(
                  "Both operands of seq must be of type string", rhs);
           }
           return std::make_shared<cell_c>(
@@ -886,7 +919,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_SNEQ] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::SNEQ");
 #endif
@@ -896,11 +929,11 @@ void processor_c::populate_standard_builtins() {
           auto rhs = process_cell(cells[2], env);
 
           if (lhs->type != cell_type_e::STRING) {
-             throw runtime_exception_c(
+             throw exceptions::runtime_c(
                  "Both operands of sneq must be of type string", lhs);
           }
           if (rhs->type != cell_type_e::STRING) {
-             throw runtime_exception_c(
+             throw exceptions::runtime_c(
                  "Both operands of sneq must be of type string", rhs);
           }
           return std::make_shared<cell_c>(
@@ -909,251 +942,236 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_LT] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::LT");
 #endif
-          return {perform_arithmetic(
-              "<", cells,
-              [](double lhs, double rhs) -> double { return lhs < rhs; }, env)};
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return lhs < rhs;
+          };
+          PERFORM_ARITH("<", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_LT_EQ] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::LT_EQ");
 #endif
-          return {perform_arithmetic(
-              "<=", cells,
-              [](double lhs, double rhs) -> double { return lhs <= rhs; },
-              env)};
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return lhs <= rhs;
+          };
+          PERFORM_ARITH("<=", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_GT] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::GT");
 #endif
-          return {perform_arithmetic(
-              ">", cells,
-              [](double lhs, double rhs) -> double { return lhs > rhs; }, env)};
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return lhs > rhs;
+          };
+          PERFORM_ARITH(">", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_GT_EQ] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::GT_EQ");
 #endif
-          return {perform_arithmetic(
-              ">=", cells,
-              [](double lhs, double rhs) -> double { return lhs >= rhs; },
-              env)};
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return lhs >= rhs;
+          };
+          PERFORM_ARITH(">=", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_EQ_EQ] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::EQ_EQ");
 #endif
-          return {perform_arithmetic(
-              "==", cells,
-              [](double lhs, double rhs) -> double {
-                 return SAUROS_DOUBLES_EQUAL(lhs, rhs);
-              },
-              env)};
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return SAUROS_DOUBLES_EQUAL(lhs, rhs);
+          };
+          PERFORM_ARITH("==", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_NOT_EQ] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::NOT_EQ");
 #endif
-          return {perform_arithmetic(
-              "!=", cells,
-              [](double lhs, double rhs) -> double { return lhs != rhs; },
-              env)};
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return lhs != rhs;
+          };
+          PERFORM_ARITH("!=", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_ADD] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::ADD");
 #endif
-          return {perform_arithmetic(
-              "+", cells,
-              [](double lhs, double rhs) -> double { return lhs + rhs; }, env)};
+
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return lhs + rhs;
+          };
+
+          PERFORM_ARITH("+", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_SUB] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::SUB");
 #endif
-          return {perform_arithmetic(
-              "-", cells,
-              [](double lhs, double rhs) -> double { return lhs - rhs; }, env)};
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return lhs - rhs;
+          };
+          PERFORM_ARITH("-", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_DIV] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::DIV");
 #endif
-          return {perform_arithmetic(
-              "/", cells,
-              [=](double lhs, double rhs) -> double {
-                 if (rhs == 0.0) {
-                    return 0.0;
-                 }
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             if (rhs == 0.0) {
+                return 0.0;
+             }
 
-                 return lhs / rhs;
-              },
-              env, true)};
+             return lhs / rhs;
+          };
+          PERFORM_ARITH("/", cells, fn, env, true);
        });
 
    _builtins[BUILTIN_MUL] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::MUL");
 #endif
-          return {perform_arithmetic(
-              "*", cells,
-              [](double lhs, double rhs) -> double { return lhs * rhs; }, env)};
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return lhs * rhs;
+          };
+          PERFORM_ARITH("*", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_MOD] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::MOD");
 #endif
-          return {perform_arithmetic(
-              "%", cells,
-              [](double lhs, double rhs) -> double {
-                 return static_cast<cell_int_t>(lhs) %
-                        static_cast<cell_int_t>(rhs);
-              },
-              env)};
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return static_cast<cell_int_t>(lhs) % static_cast<cell_int_t>(rhs);
+          };
+          PERFORM_ARITH("%", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_OR] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::OR");
 #endif
-          return {perform_arithmetic(
-              "%", cells,
-              [](double lhs, double rhs) -> double {
-                 bool result =
-                     (static_cast<bool>(lhs) || static_cast<bool>(rhs)) ? true
-                                                                        : false;
-                 return result;
-              },
-              env)};
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             bool result = (static_cast<bool>(lhs) || static_cast<bool>(rhs))
+                               ? true
+                               : false;
+             return result;
+          };
+          PERFORM_ARITH("%", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_AND] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::AND");
 #endif
-          return {perform_arithmetic(
-              "%", cells,
-              [](double lhs, double rhs) -> double {
-                 bool result =
-                     (static_cast<bool>(lhs) && static_cast<bool>(rhs)) ? true
-                                                                        : false;
-                 return result;
-              },
-              env)};
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             bool result = (static_cast<bool>(lhs) && static_cast<bool>(rhs))
+                               ? true
+                               : false;
+             return result;
+          };
+
+          PERFORM_ARITH("%", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_XOR] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::XOR");
 #endif
-          return {perform_arithmetic(
-              "%", cells,
-              [](double lhs, double rhs) -> double {
-                 auto _lhs = static_cast<bool>(lhs);
-                 auto _rhs = static_cast<bool>(rhs);
-                 bool result =
-                     ((_lhs && !_rhs) || (_rhs && !_lhs)) ? true : false;
-                 return result;
-              },
-              env)};
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             auto _lhs = static_cast<bool>(lhs);
+             auto _rhs = static_cast<bool>(rhs);
+             bool result = ((_lhs && !_rhs) || (_rhs && !_lhs)) ? true : false;
+             return result;
+          };
+
+          PERFORM_ARITH("%", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_BITWISE_AND] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::BW_AND");
 #endif
-          return {perform_arithmetic(
-              "%", cells,
-              [](double lhs, double rhs) -> double {
-                 return static_cast<uint64_t>(lhs) & static_cast<uint64_t>(rhs);
-              },
-              env)};
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return static_cast<uint64_t>(lhs) & static_cast<uint64_t>(rhs);
+          };
+
+          PERFORM_ARITH("%", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_BITWISE_OR] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::BW_OR");
 #endif
-          return {perform_arithmetic(
-              "%", cells,
-              [](double lhs, double rhs) -> double {
-                 return static_cast<uint64_t>(lhs) | static_cast<uint64_t>(rhs);
-              },
-              env)};
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return static_cast<uint64_t>(lhs) | static_cast<uint64_t>(rhs);
+          };
+          PERFORM_ARITH("%", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_BITWISE_LSH] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::BW_LSH");
 #endif
-          return {perform_arithmetic(
-              "%", cells,
-              [](double lhs, double rhs) -> double {
-                 return static_cast<uint64_t>(lhs)
-                        << static_cast<uint64_t>(rhs);
-              },
-              env)};
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return static_cast<uint64_t>(lhs) << static_cast<uint64_t>(rhs);
+          };
+          PERFORM_ARITH("%", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_BITWISE_RSH] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::BW_RSH");
 #endif
-          return {perform_arithmetic(
-              "%", cells,
-              [](double lhs, double rhs) -> double {
-                 return static_cast<uint64_t>(lhs) >>
-                        static_cast<uint64_t>(rhs);
-              },
-              env)};
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return static_cast<uint64_t>(lhs) >> static_cast<uint64_t>(rhs);
+          };
+          PERFORM_ARITH("%", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_BITWISE_XOR] = std::make_shared<cell_c>(
-       [this](cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::BW_XOR");
 #endif
-          return {perform_arithmetic(
-              "%", cells,
-              [](double lhs, double rhs) -> double {
-                 return static_cast<uint64_t>(lhs) ^ static_cast<uint64_t>(rhs);
-              },
-              env)};
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return static_cast<uint64_t>(lhs) ^ static_cast<uint64_t>(rhs);
+          };
+          PERFORM_ARITH("%", cells, fn, env, false);
        });
 
-   _builtins[BUILTIN_BITWISE_NOT] = std::make_shared<
-       cell_c>([this](cells_t &cells,
-                      std::shared_ptr<environment_c> env) -> cell_ptr {
+   _builtins[BUILTIN_BITWISE_NOT] = std::make_shared<cell_c>([this](
+                                                                 cells_t &cells,
+                                                                 env_ptr env)
+                                                                 -> cell_ptr {
 #ifdef PROFILER_ENABLED
       profiler_c::get_profiler()->hit("processor_builtin::BW_NOT");
 #endif
@@ -1163,7 +1181,7 @@ void processor_c::populate_standard_builtins() {
 
       if (target->type != cell_type_e::INTEGER &&
           target->type != cell_type_e::REAL) {
-         throw runtime_exception_c(
+         throw exceptions::runtime_c(
              "not command expects parameter to evaluate to a numerical type",
              cells[0]);
       }
@@ -1177,23 +1195,22 @@ void processor_c::populate_standard_builtins() {
    });
 
    auto conversion_fn =
-       [this](cell_ptr target, std::shared_ptr<environment_c> env,
+       [this](cell_ptr target, env_ptr env,
               std::function<cell_ptr(cell_ptr source)> fn) -> cell_ptr {
       auto item = process_cell(target, env);
       try {
          return fn(item);
       } catch (const std::invalid_argument &) {
-         throw runtime_exception_c("Invalid data type given for conversion",
-                                   target);
+         throw exceptions::runtime_c("Invalid data type given for conversion",
+                                     target);
       } catch (const std::out_of_range &) {
-         throw runtime_exception_c("Item caused out of range exception",
-                                   target);
+         throw exceptions::runtime_c("Item caused out of range exception",
+                                     target);
       }
    };
 
    _builtins[BUILTIN_AS_INT] = std::make_shared<cell_c>(
-       [this, conversion_fn](cells_t &cells,
-                             std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this, conversion_fn](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::AS_INT");
 #endif
@@ -1216,8 +1233,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_AS_STR] = std::make_shared<cell_c>(
-       [this, conversion_fn](cells_t &cells,
-                             std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this, conversion_fn](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::AS_STR");
 #endif
@@ -1249,8 +1265,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_AS_REAL] = std::make_shared<cell_c>(
-       [this, conversion_fn](cells_t &cells,
-                             std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this, conversion_fn](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::AS_REAL");
 #endif
@@ -1273,8 +1288,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_AS_LIST] = std::make_shared<cell_c>(
-       [this, conversion_fn](cells_t &cells,
-                             std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this, conversion_fn](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::AS_LIST");
 #endif
@@ -1282,9 +1296,9 @@ void processor_c::populate_standard_builtins() {
           auto target = process_cell(cells[1], env);
           if (static_cast<unsigned>(target->type) >
               static_cast<unsigned>(cell_type_e::STRING)) {
-             throw runtime_exception_c("as_list command expects parameter to "
-                                       "be integer, real, or string type",
-                                       cells[1]);
+             throw exceptions::runtime_c("as_list command expects parameter to "
+                                         "be integer, real, or string type",
+                                         cells[1]);
           }
 
           cell_ptr result = std::make_shared<cell_c>(cell_type_e::LIST);
@@ -1305,15 +1319,14 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_ASYNC] = std::make_shared<cell_c>(
-       [this, expect_var_get_name](
-           cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this, expect_var_get_name](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::ASYNC");
 #endif
           SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "async");
 
           if (cells[1]->type != cell_type_e::LIST) {
-             throw runtime_exception_c(
+             throw exceptions::runtime_c(
                  "async parameter required to be of type `list`\n", cells[2]);
           }
 
@@ -1344,15 +1357,14 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_THREAD] = std::make_shared<cell_c>(
-       [this, expect_var_get_name](
-           cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this, expect_var_get_name](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::THREAD");
 #endif
           SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 2, "thread");
 
           if (cells[1]->type != cell_type_e::LIST) {
-             throw runtime_exception_c(
+             throw exceptions::runtime_c(
                  "thread parameter required to be of type `list`\n", cells[1]);
           }
 
@@ -1380,8 +1392,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_CHAN] = std::make_shared<cell_c>(
-       [this, expect_var_get_name](
-           cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this, expect_var_get_name](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::CHAN");
 #endif
@@ -1402,13 +1413,12 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_REF] = std::make_shared<cell_c>(
-       [this, expect_var_get_name](
-           cells_t &cells, std::shared_ptr<environment_c> env) -> cell_ptr {
+       [this, expect_var_get_name](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::REF");
 #endif
           if (cells.size() < 1) {
-             throw runtime_exception_c(
+             throw exceptions::runtime_c(
                  "ref command expects 1 or 2 parameters, but " +
                      std::to_string(cells.size() - 1) + " were given",
                  cells[0]);
@@ -1419,7 +1429,7 @@ void processor_c::populate_standard_builtins() {
           if (cells.size() == 2) {
              ref_cell->ref_value = process_cell(cells[1], env);
           } else if (cells.size() > 3) {
-             throw runtime_exception_c(
+             throw exceptions::runtime_c(
                  "ref command expects 2 parameters at most, but " +
                      std::to_string(cells.size() - 1) + " were given",
                  cells[0]);
