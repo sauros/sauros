@@ -93,8 +93,7 @@ class processor_c {
    //! screen \param out[out] The string to populate \param cell[in] The cell to
    //! string \param env The environment to pull cell information from \param
    //! show_space Defaults to true, inserts spaces between items
-   void cell_to_string(std::string &out, cell_ptr cell,
-                       env_ptr,
+   void cell_to_string(std::string &out, cell_ptr cell, env_ptr,
                        bool show_space = false);
 
    //! \brief Reset the processor
@@ -105,8 +104,7 @@ class processor_c {
    //! \param env The environment to look in
    //! \note This helps load variables that may or may not
    //!       contain accessors (this.that.inner)
-   cell_ptr load_potential_variable(cell_ptr source,
-                                    env_ptr env);
+   cell_ptr load_potential_variable(cell_ptr source, env_ptr env);
 
  private:
    sauros::system_c _system;
@@ -114,18 +112,15 @@ class processor_c {
 
    void populate_standard_builtins();
 
-   void quote_cell(std::string &out, cell_ptr cell,
-                   env_ptr env);
+   void quote_cell(std::string &out, cell_ptr cell, env_ptr env);
 
    cell_ptr process_list(cells_t &cells, env_ptr env);
 
-   cell_ptr process_lambda(cell_ptr cell, cells_t &cells,
-                           env_ptr env);
+   cell_ptr process_lambda(cell_ptr cell, cells_t &cells, env_ptr env);
 
    cell_ptr clone_box(cell_ptr cell);
 
-   void load_package(cell_ptr cell, location_s *location,
-                     env_ptr env);
+   void load_package(cell_ptr cell, location_s *location, env_ptr env);
 
    static std::tuple<cell_ptr, std::string, env_ptr>
    retrieve_box_data(cell_ptr &cell, std::shared_ptr<environment_c> &env);

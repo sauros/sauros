@@ -14,8 +14,7 @@ processor_c::~processor_c() {
    }
 }
 
-void processor_c::cell_to_string(std::string &out, cell_ptr cell,
-                                 env_ptr env,
+void processor_c::cell_to_string(std::string &out, cell_ptr cell, env_ptr env,
                                  bool show_space) {
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::cell_to_string");
@@ -79,8 +78,7 @@ void processor_c::cell_to_string(std::string &out, cell_ptr cell,
    }
 }
 
-void processor_c::quote_cell(std::string &out, cell_ptr cell,
-                             env_ptr env) {
+void processor_c::quote_cell(std::string &out, cell_ptr cell, env_ptr env) {
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::quote_cell");
 #endif
@@ -151,8 +149,7 @@ void processor_c::quote_cell(std::string &out, cell_ptr cell,
    }
 }
 
-cell_ptr processor_c::process_list(cells_t &cells,
-                                   env_ptr env) {
+cell_ptr processor_c::process_list(cells_t &cells, env_ptr env) {
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::process_list");
 #endif
@@ -211,8 +208,7 @@ cell_ptr processor_c::process_list(cells_t &cells,
    throw runtime_exception_c("Unknown cell type", cells[0]);
 }
 
-cell_ptr processor_c::process_cell(cell_ptr cell,
-                                   env_ptr env) {
+cell_ptr processor_c::process_cell(cell_ptr cell, env_ptr env) {
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::process_cell");
 #endif
@@ -369,9 +365,7 @@ processor_c::retrieve_box_data(cell_ptr &cell,
    return {result, accessors.back(), moving_env};
 }
 
-cell_ptr
-processor_c::load_potential_variable(cell_ptr cell,
-                                     env_ptr env) {
+cell_ptr processor_c::load_potential_variable(cell_ptr cell, env_ptr env) {
 #ifdef PROFILER_ENABLED
    profiler_c::get_profiler()->hit("processor_c::load_potential_variable");
 #endif

@@ -23,39 +23,39 @@ static constexpr double EPSILON = 0.0001;
    (std::fabs(lhs__ - rhs__) <=                                                \
     EPSILON * std::max(std::fabs(lhs__), std::fabs(rhs__)))
 
-#define PERFORM_ARITH(op, cells, fn, env, force_double) \
-   if (cells.size() < 3) { \
-      throw runtime_exception_c("Expected a list size of at least 3 items", \
-                                cells[0]); \
-   } \
-   bool store_as_double{false}; \
-   auto first_cell_value = process_cell(cells[1], env); \
-   if (first_cell_value->type == cell_type_e::STRING) { \
-      throw runtime_exception_c("Invalid data type given for operand", \
-                                cells[0]); \
-   } \
-   double result = first_cell_value->data.d; \
-   if (first_cell_value->type == cell_type_e::INTEGER) { \
-      result = first_cell_value->data.i; \
-   } \
-   for (auto i = cells.begin() + 2; i != cells.end(); ++i) { \
-      auto cell_value = process_cell((*i), env); \
-      store_as_double = static_cast<unsigned short>(cell_value->type) == 0; \
-      if (cell_value->type == cell_type_e::STRING) { \
-         throw runtime_exception_c("Invalid data type given for operand", \
-                                   cells[0]); \
-      } \
-      double cell_value_actual = cell_value->data.d; \
-      if (cell_value->type == cell_type_e::INTEGER) { \
-         cell_value_actual = cell_value->data.i; \
-      } \
-      result = fn(result, cell_value_actual); \
-   } \
-   return (force_double || store_as_double) \
-              ? std::make_shared<cell_c>(cell_type_e::REAL, result, \
-                                         cells[0]->location) \
-              : std::make_shared<cell_c>(cell_type_e::INTEGER, \
-                                         static_cast<cell_int_t>(result), \
+#define PERFORM_ARITH(op, cells, fn, env, force_double)                        \
+   if (cells.size() < 3) {                                                     \
+      throw runtime_exception_c("Expected a list size of at least 3 items",    \
+                                cells[0]);                                     \
+   }                                                                           \
+   bool store_as_double{false};                                                \
+   auto first_cell_value = process_cell(cells[1], env);                        \
+   if (first_cell_value->type == cell_type_e::STRING) {                        \
+      throw runtime_exception_c("Invalid data type given for operand",         \
+                                cells[0]);                                     \
+   }                                                                           \
+   double result = first_cell_value->data.d;                                   \
+   if (first_cell_value->type == cell_type_e::INTEGER) {                       \
+      result = first_cell_value->data.i;                                       \
+   }                                                                           \
+   for (auto i = cells.begin() + 2; i != cells.end(); ++i) {                   \
+      auto cell_value = process_cell((*i), env);                               \
+      store_as_double = static_cast<unsigned short>(cell_value->type) == 0;    \
+      if (cell_value->type == cell_type_e::STRING) {                           \
+         throw runtime_exception_c("Invalid data type given for operand",      \
+                                   cells[0]);                                  \
+      }                                                                        \
+      double cell_value_actual = cell_value->data.d;                           \
+      if (cell_value->type == cell_type_e::INTEGER) {                          \
+         cell_value_actual = cell_value->data.i;                               \
+      }                                                                        \
+      result = fn(result, cell_value_actual);                                  \
+   }                                                                           \
+   return (force_double || store_as_double)                                    \
+              ? std::make_shared<cell_c>(cell_type_e::REAL, result,            \
+                                         cells[0]->location)                   \
+              : std::make_shared<cell_c>(cell_type_e::INTEGER,                 \
+                                         static_cast<cell_int_t>(result),      \
                                          cells[0]->location);
 namespace {
 
@@ -359,9 +359,9 @@ void processor_c::populate_standard_builtins() {
           throw runtime_exception_c(*message->data.s, cells[0]);
        });
 
-   _builtins[BUILTIN_NOT] = std::make_shared<
-       cell_c>([this](cells_t &cells,
-                      env_ptr env) -> cell_ptr {
+   _builtins[BUILTIN_NOT] = std::make_shared<cell_c>([this](cells_t &cells,
+                                                            env_ptr env)
+                                                         -> cell_ptr {
 #ifdef PROFILER_ENABLED
       profiler_c::get_profiler()->hit("processor_builtin::NOT");
 #endif
@@ -435,8 +435,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_VAR] = std::make_shared<cell_c>(
-       [this, expect_var_get_name](
-           cells_t &cells, env_ptr env) -> cell_ptr {
+       [this, expect_var_get_name](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::VAR");
 #endif
@@ -947,10 +946,10 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::LT");
 #endif
-          constexpr auto fn = [](double lhs, double rhs) -> double { return lhs < rhs; };
-          PERFORM_ARITH(
-              "<", cells,
-              fn, env, false);
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return lhs < rhs;
+          };
+          PERFORM_ARITH("<", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_LT_EQ] = std::make_shared<cell_c>(
@@ -958,11 +957,10 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::LT_EQ");
 #endif
-            constexpr auto fn = [](double lhs, double rhs) -> double { return lhs <= rhs; };
-          PERFORM_ARITH(
-              "<=", cells,
-              fn,
-              env, false);
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return lhs <= rhs;
+          };
+          PERFORM_ARITH("<=", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_GT] = std::make_shared<cell_c>(
@@ -970,10 +968,10 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::GT");
 #endif
-          constexpr auto fn = [](double lhs, double rhs) -> double { return lhs > rhs; };
-          PERFORM_ARITH(
-              ">", cells,
-              fn, env, false);
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return lhs > rhs;
+          };
+          PERFORM_ARITH(">", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_GT_EQ] = std::make_shared<cell_c>(
@@ -981,11 +979,10 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::GT_EQ");
 #endif
-          constexpr auto fn = [](double lhs, double rhs) -> double { return lhs >= rhs; };
-          PERFORM_ARITH(
-              ">=", cells,
-              fn,
-              env, false);
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return lhs >= rhs;
+          };
+          PERFORM_ARITH(">=", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_EQ_EQ] = std::make_shared<cell_c>(
@@ -994,12 +991,9 @@ void processor_c::populate_standard_builtins() {
           profiler_c::get_profiler()->hit("processor_builtin::EQ_EQ");
 #endif
           constexpr auto fn = [](double lhs, double rhs) -> double {
-                 return SAUROS_DOUBLES_EQUAL(lhs, rhs);
-              };
-          PERFORM_ARITH(
-              "==", cells,
-              fn,
-              env, false);
+             return SAUROS_DOUBLES_EQUAL(lhs, rhs);
+          };
+          PERFORM_ARITH("==", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_NOT_EQ] = std::make_shared<cell_c>(
@@ -1007,11 +1001,10 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::NOT_EQ");
 #endif
-          constexpr auto fn = 
-              [](double lhs, double rhs) -> double { return lhs != rhs; };
-          PERFORM_ARITH(
-              "!=", cells,fn,
-              env, false);
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return lhs != rhs;
+          };
+          PERFORM_ARITH("!=", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_ADD] = std::make_shared<cell_c>(
@@ -1019,12 +1012,12 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::ADD");
 #endif
-         
-        constexpr auto fn = [](double lhs, double rhs) -> double { return lhs + rhs; };
 
-          PERFORM_ARITH(
-              "+", cells,
-              fn, env, false);
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return lhs + rhs;
+          };
+
+          PERFORM_ARITH("+", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_SUB] = std::make_shared<cell_c>(
@@ -1032,10 +1025,10 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::SUB");
 #endif
-          constexpr auto fn = [](double lhs, double rhs) -> double { return lhs - rhs; };
-          PERFORM_ARITH(
-              "-", cells,
-              fn, env, false);
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return lhs - rhs;
+          };
+          PERFORM_ARITH("-", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_DIV] = std::make_shared<cell_c>(
@@ -1044,16 +1037,13 @@ void processor_c::populate_standard_builtins() {
           profiler_c::get_profiler()->hit("processor_builtin::DIV");
 #endif
           constexpr auto fn = [](double lhs, double rhs) -> double {
-                 if (rhs == 0.0) {
-                    return 0.0;
-                 }
+             if (rhs == 0.0) {
+                return 0.0;
+             }
 
-                 return lhs / rhs;
-              };
-          PERFORM_ARITH(
-              "/", cells,
-              fn,
-              env, true);
+             return lhs / rhs;
+          };
+          PERFORM_ARITH("/", cells, fn, env, true);
        });
 
    _builtins[BUILTIN_MUL] = std::make_shared<cell_c>(
@@ -1061,10 +1051,10 @@ void processor_c::populate_standard_builtins() {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::MUL");
 #endif
-          constexpr auto fn = [](double lhs, double rhs) -> double { return lhs * rhs; };
-          PERFORM_ARITH(
-              "*", cells,
-              fn, env, false);
+          constexpr auto fn = [](double lhs, double rhs) -> double {
+             return lhs * rhs;
+          };
+          PERFORM_ARITH("*", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_MOD] = std::make_shared<cell_c>(
@@ -1073,13 +1063,9 @@ void processor_c::populate_standard_builtins() {
           profiler_c::get_profiler()->hit("processor_builtin::MOD");
 #endif
           constexpr auto fn = [](double lhs, double rhs) -> double {
-                 return static_cast<cell_int_t>(lhs) %
-                        static_cast<cell_int_t>(rhs);
-              };
-          PERFORM_ARITH(
-              "%", cells,
-              fn,
-              env, false);
+             return static_cast<cell_int_t>(lhs) % static_cast<cell_int_t>(rhs);
+          };
+          PERFORM_ARITH("%", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_OR] = std::make_shared<cell_c>(
@@ -1088,15 +1074,12 @@ void processor_c::populate_standard_builtins() {
           profiler_c::get_profiler()->hit("processor_builtin::OR");
 #endif
           constexpr auto fn = [](double lhs, double rhs) -> double {
-                 bool result =
-                     (static_cast<bool>(lhs) || static_cast<bool>(rhs)) ? true
-                                                                        : false;
-                 return result;
-              };
-          PERFORM_ARITH(
-              "%", cells,
-              fn,
-              env, false);
+             bool result = (static_cast<bool>(lhs) || static_cast<bool>(rhs))
+                               ? true
+                               : false;
+             return result;
+          };
+          PERFORM_ARITH("%", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_AND] = std::make_shared<cell_c>(
@@ -1105,16 +1088,13 @@ void processor_c::populate_standard_builtins() {
           profiler_c::get_profiler()->hit("processor_builtin::AND");
 #endif
           constexpr auto fn = [](double lhs, double rhs) -> double {
-                 bool result =
-                     (static_cast<bool>(lhs) && static_cast<bool>(rhs)) ? true
-                                                                        : false;
-                 return result;
-              };
+             bool result = (static_cast<bool>(lhs) && static_cast<bool>(rhs))
+                               ? true
+                               : false;
+             return result;
+          };
 
-          PERFORM_ARITH(
-              "%", cells,
-              fn,
-              env, false);
+          PERFORM_ARITH("%", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_XOR] = std::make_shared<cell_c>(
@@ -1123,17 +1103,13 @@ void processor_c::populate_standard_builtins() {
           profiler_c::get_profiler()->hit("processor_builtin::XOR");
 #endif
           constexpr auto fn = [](double lhs, double rhs) -> double {
-                 auto _lhs = static_cast<bool>(lhs);
-                 auto _rhs = static_cast<bool>(rhs);
-                 bool result =
-                     ((_lhs && !_rhs) || (_rhs && !_lhs)) ? true : false;
-                 return result;
-              };
+             auto _lhs = static_cast<bool>(lhs);
+             auto _rhs = static_cast<bool>(rhs);
+             bool result = ((_lhs && !_rhs) || (_rhs && !_lhs)) ? true : false;
+             return result;
+          };
 
-          PERFORM_ARITH(
-              "%", cells,
-              fn,
-              env, false);
+          PERFORM_ARITH("%", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_BITWISE_AND] = std::make_shared<cell_c>(
@@ -1142,13 +1118,10 @@ void processor_c::populate_standard_builtins() {
           profiler_c::get_profiler()->hit("processor_builtin::BW_AND");
 #endif
           constexpr auto fn = [](double lhs, double rhs) -> double {
-                 return static_cast<uint64_t>(lhs) & static_cast<uint64_t>(rhs);
-              };
+             return static_cast<uint64_t>(lhs) & static_cast<uint64_t>(rhs);
+          };
 
-          PERFORM_ARITH(
-              "%", cells,
-              fn,
-              env, false);
+          PERFORM_ARITH("%", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_BITWISE_OR] = std::make_shared<cell_c>(
@@ -1157,12 +1130,9 @@ void processor_c::populate_standard_builtins() {
           profiler_c::get_profiler()->hit("processor_builtin::BW_OR");
 #endif
           constexpr auto fn = [](double lhs, double rhs) -> double {
-                 return static_cast<uint64_t>(lhs) | static_cast<uint64_t>(rhs);
-              };
-          PERFORM_ARITH(
-              "%", cells,
-              fn,
-              env, false);
+             return static_cast<uint64_t>(lhs) | static_cast<uint64_t>(rhs);
+          };
+          PERFORM_ARITH("%", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_BITWISE_LSH] = std::make_shared<cell_c>(
@@ -1171,13 +1141,9 @@ void processor_c::populate_standard_builtins() {
           profiler_c::get_profiler()->hit("processor_builtin::BW_LSH");
 #endif
           constexpr auto fn = [](double lhs, double rhs) -> double {
-                 return static_cast<uint64_t>(lhs)
-                        << static_cast<uint64_t>(rhs);
-              };
-          PERFORM_ARITH(
-              "%", cells,
-              fn,
-              env, false);
+             return static_cast<uint64_t>(lhs) << static_cast<uint64_t>(rhs);
+          };
+          PERFORM_ARITH("%", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_BITWISE_RSH] = std::make_shared<cell_c>(
@@ -1186,13 +1152,9 @@ void processor_c::populate_standard_builtins() {
           profiler_c::get_profiler()->hit("processor_builtin::BW_RSH");
 #endif
           constexpr auto fn = [](double lhs, double rhs) -> double {
-                 return static_cast<uint64_t>(lhs) >>
-                        static_cast<uint64_t>(rhs);
-              };
-          PERFORM_ARITH(
-              "%", cells,
-              fn,
-              env, false);
+             return static_cast<uint64_t>(lhs) >> static_cast<uint64_t>(rhs);
+          };
+          PERFORM_ARITH("%", cells, fn, env, false);
        });
 
    _builtins[BUILTIN_BITWISE_XOR] = std::make_shared<cell_c>(
@@ -1201,17 +1163,15 @@ void processor_c::populate_standard_builtins() {
           profiler_c::get_profiler()->hit("processor_builtin::BW_XOR");
 #endif
           constexpr auto fn = [](double lhs, double rhs) -> double {
-                 return static_cast<uint64_t>(lhs) ^ static_cast<uint64_t>(rhs);
-              };
-          PERFORM_ARITH(
-              "%", cells,
-              fn,
-              env, false);
+             return static_cast<uint64_t>(lhs) ^ static_cast<uint64_t>(rhs);
+          };
+          PERFORM_ARITH("%", cells, fn, env, false);
        });
 
-   _builtins[BUILTIN_BITWISE_NOT] = std::make_shared<
-       cell_c>([this](cells_t &cells,
-                      env_ptr env) -> cell_ptr {
+   _builtins[BUILTIN_BITWISE_NOT] = std::make_shared<cell_c>([this](
+                                                                 cells_t &cells,
+                                                                 env_ptr env)
+                                                                 -> cell_ptr {
 #ifdef PROFILER_ENABLED
       profiler_c::get_profiler()->hit("processor_builtin::BW_NOT");
 #endif
@@ -1250,8 +1210,7 @@ void processor_c::populate_standard_builtins() {
    };
 
    _builtins[BUILTIN_AS_INT] = std::make_shared<cell_c>(
-       [this, conversion_fn](cells_t &cells,
-                             env_ptr env) -> cell_ptr {
+       [this, conversion_fn](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::AS_INT");
 #endif
@@ -1274,8 +1233,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_AS_STR] = std::make_shared<cell_c>(
-       [this, conversion_fn](cells_t &cells,
-                             env_ptr env) -> cell_ptr {
+       [this, conversion_fn](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::AS_STR");
 #endif
@@ -1307,8 +1265,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_AS_REAL] = std::make_shared<cell_c>(
-       [this, conversion_fn](cells_t &cells,
-                             env_ptr env) -> cell_ptr {
+       [this, conversion_fn](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::AS_REAL");
 #endif
@@ -1331,8 +1288,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_AS_LIST] = std::make_shared<cell_c>(
-       [this, conversion_fn](cells_t &cells,
-                             env_ptr env) -> cell_ptr {
+       [this, conversion_fn](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::AS_LIST");
 #endif
@@ -1363,8 +1319,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_ASYNC] = std::make_shared<cell_c>(
-       [this, expect_var_get_name](
-           cells_t &cells, env_ptr env) -> cell_ptr {
+       [this, expect_var_get_name](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::ASYNC");
 #endif
@@ -1402,8 +1357,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_THREAD] = std::make_shared<cell_c>(
-       [this, expect_var_get_name](
-           cells_t &cells, env_ptr env) -> cell_ptr {
+       [this, expect_var_get_name](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::THREAD");
 #endif
@@ -1438,8 +1392,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_CHAN] = std::make_shared<cell_c>(
-       [this, expect_var_get_name](
-           cells_t &cells, env_ptr env) -> cell_ptr {
+       [this, expect_var_get_name](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::CHAN");
 #endif
@@ -1460,8 +1413,7 @@ void processor_c::populate_standard_builtins() {
        });
 
    _builtins[BUILTIN_REF] = std::make_shared<cell_c>(
-       [this, expect_var_get_name](
-           cells_t &cells, env_ptr env) -> cell_ptr {
+       [this, expect_var_get_name](cells_t &cells, env_ptr env) -> cell_ptr {
 #ifdef PROFILER_ENABLED
           profiler_c::get_profiler()->hit("processor_builtin::REF");
 #endif
