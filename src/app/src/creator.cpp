@@ -261,7 +261,7 @@ int create_app(std::string &file) {
 
    auto app_name = path.filename().string();
 
-   std::cout << "New application nam: " << app_name << std::endl;
+   std::cout << "New application name: " << app_name << std::endl;
 
    if (!std::filesystem::create_directory(path)) {
       std::cerr << "Unable to create directory: " << file << std::endl;
