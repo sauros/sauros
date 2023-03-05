@@ -9,6 +9,11 @@ include_directories(${LIBAUROS_INCLUDE_DIRS})
 
 find_package (Threads REQUIRED)
 
+include("cmake/FindGit2.cmake")
+if(NOT LIBGIT2_FOUND)
+  message(FATAL_ERROR "Unable to locate libgit2")
+endif()
+
 #
 # Options
 #
@@ -48,19 +53,23 @@ add_subdirectory(src/third_party/hwinfo)
 add_executable(sauros
   src/creator.cpp
   src/dir_loader.cpp
+  src/management/fetch.cpp
   src/main.cpp
 )
 
 target_include_directories(sauros
     PUBLIC 
+        ${LIBGIT2_INCLUDE_DIR}
         ${PROJECT_SOURCE_DIR}
+        ${PROJECT_SOURCE_DIR}/src/third_party/indicators
         ${PROJECT_SOURCE_DIR}/src/third_party/hwinfo/include)
 
 target_link_libraries(sauros 
    PUBLIC hwinfo::HWinfo
    ${LIBSAUROS_LIBRARIES}
    dl
-   Threads::Threads)
+   Threads::Threads
+   ${LIBGIT2_LIBRARIES})
 
 #
 # Install bin

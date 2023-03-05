@@ -9,6 +9,7 @@
 
 #include "creator.hpp"
 #include "dir_loader.hpp"
+#include "management/fetch.hpp"
 
 namespace {
 std::shared_ptr<sauros::environment_c> env =
@@ -183,6 +184,16 @@ int main(int argc, char **argv) {
       }
       i++;
       return app::create_app(args[i]);
+    }
+
+    if (args[i] == "get") {
+      if (i + 1 >= args.size()) {
+        std::cerr << "Expected <url> for command `get`" << std::endl;
+        return 1;
+      }
+      i++;
+      return !mgmt::fetch(args[i]);
+      ;
     }
   }
 
