@@ -86,13 +86,6 @@ static inline bool eval_truthy(cell_ptr cell, location_s *location) {
 void processor_c::populate_standard_builtins() {
 
   auto expect_var_get_name = [this](cell_ptr cell) -> std::string {
-    if (cell->type == cell_type_e::BOX_SYMBOL) {
-      throw exceptions::runtime_c(
-          "Attempting to directly define a variable accessor " +
-              (*cell->data.s),
-          cell);
-    }
-
     if (cell->builtin_encoding != BUILTIN_DEFAULT_VAL) {
       throw exceptions::runtime_c(
           "Attempting to define a key symbol: " + (*cell->data.s), cell);
@@ -625,39 +618,37 @@ void processor_c::populate_standard_builtins() {
 #endif
         SAUROS_PROCESSOR_CHECK_CELL_SIZE(cells, 3, "set");
 
-        if (!cells[1]->data.s) {
-          throw exceptions::runtime_c("Data unknown", cells[1]);
-        }
-
         auto &variable_name = *cells[1]->data.s;
 
-        if (variable_name.find('.') != std::string::npos) {
+        switch(cells[1]->type) {
+         case cell_type_e::BOX_SYMBOL: {
+            auto [_, target_variable, target_env] =
+               retrieve_box_data(cells[1], env);
 
-          auto [_, target_variable, target_env] =
-              retrieve_box_data(cells[1], env);
+            auto value = process_cell(cells[2], env);
 
-          auto value = process_cell(cells[2], env);
+            if (value->type == cell_type_e::SYMBOL) {
+               throw exceptions::runtime_c("Expected list or datum value (set)",
+                                          cells[2]);
+            }
+            target_env->set(target_variable, value);
+            return {value};
+         }
+         case cell_type_e::SYMBOL: {
+            // If this isn't found it will throw :)
+            auto containing_env = env->find(variable_name, cells[1]);
+            auto value = process_cell(cells[2], env);
 
-          if (value->type == cell_type_e::SYMBOL) {
-            throw exceptions::runtime_c("Expected list or datum value (set)",
-                                        cells[2]);
-          }
-
-          target_env->set(target_variable, value);
-          return {value};
-
-        } else {
-          // If this isn't found it will throw :)
-          auto containing_env = env->find(variable_name, cells[1]);
-          auto value = process_cell(cells[2], env);
-
-          if (value->type == cell_type_e::SYMBOL) {
-            throw exceptions::runtime_c("Expected list or datum value (set)",
-                                        cells[2]);
-          }
-
-          containing_env->set(variable_name, value);
-          return {value};
+            if (value->type == cell_type_e::SYMBOL) {
+               throw exceptions::runtime_c("Expected list or datum value (set)",
+                                          cells[2]);
+            }
+            containing_env->set(variable_name, value);
+            return {value};
+            }
+         default: {
+          throw exceptions::runtime_c("Expected symbol for `set`", cells[1]);
+         }
         }
       });
 
