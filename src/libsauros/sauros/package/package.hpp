@@ -10,15 +10,15 @@
 namespace sauros {
 namespace package {
 struct pkg_s {
-   std::string name;
-   std::string library_file;
-   std::string license;
-   std::string version;
-   std::vector<std::string> authors_list;
-   std::vector<std::string> library_function_list;
-   std::vector<std::string> source_file_list;
-   std::vector<std::string> requires_list;
-   std::shared_ptr<sauros::environment_c> env{nullptr};
+  std::string name;
+  std::string library_file;
+  std::string license;
+  std::string version;
+  std::vector<std::string> authors_list;
+  std::vector<std::string> library_function_list;
+  std::vector<std::string> source_file_list;
+  std::vector<std::string> requires_list;
+  std::shared_ptr<sauros::environment_c> env{nullptr};
 };
 
 //! \brief Attempt to load a package from a target directory

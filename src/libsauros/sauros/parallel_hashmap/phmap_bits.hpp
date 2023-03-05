@@ -80,27 +80,27 @@ namespace phmap {
 namespace bits {
 
 inline uint16_t UnalignedLoad16(const void *p) {
-   return __sanitizer_unaligned_load16(p);
+  return __sanitizer_unaligned_load16(p);
 }
 
 inline uint32_t UnalignedLoad32(const void *p) {
-   return __sanitizer_unaligned_load32(p);
+  return __sanitizer_unaligned_load32(p);
 }
 
 inline uint64_t UnalignedLoad64(const void *p) {
-   return __sanitizer_unaligned_load64(p);
+  return __sanitizer_unaligned_load64(p);
 }
 
 inline void UnalignedStore16(void *p, uint16_t v) {
-   __sanitizer_unaligned_store16(p, v);
+  __sanitizer_unaligned_store16(p, v);
 }
 
 inline void UnalignedStore32(void *p, uint32_t v) {
-   __sanitizer_unaligned_store32(p, v);
+  __sanitizer_unaligned_store32(p, v);
 }
 
 inline void UnalignedStore64(void *p, uint64_t v) {
-   __sanitizer_unaligned_store64(p, v);
+  __sanitizer_unaligned_store64(p, v);
 }
 
 } // namespace bits
@@ -111,11 +111,11 @@ inline void UnalignedStore64(void *p, uint64_t v) {
 #define PHMAP_INTERNAL_UNALIGNED_LOAD64(_p) (phmap::bits::UnalignedLoad64(_p))
 
 #define PHMAP_INTERNAL_UNALIGNED_STORE16(_p, _val)                             \
-   (phmap::bits::UnalignedStore16(_p, _val))
+  (phmap::bits::UnalignedStore16(_p, _val))
 #define PHMAP_INTERNAL_UNALIGNED_STORE32(_p, _val)                             \
-   (phmap::bits::UnalignedStore32(_p, _val))
+  (phmap::bits::UnalignedStore32(_p, _val))
 #define PHMAP_INTERNAL_UNALIGNED_STORE64(_p, _val)                             \
-   (phmap::bits::UnalignedStore64(_p, _val))
+  (phmap::bits::UnalignedStore64(_p, _val))
 
 #else
 
@@ -123,21 +123,21 @@ namespace phmap {
 namespace bits {
 
 inline uint16_t UnalignedLoad16(const void *p) {
-   uint16_t t;
-   memcpy(&t, p, sizeof t);
-   return t;
+  uint16_t t;
+  memcpy(&t, p, sizeof t);
+  return t;
 }
 
 inline uint32_t UnalignedLoad32(const void *p) {
-   uint32_t t;
-   memcpy(&t, p, sizeof t);
-   return t;
+  uint32_t t;
+  memcpy(&t, p, sizeof t);
+  return t;
 }
 
 inline uint64_t UnalignedLoad64(const void *p) {
-   uint64_t t;
-   memcpy(&t, p, sizeof t);
-   return t;
+  uint64_t t;
+  memcpy(&t, p, sizeof t);
+  return t;
 }
 
 inline void UnalignedStore16(void *p, uint16_t v) { memcpy(p, &v, sizeof v); }
@@ -154,11 +154,11 @@ inline void UnalignedStore64(void *p, uint64_t v) { memcpy(p, &v, sizeof v); }
 #define PHMAP_INTERNAL_UNALIGNED_LOAD64(_p) (phmap::bits::UnalignedLoad64(_p))
 
 #define PHMAP_INTERNAL_UNALIGNED_STORE16(_p, _val)                             \
-   (phmap::bits::UnalignedStore16(_p, _val))
+  (phmap::bits::UnalignedStore16(_p, _val))
 #define PHMAP_INTERNAL_UNALIGNED_STORE32(_p, _val)                             \
-   (phmap::bits::UnalignedStore32(_p, _val))
+  (phmap::bits::UnalignedStore32(_p, _val))
 #define PHMAP_INTERNAL_UNALIGNED_STORE64(_p, _val)                             \
-   (phmap::bits::UnalignedStore64(_p, _val))
+  (phmap::bits::UnalignedStore64(_p, _val))
 
 #endif
 
@@ -168,9 +168,9 @@ inline void UnalignedStore64(void *p, uint64_t v) { memcpy(p, &v, sizeof v); }
 
 #if defined(__pnacl__)
 #define PHMAP_BLOCK_TAIL_CALL_OPTIMIZATION()                                   \
-   if (volatile int x = 0) {                                                   \
-      (void)x;                                                                 \
-   }
+  if (volatile int x = 0) {                                                    \
+    (void)x;                                                                   \
+  }
 #elif defined(__clang__)
   // Clang will not tail call given inline volatile assembly.
 #define PHMAP_BLOCK_TAIL_CALL_OPTIMIZATION() __asm__ __volatile__("")
@@ -183,9 +183,9 @@ inline void UnalignedStore64(void *p, uint64_t v) { memcpy(p, &v, sizeof v); }
 #define PHMAP_BLOCK_TAIL_CALL_OPTIMIZATION() __nop()
 #else
 #define PHMAP_BLOCK_TAIL_CALL_OPTIMIZATION()                                   \
-   if (volatile int x = 0) {                                                   \
-      (void)x;                                                                 \
-   }
+  if (volatile int x = 0) {                                                    \
+    (void)x;                                                                   \
+  }
 #endif
 
 #if defined(__GNUC__)
@@ -196,16 +196,16 @@ inline void UnalignedStore64(void *p, uint64_t v) { memcpy(p, &v, sizeof v); }
 #ifdef PHMAP_HAVE_INTRINSIC_INT128
 __extension__ typedef unsigned __int128 phmap_uint128;
 inline uint64_t umul128(uint64_t a, uint64_t b, uint64_t *high) {
-   auto result = static_cast<phmap_uint128>(a) * static_cast<phmap_uint128>(b);
-   *high = static_cast<uint64_t>(result >> 64);
-   return static_cast<uint64_t>(result);
+  auto result = static_cast<phmap_uint128>(a) * static_cast<phmap_uint128>(b);
+  *high = static_cast<uint64_t>(result >> 64);
+  return static_cast<uint64_t>(result);
 }
 #define PHMAP_HAS_UMUL128 1
 #elif (defined(_MSC_VER))
 #if defined(_M_X64)
 #pragma intrinsic(_umul128)
 inline uint64_t umul128(uint64_t a, uint64_t b, uint64_t *high) {
-   return _umul128(a, b, high);
+  return _umul128(a, b, high);
 }
 #define PHMAP_HAS_UMUL128 1
 #endif
@@ -279,161 +279,161 @@ namespace phmap {
 namespace base_internal {
 
 PHMAP_BASE_INTERNAL_FORCEINLINE int CountLeadingZeros64Slow(uint64_t n) {
-   int zeroes = 60;
-   if (n >> 32)
-      zeroes -= 32, n >>= 32;
-   if (n >> 16)
-      zeroes -= 16, n >>= 16;
-   if (n >> 8)
-      zeroes -= 8, n >>= 8;
-   if (n >> 4)
-      zeroes -= 4, n >>= 4;
-   return "\4\3\2\2\1\1\1\1\0\0\0\0\0\0\0"[n] + zeroes;
+  int zeroes = 60;
+  if (n >> 32)
+    zeroes -= 32, n >>= 32;
+  if (n >> 16)
+    zeroes -= 16, n >>= 16;
+  if (n >> 8)
+    zeroes -= 8, n >>= 8;
+  if (n >> 4)
+    zeroes -= 4, n >>= 4;
+  return "\4\3\2\2\1\1\1\1\0\0\0\0\0\0\0"[n] + zeroes;
 }
 
 PHMAP_BASE_INTERNAL_FORCEINLINE int CountLeadingZeros64(uint64_t n) {
 #if defined(_MSC_VER) && defined(_M_X64)
-   // MSVC does not have __buitin_clzll. Use _BitScanReverse64.
-   unsigned long result = 0; // NOLINT(runtime/int)
-   if (_BitScanReverse64(&result, n)) {
-      return (int)(63 - result);
-   }
-   return 64;
+  // MSVC does not have __buitin_clzll. Use _BitScanReverse64.
+  unsigned long result = 0; // NOLINT(runtime/int)
+  if (_BitScanReverse64(&result, n)) {
+    return (int)(63 - result);
+  }
+  return 64;
 #elif defined(_MSC_VER) && !defined(__clang__)
-   // MSVC does not have __buitin_clzll. Compose two calls to _BitScanReverse
-   unsigned long result = 0; // NOLINT(runtime/int)
-   if ((n >> 32) && _BitScanReverse(&result, (unsigned long)(n >> 32))) {
-      return 31 - result;
-   }
-   if (_BitScanReverse(&result, (unsigned long)n)) {
-      return 63 - result;
-   }
-   return 64;
+  // MSVC does not have __buitin_clzll. Compose two calls to _BitScanReverse
+  unsigned long result = 0; // NOLINT(runtime/int)
+  if ((n >> 32) && _BitScanReverse(&result, (unsigned long)(n >> 32))) {
+    return 31 - result;
+  }
+  if (_BitScanReverse(&result, (unsigned long)n)) {
+    return 63 - result;
+  }
+  return 64;
 #elif defined(__GNUC__) || defined(__clang__)
-   // Use __builtin_clzll, which uses the following instructions:
-   //  x86: bsr
-   //  ARM64: clz
-   //  PPC: cntlzd
-   static_assert(sizeof(unsigned long long) == sizeof(n), // NOLINT(runtime/int)
-                 "__builtin_clzll does not take 64-bit arg");
+  // Use __builtin_clzll, which uses the following instructions:
+  //  x86: bsr
+  //  ARM64: clz
+  //  PPC: cntlzd
+  static_assert(sizeof(unsigned long long) == sizeof(n), // NOLINT(runtime/int)
+                "__builtin_clzll does not take 64-bit arg");
 
-   // Handle 0 as a special case because __builtin_clzll(0) is undefined.
-   if (n == 0) {
-      return 64;
-   }
-   return __builtin_clzll(n);
+  // Handle 0 as a special case because __builtin_clzll(0) is undefined.
+  if (n == 0) {
+    return 64;
+  }
+  return __builtin_clzll(n);
 #else
-   return CountLeadingZeros64Slow(n);
+  return CountLeadingZeros64Slow(n);
 #endif
 }
 
 PHMAP_BASE_INTERNAL_FORCEINLINE uint32_t CountLeadingZeros32Slow(uint64_t n) {
-   uint32_t zeroes = 28;
-   if (n >> 16)
-      zeroes -= 16, n >>= 16;
-   if (n >> 8)
-      zeroes -= 8, n >>= 8;
-   if (n >> 4)
-      zeroes -= 4, n >>= 4;
-   return "\4\3\2\2\1\1\1\1\0\0\0\0\0\0\0"[n] + zeroes;
+  uint32_t zeroes = 28;
+  if (n >> 16)
+    zeroes -= 16, n >>= 16;
+  if (n >> 8)
+    zeroes -= 8, n >>= 8;
+  if (n >> 4)
+    zeroes -= 4, n >>= 4;
+  return "\4\3\2\2\1\1\1\1\0\0\0\0\0\0\0"[n] + zeroes;
 }
 
 PHMAP_BASE_INTERNAL_FORCEINLINE uint32_t CountLeadingZeros32(uint32_t n) {
 #if defined(_MSC_VER) && !defined(__clang__)
-   unsigned long result = 0; // NOLINT(runtime/int)
-   if (_BitScanReverse(&result, n)) {
-      return (uint32_t)(31 - result);
-   }
-   return 32;
+  unsigned long result = 0; // NOLINT(runtime/int)
+  if (_BitScanReverse(&result, n)) {
+    return (uint32_t)(31 - result);
+  }
+  return 32;
 #elif defined(__GNUC__) || defined(__clang__)
-   // Use __builtin_clz, which uses the following instructions:
-   //  x86: bsr
-   //  ARM64: clz
-   //  PPC: cntlzd
-   static_assert(sizeof(int) == sizeof(n),
-                 "__builtin_clz does not take 32-bit arg");
+  // Use __builtin_clz, which uses the following instructions:
+  //  x86: bsr
+  //  ARM64: clz
+  //  PPC: cntlzd
+  static_assert(sizeof(int) == sizeof(n),
+                "__builtin_clz does not take 32-bit arg");
 
-   // Handle 0 as a special case because __builtin_clz(0) is undefined.
-   if (n == 0) {
-      return 32;
-   }
-   return __builtin_clz(n);
+  // Handle 0 as a special case because __builtin_clz(0) is undefined.
+  if (n == 0) {
+    return 32;
+  }
+  return __builtin_clz(n);
 #else
-   return CountLeadingZeros32Slow(n);
+  return CountLeadingZeros32Slow(n);
 #endif
 }
 
 PHMAP_BASE_INTERNAL_FORCEINLINE uint32_t
 CountTrailingZerosNonZero64Slow(uint64_t n) {
-   uint32_t c = 63;
-   n &= ~n + 1;
-   if (n & 0x00000000FFFFFFFF)
-      c -= 32;
-   if (n & 0x0000FFFF0000FFFF)
-      c -= 16;
-   if (n & 0x00FF00FF00FF00FF)
-      c -= 8;
-   if (n & 0x0F0F0F0F0F0F0F0F)
-      c -= 4;
-   if (n & 0x3333333333333333)
-      c -= 2;
-   if (n & 0x5555555555555555)
-      c -= 1;
-   return c;
+  uint32_t c = 63;
+  n &= ~n + 1;
+  if (n & 0x00000000FFFFFFFF)
+    c -= 32;
+  if (n & 0x0000FFFF0000FFFF)
+    c -= 16;
+  if (n & 0x00FF00FF00FF00FF)
+    c -= 8;
+  if (n & 0x0F0F0F0F0F0F0F0F)
+    c -= 4;
+  if (n & 0x3333333333333333)
+    c -= 2;
+  if (n & 0x5555555555555555)
+    c -= 1;
+  return c;
 }
 
 PHMAP_BASE_INTERNAL_FORCEINLINE uint32_t
 CountTrailingZerosNonZero64(uint64_t n) {
 #if defined(_MSC_VER) && !defined(__clang__) && defined(_M_X64)
-   unsigned long result = 0; // NOLINT(runtime/int)
-   _BitScanForward64(&result, n);
-   return (uint32_t)result;
+  unsigned long result = 0; // NOLINT(runtime/int)
+  _BitScanForward64(&result, n);
+  return (uint32_t)result;
 #elif defined(_MSC_VER) && !defined(__clang__)
-   unsigned long result = 0; // NOLINT(runtime/int)
-   if (static_cast<uint32_t>(n) == 0) {
-      _BitScanForward(&result, (unsigned long)(n >> 32));
-      return result + 32;
-   }
-   _BitScanForward(&result, (unsigned long)n);
-   return result;
+  unsigned long result = 0; // NOLINT(runtime/int)
+  if (static_cast<uint32_t>(n) == 0) {
+    _BitScanForward(&result, (unsigned long)(n >> 32));
+    return result + 32;
+  }
+  _BitScanForward(&result, (unsigned long)n);
+  return result;
 #elif defined(__GNUC__) || defined(__clang__)
-   static_assert(sizeof(unsigned long long) == sizeof(n), // NOLINT(runtime/int)
-                 "__builtin_ctzll does not take 64-bit arg");
-   return __builtin_ctzll(n);
+  static_assert(sizeof(unsigned long long) == sizeof(n), // NOLINT(runtime/int)
+                "__builtin_ctzll does not take 64-bit arg");
+  return __builtin_ctzll(n);
 #else
-   return CountTrailingZerosNonZero64Slow(n);
+  return CountTrailingZerosNonZero64Slow(n);
 #endif
 }
 
 PHMAP_BASE_INTERNAL_FORCEINLINE uint32_t
 CountTrailingZerosNonZero32Slow(uint32_t n) {
-   uint32_t c = 31;
-   n &= ~n + 1;
-   if (n & 0x0000FFFF)
-      c -= 16;
-   if (n & 0x00FF00FF)
-      c -= 8;
-   if (n & 0x0F0F0F0F)
-      c -= 4;
-   if (n & 0x33333333)
-      c -= 2;
-   if (n & 0x55555555)
-      c -= 1;
-   return c;
+  uint32_t c = 31;
+  n &= ~n + 1;
+  if (n & 0x0000FFFF)
+    c -= 16;
+  if (n & 0x00FF00FF)
+    c -= 8;
+  if (n & 0x0F0F0F0F)
+    c -= 4;
+  if (n & 0x33333333)
+    c -= 2;
+  if (n & 0x55555555)
+    c -= 1;
+  return c;
 }
 
 PHMAP_BASE_INTERNAL_FORCEINLINE uint32_t
 CountTrailingZerosNonZero32(uint32_t n) {
 #if defined(_MSC_VER) && !defined(__clang__)
-   unsigned long result = 0; // NOLINT(runtime/int)
-   _BitScanForward(&result, n);
-   return (uint32_t)result;
+  unsigned long result = 0; // NOLINT(runtime/int)
+  _BitScanForward(&result, n);
+  return (uint32_t)result;
 #elif defined(__GNUC__) || defined(__clang__)
-   static_assert(sizeof(int) == sizeof(n),
-                 "__builtin_ctz does not take 32-bit arg");
-   return __builtin_ctz(n);
+  static_assert(sizeof(int) == sizeof(n),
+                "__builtin_ctz does not take 32-bit arg");
+  return __builtin_ctz(n);
 #else
-   return CountTrailingZerosNonZero32Slow(n);
+  return CountTrailingZerosNonZero32Slow(n);
 #endif
 }
 
@@ -457,25 +457,25 @@ namespace phmap {
      ((__GNUC__ == 4 && __GNUC_MINOR__ >= 8) || __GNUC__ >= 5))
 
 inline uint64_t gbswap_64(uint64_t host_int) {
-   return __builtin_bswap64(host_int);
+  return __builtin_bswap64(host_int);
 }
 inline uint32_t gbswap_32(uint32_t host_int) {
-   return __builtin_bswap32(host_int);
+  return __builtin_bswap32(host_int);
 }
 inline uint16_t gbswap_16(uint16_t host_int) {
-   return __builtin_bswap16(host_int);
+  return __builtin_bswap16(host_int);
 }
 
 #elif defined(_MSC_VER)
 
 inline uint64_t gbswap_64(uint64_t host_int) {
-   return _byteswap_uint64(host_int);
+  return _byteswap_uint64(host_int);
 }
 inline uint32_t gbswap_32(uint32_t host_int) {
-   return _byteswap_ulong(host_int);
+  return _byteswap_ulong(host_int);
 }
 inline uint16_t gbswap_16(uint16_t host_int) {
-   return _byteswap_ushort(host_int);
+  return _byteswap_ushort(host_int);
 }
 
 #elif defined(__APPLE__)
@@ -488,45 +488,45 @@ inline uint16_t gbswap_16(uint16_t host_int) { return OSSwapInt64(host_int); }
 
 inline uint64_t gbswap_64(uint64_t host_int) {
 #if defined(__GNUC__) && defined(__x86_64__) && !defined(__APPLE__)
-   // Adapted from /usr/include/byteswap.h.  Not available on Mac.
-   if (__builtin_constant_p(host_int)) {
-      return __bswap_constant_64(host_int);
-   } else {
-      uint64_t result;
-      __asm__("bswap %0" : "=r"(result) : "0"(host_int));
-      return result;
-   }
+  // Adapted from /usr/include/byteswap.h.  Not available on Mac.
+  if (__builtin_constant_p(host_int)) {
+    return __bswap_constant_64(host_int);
+  } else {
+    uint64_t result;
+    __asm__("bswap %0" : "=r"(result) : "0"(host_int));
+    return result;
+  }
 #elif defined(__GLIBC__)
-   return bswap_64(host_int);
+  return bswap_64(host_int);
 #else
-   return (((host_int & uint64_t{0xFF}) << 56) |
-           ((host_int & uint64_t{0xFF00}) << 40) |
-           ((host_int & uint64_t{0xFF0000}) << 24) |
-           ((host_int & uint64_t{0xFF000000}) << 8) |
-           ((host_int & uint64_t{0xFF00000000}) >> 8) |
-           ((host_int & uint64_t{0xFF0000000000}) >> 24) |
-           ((host_int & uint64_t{0xFF000000000000}) >> 40) |
-           ((host_int & uint64_t{0xFF00000000000000}) >> 56));
+  return (((host_int & uint64_t{0xFF}) << 56) |
+          ((host_int & uint64_t{0xFF00}) << 40) |
+          ((host_int & uint64_t{0xFF0000}) << 24) |
+          ((host_int & uint64_t{0xFF000000}) << 8) |
+          ((host_int & uint64_t{0xFF00000000}) >> 8) |
+          ((host_int & uint64_t{0xFF0000000000}) >> 24) |
+          ((host_int & uint64_t{0xFF000000000000}) >> 40) |
+          ((host_int & uint64_t{0xFF00000000000000}) >> 56));
 #endif // bswap_64
 }
 
 inline uint32_t gbswap_32(uint32_t host_int) {
 #if defined(__GLIBC__)
-   return bswap_32(host_int);
+  return bswap_32(host_int);
 #else
-   return (((host_int & uint32_t{0xFF}) << 24) |
-           ((host_int & uint32_t{0xFF00}) << 8) |
-           ((host_int & uint32_t{0xFF0000}) >> 8) |
-           ((host_int & uint32_t{0xFF000000}) >> 24));
+  return (((host_int & uint32_t{0xFF}) << 24) |
+          ((host_int & uint32_t{0xFF00}) << 8) |
+          ((host_int & uint32_t{0xFF0000}) >> 8) |
+          ((host_int & uint32_t{0xFF000000}) >> 24));
 #endif
 }
 
 inline uint16_t gbswap_16(uint16_t host_int) {
 #if defined(__GLIBC__)
-   return bswap_16(host_int);
+  return bswap_16(host_int);
 #else
-   return (((host_int & uint16_t{0xFF}) << 8) |
-           ((host_int & uint16_t{0xFF00}) >> 8));
+  return (((host_int & uint16_t{0xFF}) << 8) |
+          ((host_int & uint16_t{0xFF00}) >> 8));
 #endif
 }
 
@@ -599,27 +599,27 @@ inline constexpr bool IsLittleEndian() { return false; }
 // Functions to do unaligned loads and stores in little-endian order.
 // ------------------------------------------------------------------
 inline uint16_t Load16(const void *p) {
-   return ToHost16(PHMAP_INTERNAL_UNALIGNED_LOAD16(p));
+  return ToHost16(PHMAP_INTERNAL_UNALIGNED_LOAD16(p));
 }
 
 inline void Store16(void *p, uint16_t v) {
-   PHMAP_INTERNAL_UNALIGNED_STORE16(p, FromHost16(v));
+  PHMAP_INTERNAL_UNALIGNED_STORE16(p, FromHost16(v));
 }
 
 inline uint32_t Load32(const void *p) {
-   return ToHost32(PHMAP_INTERNAL_UNALIGNED_LOAD32(p));
+  return ToHost32(PHMAP_INTERNAL_UNALIGNED_LOAD32(p));
 }
 
 inline void Store32(void *p, uint32_t v) {
-   PHMAP_INTERNAL_UNALIGNED_STORE32(p, FromHost32(v));
+  PHMAP_INTERNAL_UNALIGNED_STORE32(p, FromHost32(v));
 }
 
 inline uint64_t Load64(const void *p) {
-   return ToHost64(PHMAP_INTERNAL_UNALIGNED_LOAD64(p));
+  return ToHost64(PHMAP_INTERNAL_UNALIGNED_LOAD64(p));
 }
 
 inline void Store64(void *p, uint64_t v) {
-   PHMAP_INTERNAL_UNALIGNED_STORE64(p, FromHost64(v));
+  PHMAP_INTERNAL_UNALIGNED_STORE64(p, FromHost64(v));
 }
 
 } // namespace little_endian
@@ -659,27 +659,27 @@ inline constexpr bool IsLittleEndian() { return false; }
 
 // Functions to do unaligned loads and stores in big-endian order.
 inline uint16_t Load16(const void *p) {
-   return ToHost16(PHMAP_INTERNAL_UNALIGNED_LOAD16(p));
+  return ToHost16(PHMAP_INTERNAL_UNALIGNED_LOAD16(p));
 }
 
 inline void Store16(void *p, uint16_t v) {
-   PHMAP_INTERNAL_UNALIGNED_STORE16(p, FromHost16(v));
+  PHMAP_INTERNAL_UNALIGNED_STORE16(p, FromHost16(v));
 }
 
 inline uint32_t Load32(const void *p) {
-   return ToHost32(PHMAP_INTERNAL_UNALIGNED_LOAD32(p));
+  return ToHost32(PHMAP_INTERNAL_UNALIGNED_LOAD32(p));
 }
 
 inline void Store32(void *p, uint32_t v) {
-   PHMAP_INTERNAL_UNALIGNED_STORE32(p, FromHost32(v));
+  PHMAP_INTERNAL_UNALIGNED_STORE32(p, FromHost32(v));
 }
 
 inline uint64_t Load64(const void *p) {
-   return ToHost64(PHMAP_INTERNAL_UNALIGNED_LOAD64(p));
+  return ToHost64(PHMAP_INTERNAL_UNALIGNED_LOAD64(p));
 }
 
 inline void Store64(void *p, uint64_t v) {
-   PHMAP_INTERNAL_UNALIGNED_STORE64(p, FromHost64(v));
+  PHMAP_INTERNAL_UNALIGNED_STORE64(p, FromHost64(v));
 }
 
 } // namespace big_endian

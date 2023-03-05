@@ -46,8 +46,8 @@ namespace priv {
 
 // The hash of an object of type T is computed by using phmap::Hash.
 template <class T, class E = void> struct HashEq {
-   using Hash = phmap::Hash<T>;
-   using Eq = phmap::EqualTo<T>;
+  using Hash = phmap::Hash<T>;
+  using Eq = phmap::EqualTo<T>;
 };
 
 template <class T> using hash_default_hash = typename priv::HashEq<T>::Hash;

@@ -12,217 +12,215 @@ namespace sauros {
 namespace package {
 
 #define PACKAGE_CHECK(condition__, msg__)                                      \
-   if (!(condition__)) {                                                       \
-      throw sauros::exceptions::runtime_c(                                     \
-          msg__, std::make_shared<cell_c>(cell_type_e::STRING, "", location)); \
-   }
+  if (!(condition__)) {                                                        \
+    throw sauros::exceptions::runtime_c(                                       \
+        msg__, std::make_shared<cell_c>(cell_type_e::STRING, "", location));   \
+  }
 
 extern pkg_s load(cell_ptr cell, sauros::system_c &system, location_s *location,
                   env_ptr env) {
 
 #ifdef PROFILER_ENABLED
-   profiler_c::get_profiler()->hit("package::load");
+  profiler_c::get_profiler()->hit("package::load");
 #endif
 
-   auto sauros_home = system.get_sauros_directory();
+  auto sauros_home = system.get_sauros_directory();
 
-   PACKAGE_CHECK(sauros_home.has_value(),
-                 "sauros home directory not found. please set "
-                 "SAUROS_HOME environment variable.")
+  PACKAGE_CHECK(sauros_home.has_value(),
+                "sauros home directory not found. please set "
+                "SAUROS_HOME environment variable.")
 
-   auto target = cell->data_as_str();
+  auto target = cell->data_as_str();
 
-   std::filesystem::path root;
-   std::filesystem::path target_manifest_file;
+  std::filesystem::path root;
+  std::filesystem::path target_manifest_file;
 
-   // Prefer the local package to an installed one
-   if (cell->origin) {
-      target_manifest_file = (*cell->origin);
-      target_manifest_file.remove_filename();
-      target_manifest_file /= target;
-      root = target_manifest_file;
-      target_manifest_file /= "pkg.saur";
-   }
+  // Prefer the local package to an installed one
+  if (cell->origin) {
+    target_manifest_file = (*cell->origin);
+    target_manifest_file.remove_filename();
+    target_manifest_file /= target;
+    root = target_manifest_file;
+    target_manifest_file /= "pkg.saur";
+  }
 
-   // If a local one doesn't exist then we target install location
-   if (!std::filesystem::is_regular_file(target_manifest_file)) {
-      auto home = system.get_sauros_directory();
-      PACKAGE_CHECK(home.has_value(),
-                    sauros::format("Unable to locate: % , SAUROS_HOME not "
-                                   "defined and package is not local",
-                                   target))
-      target_manifest_file = *home;
-      target_manifest_file /= "pkgs";
-      target_manifest_file /= target;
-      root = target_manifest_file;
-      target_manifest_file /= "pkg.saur";
-   }
+  // If a local one doesn't exist then we target install location
+  if (!std::filesystem::is_regular_file(target_manifest_file)) {
+    auto home = system.get_sauros_directory();
+    PACKAGE_CHECK(home.has_value(),
+                  sauros::format("Unable to locate: % , SAUROS_HOME not "
+                                 "defined and package is not local",
+                                 target))
+    target_manifest_file = *home;
+    target_manifest_file /= "pkgs";
+    target_manifest_file /= target;
+    root = target_manifest_file;
+    target_manifest_file /= "pkg.saur";
+  }
 
-   PACKAGE_CHECK(std::filesystem::is_regular_file(target_manifest_file),
-                 sauros::format("unable to locate package for: %", target))
+  PACKAGE_CHECK(std::filesystem::is_regular_file(target_manifest_file),
+                sauros::format("unable to locate package for: %", target))
 
-   pkg_s package;
+  pkg_s package;
 
-   // Now we load the manifest in a new processor and environment
-   package.env = std::make_shared<sauros::environment_c>();
+  // Now we load the manifest in a new processor and environment
+  package.env = std::make_shared<sauros::environment_c>();
 
-   {
-      sauros::file_executor_c file_executor(package.env);
-      PACKAGE_CHECK(!file_executor.run(target_manifest_file.c_str()),
-                    sauros::format("unable to open: %",
-                                   std::string(target_manifest_file)))
-   }
+  {
+    sauros::file_executor_c file_executor(package.env);
+    PACKAGE_CHECK(
+        !file_executor.run(target_manifest_file.c_str()),
+        sauros::format("unable to open: %", std::string(target_manifest_file)))
+  }
 
-   // Now the environment has the information we need to
-   // load the environment given to us with the library data
+  // Now the environment has the information we need to
+  // load the environment given to us with the library data
 
-   {
-      PACKAGE_CHECK(
-          package.env->exists("pkg_name"),
-          sauros::format(
-              "target: % does not contain the required field `pkg_name`",
-              target))
+  {
+    PACKAGE_CHECK(
+        package.env->exists("pkg_name"),
+        sauros::format(
+            "target: % does not contain the required field `pkg_name`", target))
 
-      PACKAGE_CHECK(
-          package.env->exists("version"),
-          sauros::format(
-              "target: % does not contain the required field `version`",
-              target))
+    PACKAGE_CHECK(
+        package.env->exists("version"),
+        sauros::format(
+            "target: % does not contain the required field `version`", target))
 
-      // Optional
-      if (package.env->exists("authors")) {
-         auto author_cell = package.env->get("authors");
-         if (author_cell->type == cell_type_e::STRING) {
-            package.authors_list.push_back(author_cell->data_as_str());
-         } else {
-            PACKAGE_CHECK(
-                (author_cell->type == cell_type_e::LIST),
-                "author field in pkg must be of type `string` or type `list`")
+    // Optional
+    if (package.env->exists("authors")) {
+      auto author_cell = package.env->get("authors");
+      if (author_cell->type == cell_type_e::STRING) {
+        package.authors_list.push_back(author_cell->data_as_str());
+      } else {
+        PACKAGE_CHECK(
+            (author_cell->type == cell_type_e::LIST),
+            "author field in pkg must be of type `string` or type `list`")
 
-            for (auto &author : author_cell->list) {
-               PACKAGE_CHECK(
-                   (author->type == cell_type_e::STRING),
-                   "author name in pkg authors list must be of type `string`")
-               package.authors_list.push_back(author->data_as_str());
-            }
-         }
+        for (auto &author : author_cell->list) {
+          PACKAGE_CHECK(
+              (author->type == cell_type_e::STRING),
+              "author name in pkg authors list must be of type `string`")
+          package.authors_list.push_back(author->data_as_str());
+        }
       }
+    }
 
-      // Optional
-      if (package.env->exists("license")) {
-         auto license_cell = package.env->get("license");
+    // Optional
+    if (package.env->exists("license")) {
+      auto license_cell = package.env->get("license");
 
-         PACKAGE_CHECK((license_cell->type == cell_type_e::STRING),
-                       "license field in pkg must be of type `string`")
+      PACKAGE_CHECK((license_cell->type == cell_type_e::STRING),
+                    "license field in pkg must be of type `string`")
 
-         package.license = license_cell->data_as_str();
+      package.license = license_cell->data_as_str();
+    }
+
+    auto package_name_cell = package.env->get("pkg_name");
+
+    PACKAGE_CHECK((package_name_cell->type == cell_type_e::STRING),
+                  "pkg_name field in pkg must be of type `string`")
+
+    auto version_cell = package.env->get("version");
+
+    PACKAGE_CHECK((version_cell->type == cell_type_e::STRING),
+                  "version field in pkg must be of type `string`")
+
+    package.name = package_name_cell->data_as_str();
+    package.version = version_cell->data_as_str();
+
+    auto package_file = root;
+    package_file /= "pkg.saur";
+
+    // Optional
+    if (package.env->exists("requires")) {
+      auto requires_cell = package.env->get("requires");
+      PACKAGE_CHECK((requires_cell->type == cell_type_e::LIST),
+                    "requires field in pkg must be of type `string`")
+      for (auto &required_pkg : requires_cell->list) {
+        PACKAGE_CHECK(
+            (required_pkg->type == cell_type_e::STRING),
+            "package name in pkg's requires list must be of type `string`")
+        package.requires_list.push_back(required_pkg->data_as_str());
       }
+    }
 
-      auto package_name_cell = package.env->get("pkg_name");
+    // Check if we need to load library info
+    if (package.env->exists("library_file")) {
+
+      auto library_file_cell = package.env->get("library_file");
 
       PACKAGE_CHECK((package_name_cell->type == cell_type_e::STRING),
-                    "pkg_name field in pkg must be of type `string`")
+                    "library_file field in pkg must be of type `string`")
 
-      auto version_cell = package.env->get("version");
+      {
+        auto library_file_actual = root;
+        library_file_actual /= library_file_cell->data_as_str();
 
-      PACKAGE_CHECK((version_cell->type == cell_type_e::STRING),
-                    "version field in pkg must be of type `string`")
+        PACKAGE_CHECK(
+            (std::filesystem::is_regular_file(library_file_actual)),
+            sauros::format(
+                "given library_file target: %  for pkg % does not exist",
+                library_file_actual.string(), target))
 
-      package.name = package_name_cell->data_as_str();
-      package.version = version_cell->data_as_str();
-
-      auto package_file = root;
-      package_file /= "pkg.saur";
-
-      // Optional
-      if (package.env->exists("requires")) {
-         auto requires_cell = package.env->get("requires");
-         PACKAGE_CHECK((requires_cell->type == cell_type_e::LIST),
-                       "requires field in pkg must be of type `string`")
-         for (auto &required_pkg : requires_cell->list) {
-            PACKAGE_CHECK(
-                (required_pkg->type == cell_type_e::STRING),
-                "package name in pkg's requires list must be of type `string`")
-            package.requires_list.push_back(required_pkg->data_as_str());
-         }
+        package.library_file = library_file_actual.string();
       }
 
-      // Check if we need to load library info
-      if (package.env->exists("library_file")) {
+      PACKAGE_CHECK(
+          package.env->exists("library_functions"),
+          sauros::format(
+              "% does not contain a library_functions list for library: %",
+              target, package.library_file))
 
-         auto library_file_cell = package.env->get("library_file");
+      auto library_functions_cell = package.env->get("library_functions");
 
-         PACKAGE_CHECK((package_name_cell->type == cell_type_e::STRING),
-                       "library_file field in pkg must be of type `string`")
+      PACKAGE_CHECK(
+          (library_functions_cell->type == cell_type_e::LIST),
+          "library_functions_cell field in pkg must be of type `list`")
 
-         {
-            auto library_file_actual = root;
-            library_file_actual /= library_file_cell->data_as_str();
+      // Load the functions
+      for (auto &function_name_cell : library_functions_cell->list) {
 
-            PACKAGE_CHECK(
-                (std::filesystem::is_regular_file(library_file_actual)),
-                sauros::format(
-                    "given library_file target: %  for pkg % does not exist",
-                    library_file_actual.string(), target))
+        PACKAGE_CHECK((function_name_cell->type == cell_type_e::STRING),
+                      "function name in pkg's library_functions list must "
+                      "be of type `string`")
 
-            package.library_file = library_file_actual.string();
-         }
-
-         PACKAGE_CHECK(
-             package.env->exists("library_functions"),
-             sauros::format(
-                 "% does not contain a library_functions list for library: %",
-                 target, package.library_file))
-
-         auto library_functions_cell = package.env->get("library_functions");
-
-         PACKAGE_CHECK(
-             (library_functions_cell->type == cell_type_e::LIST),
-             "library_functions_cell field in pkg must be of type `list`")
-
-         // Load the functions
-         for (auto &function_name_cell : library_functions_cell->list) {
-
-            PACKAGE_CHECK((function_name_cell->type == cell_type_e::STRING),
-                          "function name in pkg's library_functions list must "
-                          "be of type `string`")
-
-            package.library_function_list.push_back(
-                function_name_cell->data_as_str());
-         }
+        package.library_function_list.push_back(
+            function_name_cell->data_as_str());
       }
+    }
 
-      // Check if there are source files listed
+    // Check if there are source files listed
 
-      if (package.env->exists("source_files")) {
-         auto source_files_cell = package.env->get("source_files");
-         PACKAGE_CHECK((source_files_cell->type == cell_type_e::LIST),
-                       "source_files field in pkg must be of type `list`")
+    if (package.env->exists("source_files")) {
+      auto source_files_cell = package.env->get("source_files");
+      PACKAGE_CHECK((source_files_cell->type == cell_type_e::LIST),
+                    "source_files field in pkg must be of type `list`")
 
-         // Load the functions
-         for (auto &file_name_cell : source_files_cell->list) {
-            PACKAGE_CHECK(
-                (file_name_cell->type == cell_type_e::STRING),
-                "file name in pkg's source_files list must be of type `string`")
+      // Load the functions
+      for (auto &file_name_cell : source_files_cell->list) {
+        PACKAGE_CHECK(
+            (file_name_cell->type == cell_type_e::STRING),
+            "file name in pkg's source_files list must be of type `string`")
 
-            {
-               auto file_actual = root;
-               file_actual /= file_name_cell->data_as_str();
+        {
+          auto file_actual = root;
+          file_actual /= file_name_cell->data_as_str();
 
-               PACKAGE_CHECK(
-                   (std::filesystem::is_regular_file(file_actual)),
-                   sauros::format(
-                       "given source_files target: %  for pkg % does not exist",
-                       file_actual.string(), target))
+          PACKAGE_CHECK(
+              (std::filesystem::is_regular_file(file_actual)),
+              sauros::format(
+                  "given source_files target: %  for pkg % does not exist",
+                  file_actual.string(), target))
 
-               package.source_file_list.push_back(file_actual);
-            }
-         }
+          package.source_file_list.push_back(file_actual);
+        }
       }
+    }
 
-   } // End anon scope
+  } // End anon scope
 
-   return package;
+  return package;
 }
 
 } // namespace package

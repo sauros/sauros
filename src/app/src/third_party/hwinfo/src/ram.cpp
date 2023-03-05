@@ -20,47 +20,47 @@ namespace hwinfo {
 RAM::RAM(std::string &vendor, std::string &name, std::string &model,
          std::string &serialNumber, int64_t size_Bytes)
     : _vendor(vendor), _name(name), _model(model), _serialNumber(serialNumber) {
-   _totalSize_Bytes = size_Bytes;
+  _totalSize_Bytes = size_Bytes;
 }
 
 // _____________________________________________________________________________________________________________________
 std::string &RAM::vendor() {
-   if (_vendor.empty()) {
-      _vendor = getVendor();
-   }
-   return _vendor;
+  if (_vendor.empty()) {
+    _vendor = getVendor();
+  }
+  return _vendor;
 }
 
 // _____________________________________________________________________________________________________________________
 std::string &RAM::name() {
-   if (_name.empty()) {
-      _name = getName();
-   }
-   return _name;
+  if (_name.empty()) {
+    _name = getName();
+  }
+  return _name;
 }
 
 // _____________________________________________________________________________________________________________________
 std::string &RAM::model() {
-   if (_model.empty()) {
-      _model = getModel();
-   }
-   return _model;
+  if (_model.empty()) {
+    _model = getModel();
+  }
+  return _model;
 }
 
 // _____________________________________________________________________________________________________________________
 std::string &RAM::serialNumber() {
-   if (_serialNumber.empty()) {
-      _serialNumber = getSerialNumber();
-   }
-   return _serialNumber;
+  if (_serialNumber.empty()) {
+    _serialNumber = getSerialNumber();
+  }
+  return _serialNumber;
 }
 
 // _____________________________________________________________________________________________________________________
 int64_t RAM::totalSize_Bytes() {
-   if (_totalSize_Bytes == -1) {
-      _totalSize_Bytes = getTotalSize_Bytes();
-   }
-   return _totalSize_Bytes;
+  if (_totalSize_Bytes == -1) {
+    _totalSize_Bytes = getTotalSize_Bytes();
+  }
+  return _totalSize_Bytes;
 }
 
 } // namespace hwinfo

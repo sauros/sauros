@@ -24,42 +24,42 @@ namespace sauros {
 
 class profiler_c {
 
- public:
-   profiler_c(profiler_c &) = delete;
-   void operator=(const profiler_c &) = delete;
+public:
+  profiler_c(profiler_c &) = delete;
+  void operator=(const profiler_c &) = delete;
 
-   static profiler_c *get_profiler() {
-      if (!_profiler) {
-         _profiler = new profiler_c();
-      }
-      return _profiler;
-   }
+  static profiler_c *get_profiler() {
+    if (!_profiler) {
+      _profiler = new profiler_c();
+    }
+    return _profiler;
+  }
 
-   void hit(const std::string source) {
-      if (_hits.find(source) != _hits.end()) {
-         _hits[source]++;
-         return;
-      }
-      _hits[source] = 1;
-   }
+  void hit(const std::string source) {
+    if (_hits.find(source) != _hits.end()) {
+      _hits[source]++;
+      return;
+    }
+    _hits[source] = 1;
+  }
 
-   void dump() {
-      std::cout << rang::fg::yellow << "Profile dump\n"
-                << rang::fg::reset
-                << "The following items may not show in their execution order\n"
+  void dump() {
+    std::cout << rang::fg::yellow << "Profile dump\n"
+              << rang::fg::reset
+              << "The following items may not show in their execution order\n"
+              << std::endl;
+    for (auto [source, count] : _hits) {
+      std::cout << rang::fg::cyan << source << rang::fg::reset << " : " << count
                 << std::endl;
-      for (auto [source, count] : _hits) {
-         std::cout << rang::fg::cyan << source << rang::fg::reset << " : "
-                   << count << std::endl;
-      }
-   }
+    }
+  }
 
- protected:
-   static profiler_c *_profiler;
+protected:
+  static profiler_c *_profiler;
 
-   profiler_c() {}
+  profiler_c() {}
 
-   std::unordered_map<std::string, uint64_t> _hits;
+  std::unordered_map<std::string, uint64_t> _hits;
 };
 
 } // namespace sauros
