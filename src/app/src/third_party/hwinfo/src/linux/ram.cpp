@@ -28,12 +28,12 @@ std::string RAM::getSerialNumber() { return "<unknown>"; }
 
 // _____________________________________________________________________________________________________________________
 int64_t RAM::getTotalSize_Bytes() {
-   long pages = sysconf(_SC_PHYS_PAGES);
-   long page_size = sysconf(_SC_PAGESIZE);
-   if ((pages > 0) && (page_size > 0)) {
-      return pages * page_size;
-   }
-   return -1;
+  long pages = sysconf(_SC_PHYS_PAGES);
+  long page_size = sysconf(_SC_PAGESIZE);
+  if ((pages > 0) && (page_size > 0)) {
+    return pages * page_size;
+  }
+  return -1;
 }
 
 } // namespace hwinfo

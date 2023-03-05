@@ -136,14 +136,14 @@
 // https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
 #define PHMAP_INTERNAL_HAVE_MIN_GNUC_VERSION(x, y)                             \
-   (__GNUC__ > (x) || __GNUC__ == (x) && __GNUC_MINOR__ >= (y))
+  (__GNUC__ > (x) || __GNUC__ == (x) && __GNUC_MINOR__ >= (y))
 #else
 #define PHMAP_INTERNAL_HAVE_MIN_GNUC_VERSION(x, y) 0
 #endif
 
 #if defined(__clang__) && defined(__clang_major__) && defined(__clang_minor__)
 #define PHMAP_INTERNAL_HAVE_MIN_CLANG_VERSION(x, y)                            \
-   (__clang_major__ > (x) || __clang_major__ == (x) && __clang_minor__ >= (y))
+  (__clang_major__ > (x) || __clang_major__ == (x) && __clang_minor__ >= (y))
 #else
 #define PHMAP_INTERNAL_HAVE_MIN_CLANG_VERSION(x, y) 0
 #endif
@@ -383,9 +383,9 @@
 // -----------------------------------------------------------------------------
 #if PHMAP_HAVE_ATTRIBUTE(format) || (defined(__GNUC__) && !defined(__clang__))
 #define PHMAP_PRINTF_ATTRIBUTE(string_index, first_to_check)                   \
-   __attribute__((__format__(__printf__, string_index, first_to_check)))
+  __attribute__((__format__(__printf__, string_index, first_to_check)))
 #define PHMAP_SCANF_ATTRIBUTE(string_index, first_to_check)                    \
-   __attribute__((__format__(__scanf__, string_index, first_to_check)))
+  __attribute__((__format__(__scanf__, string_index, first_to_check)))
 #else
 #define PHMAP_PRINTF_ATTRIBUTE(string_index, first_to_check)
 #define PHMAP_SCANF_ATTRIBUTE(string_index, first_to_check)
@@ -413,7 +413,7 @@
 #elif defined(__GNUC__) && !defined(__clang__)
 #define PHMAP_HAVE_ATTRIBUTE_NO_TAIL_CALL 1
 #define PHMAP_ATTRIBUTE_NO_TAIL_CALL                                           \
-   __attribute__((optimize("no-optimize-sibling-calls")))
+  __attribute__((optimize("no-optimize-sibling-calls")))
 #else
 #define PHMAP_ATTRIBUTE_NO_TAIL_CALL
 #define PHMAP_HAVE_ATTRIBUTE_NO_TAIL_CALL 0
@@ -465,7 +465,7 @@
 #if defined(__GNUC__) &&                                                       \
     (defined(UNDEFINED_BEHAVIOR_SANITIZER) || defined(ADDRESS_SANITIZER))
 #define PHMAP_ATTRIBUTE_NO_SANITIZE_UNDEFINED                                  \
-   __attribute__((no_sanitize("undefined")))
+  __attribute__((no_sanitize("undefined")))
 #else
 #define PHMAP_ATTRIBUTE_NO_SANITIZE_UNDEFINED
 #endif
@@ -478,7 +478,7 @@
 
 #if defined(__GNUC__) && defined(SAFESTACK_SANITIZER)
 #define PHMAP_ATTRIBUTE_NO_SANITIZE_SAFESTACK                                  \
-   __attribute__((no_sanitize("safe-stack")))
+  __attribute__((no_sanitize("safe-stack")))
 #else
 #define PHMAP_ATTRIBUTE_NO_SANITIZE_SAFESTACK
 #endif
@@ -500,24 +500,24 @@
 #define PHMAP_HAVE_ATTRIBUTE_SECTION 1
 #ifndef PHMAP_ATTRIBUTE_SECTION
 #define PHMAP_ATTRIBUTE_SECTION(name)                                          \
-   __attribute__((section(#name))) __attribute__((noinline))
+  __attribute__((section(#name))) __attribute__((noinline))
 #endif
 #ifndef PHMAP_ATTRIBUTE_SECTION_VARIABLE
 #define PHMAP_ATTRIBUTE_SECTION_VARIABLE(name) __attribute__((section(#name)))
 #endif
 #ifndef PHMAP_DECLARE_ATTRIBUTE_SECTION_VARS
 #define PHMAP_DECLARE_ATTRIBUTE_SECTION_VARS(name)                             \
-   extern char __start_##name[] PHMAP_ATTRIBUTE_WEAK;                          \
-   extern char __stop_##name[] PHMAP_ATTRIBUTE_WEAK
+  extern char __start_##name[] PHMAP_ATTRIBUTE_WEAK;                           \
+  extern char __stop_##name[] PHMAP_ATTRIBUTE_WEAK
 #endif
 #ifndef PHMAP_DEFINE_ATTRIBUTE_SECTION_VARS
 #define PHMAP_INIT_ATTRIBUTE_SECTION_VARS(name)
 #define PHMAP_DEFINE_ATTRIBUTE_SECTION_VARS(name)
 #endif
 #define PHMAP_ATTRIBUTE_SECTION_START(name)                                    \
-   (reinterpret_cast<void *>(__start_##name))
+  (reinterpret_cast<void *>(__start_##name))
 #define PHMAP_ATTRIBUTE_SECTION_STOP(name)                                     \
-   (reinterpret_cast<void *>(__stop_##name))
+  (reinterpret_cast<void *>(__stop_##name))
 #else // !PHMAP_HAVE_ATTRIBUTE_SECTION
 #define PHMAP_HAVE_ATTRIBUTE_SECTION 0
 #define PHMAP_ATTRIBUTE_SECTION(name)
@@ -533,7 +533,7 @@
     (defined(__GNUC__) && !defined(__clang__))
 #if defined(__i386__)
 #define PHMAP_ATTRIBUTE_STACK_ALIGN_FOR_OLD_LIBC                               \
-   __attribute__((force_align_arg_pointer))
+  __attribute__((force_align_arg_pointer))
 #define PHMAP_REQUIRE_STACK_ALIGN_TRAMPOLINE (0)
 #elif defined(__x86_64__)
 #define PHMAP_REQUIRE_STACK_ALIGN_TRAMPOLINE (1)
@@ -655,7 +655,7 @@
 // can be used in defining new arrays. If you use this macro on a pointer by
 // mistake, you will get a compile-time error.
 #define PHMAP_ARRAYSIZE(array)                                                 \
-   (sizeof(::phmap::macros_internal::ArraySizeHelper(array)))
+  (sizeof(::phmap::macros_internal::ArraySizeHelper(array)))
 
 namespace phmap {
 namespace macros_internal {
@@ -677,8 +677,8 @@ auto ArraySizeHelper(const T (&array)[N]) -> char (&)[N];
 
 #ifndef PHMAP_FALLTHROUGH_INTENDED
 #define PHMAP_FALLTHROUGH_INTENDED                                             \
-   do {                                                                        \
-   } while (0)
+  do {                                                                         \
+  } while (0)
 #endif
 
 // PHMAP_DEPRECATED()
@@ -725,7 +725,7 @@ auto ArraySizeHelper(const T (&array)[N]) -> char (&)[N];
 #if defined(__clang__)
 #if __has_attribute(enable_if)
 #define PHMAP_BAD_CALL_IF(expr, msg)                                           \
-   __attribute__((enable_if(expr, "Bad call trap"), unavailable(msg)))
+  __attribute__((enable_if(expr, "Bad call trap"), unavailable(msg)))
 #endif
 #endif
 
@@ -745,23 +745,23 @@ auto ArraySizeHelper(const T (&array)[N]) -> char (&)[N];
 #define PHMAP_ASSERT(expr) (false ? (void)(expr) : (void)0)
 #else
 #define PHMAP_ASSERT(expr)                                                     \
-   (PHMAP_PREDICT_TRUE((expr)) ? (void)0                                       \
-                               : [] { assert(false && #expr); }()) // NOLINT
+  (PHMAP_PREDICT_TRUE((expr)) ? (void)0                                        \
+                              : [] { assert(false && #expr); }()) // NOLINT
 #endif
 
 #ifdef PHMAP_HAVE_EXCEPTIONS
 #define PHMAP_INTERNAL_TRY try
 #define PHMAP_INTERNAL_CATCH_ANY catch (...)
 #define PHMAP_INTERNAL_RETHROW                                                 \
-   do {                                                                        \
-      throw;                                                                   \
-   } while (false)
+  do {                                                                         \
+    throw;                                                                     \
+  } while (false)
 #else // PHMAP_HAVE_EXCEPTIONS
 #define PHMAP_INTERNAL_TRY if (true)
 #define PHMAP_INTERNAL_CATCH_ANY else if (false)
 #define PHMAP_INTERNAL_RETHROW                                                 \
-   do {                                                                        \
-   } while (false)
+  do {                                                                         \
+  } while (false)
 #endif // PHMAP_HAVE_EXCEPTIONS
 
 #endif // phmap_config_h_guard_
