@@ -242,12 +242,6 @@ cell_ptr processor_c::process_cell(cell_ptr cell, env_ptr env) {
   }
 
   case cell_type_e::ENCODED_SYMBOL: {
-    if (cell->builtin_encoding == BUILTIN_DEFAULT_VAL ||
-        cell->builtin_encoding >= BUILTIN_ENTRY_COUNT) {
-      throw exceptions::runtime_c(
-          "Invalid encoded symbol for : " + *cell->data.s, cell);
-    }
-
     // Direct access - no more mapping
     return _builtins[cell->builtin_encoding];
   }

@@ -620,35 +620,35 @@ void processor_c::populate_standard_builtins() {
 
         auto &variable_name = *cells[1]->data.s;
 
-        switch(cells[1]->type) {
-         case cell_type_e::BOX_SYMBOL: {
-            auto [_, target_variable, target_env] =
-               retrieve_box_data(cells[1], env);
+        switch (cells[1]->type) {
+        case cell_type_e::BOX_SYMBOL: {
+          auto [_, target_variable, target_env] =
+              retrieve_box_data(cells[1], env);
 
-            auto value = process_cell(cells[2], env);
+          auto value = process_cell(cells[2], env);
 
-            if (value->type == cell_type_e::SYMBOL) {
-               throw exceptions::runtime_c("Expected list or datum value (set)",
-                                          cells[2]);
-            }
-            target_env->set(target_variable, value);
-            return {value};
-         }
-         case cell_type_e::SYMBOL: {
-            // If this isn't found it will throw :)
-            auto containing_env = env->find(variable_name, cells[1]);
-            auto value = process_cell(cells[2], env);
+          if (value->type == cell_type_e::SYMBOL) {
+            throw exceptions::runtime_c("Expected list or datum value (set)",
+                                        cells[2]);
+          }
+          target_env->set(target_variable, value);
+          return {value};
+        }
+        case cell_type_e::SYMBOL: {
+          // If this isn't found it will throw :)
+          auto containing_env = env->find(variable_name, cells[1]);
+          auto value = process_cell(cells[2], env);
 
-            if (value->type == cell_type_e::SYMBOL) {
-               throw exceptions::runtime_c("Expected list or datum value (set)",
-                                          cells[2]);
-            }
-            containing_env->set(variable_name, value);
-            return {value};
-            }
-         default: {
+          if (value->type == cell_type_e::SYMBOL) {
+            throw exceptions::runtime_c("Expected list or datum value (set)",
+                                        cells[2]);
+          }
+          containing_env->set(variable_name, value);
+          return {value};
+        }
+        default: {
           throw exceptions::runtime_c("Expected symbol for `set`", cells[1]);
-         }
+        }
         }
       });
 
