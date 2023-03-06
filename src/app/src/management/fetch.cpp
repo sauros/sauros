@@ -3,8 +3,10 @@
 
 #include "indicators.hpp"
 
+#include "package.hpp"
 #include <git2.h>
 #include <sauros/rang.hpp>
+#include <sauros/system.hpp>
 
 namespace mgmt {
 
@@ -97,12 +99,21 @@ bool clone_repo(std::string remote_url, std::filesystem::path dir,
 
 bool fetch(std::string remote_url) {
 
+  auto sauros_home = sauros::system::sauros_home();
+  if (!sauros_home.has_value()) {
+    std::cerr << rang::fg::red << "[FAIL]" << rang::fg::reset
+              << " Unable to obtain SAUROS_HOME " << std::endl;
+    return false;
+  }
+
   std::cout << "Fetching " << remote_url << std::endl;
 
   if (!clone_repo(remote_url, "/tmp", "test_repo")) {
     std::cerr << rang::fg::red << "[FAIL]" << rang::fg::reset
               << "Unable to clone target: " << remote_url << std::endl;
   }
+
+  auto pkg = package_load_from_dir("/tmp/test_repo");
 
   // CD into the directory that we cloned
 

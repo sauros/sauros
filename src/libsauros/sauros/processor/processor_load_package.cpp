@@ -2,6 +2,7 @@
 #include "sauros/driver.hpp"
 #include "sauros/package/package.hpp"
 #include "sauros/profiler.hpp"
+#include "sauros/system.hpp"
 #include <filesystem>
 #include <iostream>
 
@@ -28,7 +29,14 @@ void processor_c::load_package(cell_ptr cell, location_s *location,
     return;
   }
 
-  auto pkg = package::load(cell, _system, location, env);
+  auto sauros_home = sauros::system::sauros_home();
+  if (!sauros_home.has_value()) {
+    throw exceptions::runtime_c(
+        "SAUROS_HOME not set",
+        std::make_shared<cell_c>(cell_type_e::STRING, "", location));
+  }
+
+  auto pkg = package::load(cell, *sauros_home, location, env);
 
   // Load any required packages
   for (auto &required_package : pkg.requires_list) {

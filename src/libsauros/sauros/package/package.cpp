@@ -17,18 +17,12 @@ namespace package {
         msg__, std::make_shared<cell_c>(cell_type_e::STRING, "", location));   \
   }
 
-extern pkg_s load(cell_ptr cell, sauros::system_c &system, location_s *location,
+extern pkg_s load(cell_ptr cell, std::string &sauros_home, location_s *location,
                   env_ptr env) {
 
 #ifdef PROFILER_ENABLED
   profiler_c::get_profiler()->hit("package::load");
 #endif
-
-  auto sauros_home = system.get_sauros_directory();
-
-  PACKAGE_CHECK(sauros_home.has_value(),
-                "sauros home directory not found. please set "
-                "SAUROS_HOME environment variable.")
 
   auto target = cell->data_as_str();
 
@@ -46,12 +40,7 @@ extern pkg_s load(cell_ptr cell, sauros::system_c &system, location_s *location,
 
   // If a local one doesn't exist then we target install location
   if (!std::filesystem::is_regular_file(target_manifest_file)) {
-    auto home = system.get_sauros_directory();
-    PACKAGE_CHECK(home.has_value(),
-                  sauros::format("Unable to locate: % , SAUROS_HOME not "
-                                 "defined and package is not local",
-                                 target))
-    target_manifest_file = *home;
+    target_manifest_file = sauros_home;
     target_manifest_file /= "pkgs";
     target_manifest_file /= target;
     root = target_manifest_file;

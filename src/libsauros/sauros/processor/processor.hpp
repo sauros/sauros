@@ -5,7 +5,6 @@
 #include "sauros/cell.hpp"
 #include "sauros/environment.hpp"
 #include "sauros/exceptions.hpp"
-#include "sauros/system/system.hpp"
 
 #include "sauros/types.hpp"
 #include <array>
@@ -52,7 +51,6 @@ public:
   cell_ptr load_potential_variable(cell_ptr source, env_ptr env);
 
 private:
-  sauros::system_c _system;
   std::array<cell_ptr, BUILTIN_ENTRY_COUNT> _builtins;
 
   void populate_standard_builtins();

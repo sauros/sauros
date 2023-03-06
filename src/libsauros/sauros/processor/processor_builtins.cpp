@@ -7,6 +7,7 @@
 #include <limits>
 
 #include "sauros/format.hpp"
+#include "sauros/system.hpp"
 
 namespace sauros {
 
@@ -141,7 +142,7 @@ void processor_c::populate_standard_builtins() {
 
           if (cells[0]->origin) {
             if (!perform_load((*(*i)->data.s), cells[0]->origin,
-                              _system.get_sauros_directory())) {
+                              sauros::system::sauros_home())) {
               throw sauros::exceptions::runtime_c(
                   "Unable to load import: " + (*(*i)->data.s), (*i));
             }

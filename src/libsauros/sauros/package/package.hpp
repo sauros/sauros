@@ -4,6 +4,7 @@
 #include "sauros/environment.hpp"
 #include "sauros/system/system.hpp"
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,7 +23,7 @@ struct pkg_s {
 };
 
 //! \brief Attempt to load a package from a target directory
-extern pkg_s load(cell_ptr cell, sauros::system_c &system, location_s *location,
+extern pkg_s load(cell_ptr cell, std::string &sauros_home, location_s *location,
                   env_ptr env);
 } // namespace package
 } // namespace sauros

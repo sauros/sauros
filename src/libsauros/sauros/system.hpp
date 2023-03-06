@@ -1,25 +1,26 @@
-#include "system.hpp"
-#include <cstdlib>
+#ifndef SAUROS_SYSTEM_HOME_HPP
+#define SAUROS_SYSTEM_HOME_HPP
 
-#include "sauros/profiler.hpp"
+#include "profiler.hpp"
 #include <filesystem>
-#include <iostream>
+#include <optional>
+#include <string>
 
 namespace sauros {
+namespace system {
 
-system_c::system_c() {
+static inline std::optional<std::string> sauros_home() {
 
 #ifdef PROFILER_ENABLED
-  profiler_c::get_profiler()->hit("system_c::system_c");
+  profiler_c::get_profiler()->hit("system::sauros_home");
 #endif
 
   std::filesystem::path sauros_home;
 
-  // First check to see if there is a SAUROS_HOME that will override defaults
-
   if (const char *s_home = std::getenv("SAUROS_HOME")) {
 
     sauros_home = std::filesystem::path(s_home);
+
   } else {
 
     std::filesystem::path user_home;
@@ -38,23 +39,22 @@ system_c::system_c() {
       }
     }
 #else
-    // Unable to detect the home env
+    return {};
 #endif
 
     if (!std::filesystem::exists(user_home)) {
-      // std::cerr << "Suspected home directory `" << user_home.c_str() << "`
-      // does not exist - Unable to determine sauors home" << std::endl;
-      return;
+      return {};
     }
 
     sauros_home = user_home / std::filesystem::path(".sauros");
   }
 
   if (std::filesystem::exists(sauros_home)) {
-    _home = sauros_home.c_str();
-    // std::cout << "sauros home exists" << std::endl;
-    return;
+    return {sauros_home.string()};
   }
+  return {};
 }
-
+} // namespace system
 } // namespace sauros
+
+#endif

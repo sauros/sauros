@@ -69,7 +69,6 @@ set(SAUROS_SOURCES
    ${CMAKE_SOURCE_DIR}/sauros/profiler.cpp
    ${CMAKE_SOURCE_DIR}/sauros/capi/capi.cpp
    ${CMAKE_SOURCE_DIR}/sauros/RLL/rll_wrapper.cpp
-   ${CMAKE_SOURCE_DIR}/sauros/system/system.cpp
    ${CMAKE_SOURCE_DIR}/sauros/front/parser.cpp
    ${CMAKE_SOURCE_DIR}/sauros/package/package.cpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor.cpp
@@ -101,13 +100,13 @@ set(HEADERS
    ${CMAKE_SOURCE_DIR}/sauros/rang.hpp
    ${CMAKE_SOURCE_DIR}/sauros/capi/capi.hpp
    ${CMAKE_SOURCE_DIR}/sauros/RLL/rll_wrapper.hpp
-   ${CMAKE_SOURCE_DIR}/sauros/system/system.hpp
    ${CMAKE_SOURCE_DIR}/sauros/package/package.hpp
    ${CMAKE_SOURCE_DIR}/sauros/processor/processor.hpp
    ${CMAKE_SOURCE_DIR}/sauros/environment.hpp
    ${CMAKE_SOURCE_DIR}/sauros/cell.hpp
    ${CMAKE_SOURCE_DIR}/sauros/types.hpp
    ${CMAKE_SOURCE_DIR}/sauros/version.hpp
+   ${CMAKE_SOURCE_DIR}/sauros/system.hpp
    ${CMAKE_SOURCE_DIR}/sauros/sauros.hpp
    ${CMAKE_SOURCE_DIR}/sauros/RLL/RLL.h
    ${PARALLEL_HASHMAP_HEADERS}

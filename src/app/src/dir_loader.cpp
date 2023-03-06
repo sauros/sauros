@@ -1,6 +1,6 @@
 #include "dir_loader.hpp"
 #include <filesystem>
-#include <sauros/system/system.hpp>
+#include <sauros/system.hpp>
 
 namespace app {
 
@@ -76,7 +76,6 @@ std::string load_dir(std::shared_ptr<sauros::environment_c> env) {
       std::exit(1);
     }
 
-    sauros::system_c sys;
     for (auto required : app_requires->list) {
       if (sauros::cell_type_e::STRING != required->type) {
         std::cerr << "Expected `required` item to be of type string"
@@ -95,7 +94,7 @@ std::string load_dir(std::shared_ptr<sauros::environment_c> env) {
       }
 
       // If we get here then its not local
-      auto sauros_home = sys.get_sauros_directory();
+      auto sauros_home = sauros::system::sauros_home();
       if (!sauros_home.has_value()) {
         std::cerr << "Unable to locate package: " << target
                   << " locally, and SAUROS_HOME has not been set" << std::endl;

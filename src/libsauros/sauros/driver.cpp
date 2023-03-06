@@ -5,7 +5,7 @@
 #include <filesystem>
 #include <iostream>
 #include <sauros/linenoise/linenoise.hpp>
-#include <sauros/system/system.hpp>
+#include <sauros/system.hpp>
 #include <unordered_map>
 
 namespace sauros {
@@ -315,8 +315,7 @@ void repl_c::start() {
 
   std::filesystem::path history_path(".sauros_repl_history.txt");
   {
-    system_c system;
-    auto home = system.get_sauros_directory();
+    auto home = sauros::system::sauros_home();
     if (home.has_value()) {
       history_path = std::filesystem::path(*home);
       history_path /= "repl_history.txt";

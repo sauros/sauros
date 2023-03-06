@@ -9,7 +9,7 @@
 #include "front/parser.hpp"
 #include "processor/processor.hpp"
 #include "rang.hpp"
-#include "system/system.hpp"
+#include "system.hpp"
 #include "types.hpp"
 #include "version.hpp"
 

@@ -54,6 +54,7 @@ add_executable(sauros
   src/creator.cpp
   src/dir_loader.cpp
   src/management/fetch.cpp
+  src/management/package.cpp
   src/main.cpp
 )
 
