@@ -1,3 +1,0 @@
-1672974141415|update time display|The time display for each entry is showing as a unix timestamp, we need to make it more user friendly with time.stamp_to_utc|0
-1672974204342|filter encodings|right now the encodings use a particular symbol called pipe (can't place it here) that will bonk the en/decode functionality. Create a filter or escape that allows us to store it as part of the text in title or description|0
-1672974269803|pretty windows|The windows right now are MVP - They could be made cuter and wrap long descriptions |0
