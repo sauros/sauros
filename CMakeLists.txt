@@ -4,8 +4,8 @@ project(sauros)
 
 set(CMAKE_CXX_STANDARD 20)
 
-find_package(libsauros REQUIRED)
-include_directories(${LIBAUROS_INCLUDE_DIRS})
+add_subdirectory(${PROJECT_SOURCE_DIR}/libsauros)
+include_directories(${PROJECT_SOURCE_DIR}/libsauros)
 
 find_package (Threads REQUIRED)
 
@@ -37,11 +37,6 @@ endif()
 #
 include("cmake/CheckGit.cmake")
 
-
-#
-# Add third party directories for app
-#
-add_subdirectory(src/third_party/hwinfo)
 #
 # Setup sauros app
 #
@@ -54,11 +49,11 @@ add_executable(sauros
 target_include_directories(sauros
     PUBLIC 
         ${PROJECT_SOURCE_DIR}
-        ${PROJECT_SOURCE_DIR}/src/third_party/hwinfo/include)
+        ${PROJECT_SOURCE_DIR}/src)
 
 target_link_libraries(sauros 
-   PUBLIC hwinfo::HWinfo
-   ${LIBSAUROS_LIBRARIES}
+   PUBLIC
+   libsauros
    dl
    Threads::Threads)
 

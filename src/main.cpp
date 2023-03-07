@@ -1,11 +1,9 @@
-#include <sauros/sauros.hpp>
+#include <libsauros/sauros.hpp>
 
 #include <filesystem>
 #include <iostream>
 #include <string>
 #include <vector>
-
-#include <hwinfo/hwinfo.h>
 
 #include "creator.hpp"
 #include "dir_loader.hpp"
@@ -48,7 +46,6 @@ void show_help() {
 <filename>               Execute file
 --help      -h           Show help
 --version   -v           Show version info
---system    -s           Retrieve system information (for bug reports)
 --new-cpp-package <name> Create a new package with cpp shared-lib boilerplate
 --new-package     <name> Create a new package
 --new-app         <name> Create a new sauros application
@@ -67,77 +64,6 @@ void version_info() {
             << std::endl;
 }
 
-void system_report() {
-  std::cout << rang::fg::green
-            << "--------------------------------- SAUROS "
-               "----------------------------------"
-            << rang::fg::reset << std::endl;
-  version_info();
-
-  hwinfo::OS os;
-  std::cout << rang::fg::green
-            << "----------------------------------- OS "
-               "------------------------------------"
-            << rang::fg::reset << std::endl;
-  std::cout << std::left << std::setw(20) << "operating system:";
-  std::cout << os.fullName() << std::endl;
-  std::cout << std::left << std::setw(20) << "short name:";
-  std::cout << os.name() << std::endl;
-  std::cout << std::left << std::setw(20) << "version:";
-  std::cout << os.version() << std::endl;
-  std::cout << std::left << std::setw(20) << "kernel:";
-  std::cout << os.kernel() << std::endl;
-  std::cout << std::left << std::setw(20) << "architecture:";
-  std::cout << (os.is32bit() ? "32 bit" : "64 bit") << std::endl;
-  std::cout << std::left << std::setw(20) << "endianess:";
-  std::cout << (os.isLittleEndian() ? "little endian" : "big endian")
-            << std::endl;
-
-  hwinfo::CPU cpu;
-  std::cout << rang::fg::green
-            << "----------------------------------- CPU "
-               "-----------------------------------"
-            << rang::fg::reset << std::endl;
-  std::cout << std::left << std::setw(20) << "vendor:";
-  std::cout << cpu.vendor() << std::endl;
-  std::cout << std::left << std::setw(20) << "model:";
-  std::cout << cpu.modelName() << std::endl;
-  std::cout << std::left << std::setw(20) << "physical cores:";
-  std::cout << cpu.numPhysicalCores() << std::endl;
-  std::cout << std::left << std::setw(20) << "logical cores:";
-  std::cout << cpu.numLogicalCores() << std::endl;
-  std::cout << std::left << std::setw(20) << "max frequency:";
-  std::cout << cpu.maxClockSpeed_kHz() << std::endl;
-  std::cout << std::left << std::setw(20) << "regular frequency:";
-  std::cout << cpu.regularClockSpeed_kHz() << std::endl;
-  std::cout << std::left << std::setw(20) << "current frequency:";
-  std::cout << hwinfo::CPU::currentClockSpeed_kHz() << std::endl;
-  std::cout << std::left << std::setw(20) << "cache size:";
-  std::cout << cpu.cacheSize_Bytes() << std::endl;
-
-  hwinfo::RAM ram;
-  std::cout << rang::fg::green
-            << "----------------------------------- RAM "
-               "-----------------------------------"
-            << rang::fg::reset << std::endl;
-  std::cout << std::left << std::setw(20) << "vendor:";
-  std::cout << ram.vendor() << std::endl;
-  std::cout << std::left << std::setw(20) << "model:";
-  std::cout << ram.model() << std::endl;
-  std::cout << std::left << std::setw(20) << "name:";
-  std::cout << ram.name() << std::endl;
-  std::cout << std::left << std::setw(20) << "serial-number:";
-  std::cout << ram.serialNumber() << std::endl;
-  std::cout << std::left << std::setw(20) << "size [MiB]:";
-  std::cout << static_cast<double>(ram.totalSize_Bytes()) / 1024.0 / 1024.0
-            << std::endl;
-
-  std::cout << rang::fg::green
-            << "--------------------------------------------------------------"
-               "-------------"
-            << rang::fg::reset << std::endl;
-}
-
 int main(int argc, char **argv) {
   std::vector<std::string> args(argv + 1, argv + argc);
 
@@ -149,11 +75,6 @@ int main(int argc, char **argv) {
 
     if (args[i] == "--version" || args[i] == "-v") {
       version_info();
-      return 0;
-    }
-
-    if (args[i] == "--system" || args[i] == "-s") {
-      system_report();
       return 0;
     }
 

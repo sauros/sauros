@@ -1,7 +1,7 @@
 #ifndef SAUROS_DIRECTORY_LOADER_HPP
 #define SAUROS_DIRECTORY_LOADER_HPP
 
-#include <sauros/sauros.hpp>
+#include <libsauros/sauros.hpp>
 #include <string>
 
 namespace app {
