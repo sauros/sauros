@@ -17,3 +17,4 @@ if [ "$CC" = "clang" ]; then export CXX="clang++"; fi && cd /tmp/cpputest-* && .
 
 cd /tmp/cpputest-* && ./configure --prefix=/usr/local && make && sudo make install
 
+git submodule update --init --recursive
