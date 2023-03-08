@@ -19,5 +19,8 @@ jobs:
           name: Application Build
           command: 'mkdir build && cd build && cmake ../ && make -j4 && sudo make install'
       - run:
+          name: Package Installation
+          command: 'bash scripts/package_install.sh'
+      - run:
           name: Scripted Tests
           command: 'cd test_scripts && export SAUROS_HOME="/tmp/.sauros" && python3 run.py ../build/sauros'
