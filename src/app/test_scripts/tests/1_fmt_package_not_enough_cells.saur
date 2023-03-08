@@ -1,2 +1,0 @@
-[use "fmt"]
-[var x  [fmt.encode "% %" [list 3]]]

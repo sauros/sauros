@@ -1,7 +1,0 @@
-[var a [try [+ "some string" 90] [
-   [-1]
-]]]
-
-; The `$` variable should be a temporary that exists
-; only in the scope of the failure list
-[putln $]

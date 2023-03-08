@@ -1,9 +1,0 @@
-;  Author: bosley
-;  About:  A formatter library
-
-;  Encode cell data and escaped chars into a string
-[var get_handle [lambda [file_name] [block
-    [assert "file io pkg > file_name parameter must not be nil" [not [is_nil file_name]]]
-    [assert "file io pkg > file_name must be of type string" [seq "string" [type file_name]]]
-    [yield [file_io._pkg_file_io_get_handle_ file_name]]
-]]]

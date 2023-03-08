@@ -1,0 +1,4 @@
+[submodule "libsauros"]
+	path = libsauros
+	url = https://github.com/sauros/libsauros.git
+	branch = v0.1.0
