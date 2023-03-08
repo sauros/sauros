@@ -1,0 +1,17 @@
+;   References permit the updating of 
+;   values passed to lambdas
+;
+;   Another benifit of ref items is that
+;   they ensure that only one read/write to the
+;   reference happens at a time, so they can
+;   be used in a threaded/async process
+
+[var x [lambda [ref_item] [block
+    [ref_item.put 3]
+]]]
+
+[var my_ref [ref 10]]
+
+[x my_ref]
+
+[putln [my_ref.get]]

@@ -1,0 +1,102 @@
+;  This is a slightly more modern version of the mandelbrot program
+;  it has some features that weren't present when bench/mandelbrot 
+;  was made and I hope to expand this one to be a viewer that 
+;  shows an evolving mandelbrot set
+
+[use "std"]
+
+[var screen::struct [box [block
+   [var grid]
+]]]
+
+[var screen::height 50]
+[var screen::width 100]
+[var screen::pixels [list "." "." "," "-" "^" "_" "*" "&" "^" "%" "1" "2" "3" "4" "5"]]
+
+[var screen::new [lambda [] [block
+   [var s screen::struct]
+   [loop [var h 0] [< h screen::height] [set h [+ 1 h]] [block
+      [push s.grid [std.list::make_assigned " " screen::width]]
+   ]]
+   [yield s]
+]]]
+
+[var screen::print [lambda [screen] [block
+   [iter row screen.grid [block
+      [iter pixel row [block
+         [put pixel]
+      ]]
+      [putln ""]
+   ]]
+]]]
+
+
+; [var screen::populate [lambda [height width value] [block
+;    [set_at width [at height screen.grid] value]
+; ]]]
+; [screen::populate 40 20 "@"]
+; [screen::print screen]
+
+[var mandelbrot [lambda [real image] [
+   [block
+      [var limit 100]
+      [var z_real real]
+      [var z_image image]
+      [loop [var k 0] [< k limit] [set k [+ k 1]] [
+         [block
+            [var r2 [* z_real z_real]]
+            [var i2 [* z_image z_image]]
+            [if [> [+ r2 i2] 4.0] [yield k]]
+            [set z_image [+ [* z_real [* z_image 2.0]] image]]
+            [set z_real [+ real [- r2 i2]]]
+         ]
+      ]]
+      [yield [nil]]
+   ]
+]]]
+
+
+[var mandelbrot::pair [box [block
+   [var start]
+   [var end]
+]]]
+
+[var mandelbrot::new_pair [lambda[start end] [block
+   [var se mandelbrot::pair]
+   [set se.start start]
+   [set se.end end]
+   [yield se]
+]]]
+
+[var mandelbrot::generate [lambda [screen x y] [block
+   [var dx [/ [- x.end x.start] [- screen::width 1]]]
+   [var dy [/ [- y.end y.start] [- screen::height 1]]]
+   [loop [var i 0] [< i screen::height] [set i [+ 1 i]] [
+      [block
+         [loop [var j 0] [< j screen::width] [set j [+ 1 j]] [
+            [block
+               [var value 
+                  [mandelbrot 
+                     [ + x.start [* j dx] ]  ; x
+                     [ - y.end [* i dy] ]    ; y
+                  ]
+               ]
+               [if [not [is_nil value]] [[ 
+                  [set_at j [at i screen.grid] [at [% value [len screen::pixels]] screen::pixels]]
+               ]]
+               ]
+            ]
+         ]]
+         [putln ""]
+      ]
+   ]]
+]]]
+
+
+[var current_screen [screen::new]]
+[var x [mandelbrot::new_pair -3.0 2.0]]
+[var y [mandelbrot::new_pair -2.0 2.0]]
+
+[mandelbrot::generate current_screen x y]
+
+[screen::print current_screen]

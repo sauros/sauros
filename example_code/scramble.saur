@@ -1,0 +1,31 @@
+; 
+;  This is a simple program that takes a source string 
+;  and an integer to produce a scrambled string of a 
+;  given length value
+;
+
+; Use the built-in random module
+[use "random"]
+
+; Use the io module
+[use "io"]
+
+; Get a string to source the scrambled text from
+
+
+[var source_string [nil]]
+[loop [var getting_string [true]] [getting_string] [] [block
+   [set source_string [io.get_string "Please enter some text> "]]
+   [if [not [is_nil source_string]] [set getting_string [false]]]
+]]
+
+; Get an integer to describe the length og the scrambled string
+
+
+[var target_len [nil]]
+[loop [var getting_len [true]] [getting_len] [] [block
+   [set target_len [io.get_int "Please enter a length (integer)> "]]
+   [if [not [is_nil target_len]] [set getting_len [false]]]
+]]
+
+[putln "Your scrambled text : " [random.sourced_string source_string target_len]]

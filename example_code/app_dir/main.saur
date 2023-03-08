@@ -1,0 +1,15 @@
+[use "local_pkg"]
+;
+;   These items are populated for directory execution
+;
+[putln "App Name: " @app_name]
+[putln "Authors: " @authors]
+[putln "License: " @license]
+
+
+[putln "HELLO, WORLD!"]
+
+[local_pkg.fn]
+
+
+

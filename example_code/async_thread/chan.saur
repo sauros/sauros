@@ -1,0 +1,23 @@
+[use "std"]
+[use "os"]
+
+[var my_channel [chan]]
+
+[var receiver_lambda [lambda [] [block
+    [std.loop::main [lambda [idx] [block
+        [if [my_channel.has_data] [block
+            [var data [my_channel.get]]
+            [putln "Got: " data]
+        ]]
+        [os.sleep_ms 1000]
+    ]]]
+]]]
+
+[var handle [async [receiver_lambda]]]
+[var counter 0]
+
+[std.loop::main [lambda [idx] [block
+    [os.sleep_ms 5000]
+    [my_channel.put counter]
+    [set counter [+ 1 counter]]
+]]]

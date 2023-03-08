@@ -1,0 +1,137 @@
+;
+;  A very basic library checkout system that keeps track of
+;  books and their availability
+;
+
+[use "io"]
+[use "os"]
+[use "fmt"]
+[use "std"]
+[import "database/db.saur"]
+[import "database/entry.saur"]
+
+;  Load the database file from the @args list
+;
+[var database_file 
+   [if [== [len @args] 0] [block
+      [putln "Please provide a book name"]
+      [exit 1]
+      ]
+      [
+         [at 0 @args]
+      ]
+   ]
+]
+
+;  Load the database
+;
+[var loaded_database [database::load database_file] ]
+
+;  Save the database
+;
+[var save_db [lambda [] [block
+   [put "Saving..."]
+   [database::save database_file loaded_database]
+   [putln "COMPLETE"]
+]]]
+
+;  Select a valid entry from a given, or subsection-of the loaded database
+;
+[var select [lambda [data] [block
+   [loop [] [true] [] [block 
+      [var index 0]
+      [iter entry data [block
+         [var current_entry 
+            [fmt.encode "[%] Title: %\n    Description: %\n    Available: %\n"
+               [list index entry.title entry.description entry.status]
+            ]
+         ]
+         [putln current_entry]
+         [set index [+ 1 index]]
+      ]]
+      [var selection [io.get_int "selection> "]]
+      [if [>= selection index] [putln "invalid selection"] [
+         [yield selection]
+      ]]
+   ]]
+]]]
+
+;  Display available commands 
+;
+[var show_help [lambda [] [block
+   [putln "help      Show this message"]
+   [putln "new       Add a new book"]
+   [putln "checkout  Check out a book"]
+   [putln "return    Return a book"]
+   [putln "list      List the available books"]
+   [putln "exit      Close the program"]
+   [putln "clear     Clear the screen"]
+]]]
+
+;  List all books
+;
+[var list_books [lambda [] [block
+   [putln [fmt.encode "There are % books in the database\n"  [len loaded_database]]]
+   [loop [var i 0] [> [len loaded_database] i] [set i [+ 1 i]] [block 
+      [putln [database::entry_to_string [at i loaded_database]]]
+   ]]
+]]]
+
+;  Create a new book
+;
+[var new_book [lambda [] [block
+   [putln [fmt.string "\n\t[ NEW BOOK ]"]]
+   [var title [io.get_string "title > "]]
+   [var desc [io.get_string "description > "]]
+   [push loaded_database 
+      [database::new_entry title desc database::entry::AVAILABLE]
+   ]
+
+   [save_db]
+]]]
+
+;  Checkout a book
+;
+[var checkout_book [lambda [] [block
+   [var selected_book [at [select loaded_database] loaded_database]]
+
+   [if [not [seq selected_book.status database::entry::AVAILABLE]] [block
+      [putln "That book is not currently available"]
+      [yield 1]
+   ]]
+   [set selected_book.status database::entry::UNAVAILABLE]
+   [save_db]
+]]]
+
+;  Return a book
+;
+[var return_book [lambda [] [block
+   [var selected_book [at [select loaded_database] loaded_database]]
+
+   [if [not [seq selected_book.status database::entry::UNAVAILABLE]] [block
+      [putln "That book is already available"]
+      [yield 1]
+   ]]
+   [set selected_book.status database::entry::AVAILABLE]
+   [save_db]
+]]]
+
+;  Main program loop, get user input and
+;  map it to the correct function
+;
+[loop [] [true] [] [block
+   [std.match::item [io.get_string "$: "] [list
+      [std.match::pattern "help" show_help]
+      [std.match::pattern "new" new_book]
+      [std.match::pattern "checkout" checkout_book]
+      [std.match::pattern "return" return_book]
+      [std.match::pattern "list" list_books]
+      [std.match::pattern "clear" os.clear_screen]
+      [std.match::pattern "exit" [lambda [] [block
+         [putln "Goodbye"]
+         [exit 0]
+      ]]]
+   ] [lambda [] [
+      putln "use `help` to get a list of commands"
+   ]]]
+]]

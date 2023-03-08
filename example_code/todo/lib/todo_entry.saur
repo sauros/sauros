@@ -1,0 +1,39 @@
+[use "time"]
+[use "fmt"]
+
+[var __::anonymous::todo::entry::struct [box [block
+    [var created ""]
+    [var title ""]
+    [var description ""]
+    [var completed 0]
+]]]
+
+[var todo::entry::new [lambda [title description] [block
+    [var x __::anonymous::todo::entry::struct]
+    [set x.created [time.stamp]]
+    [set x.title title]
+    [set x.description description]
+    [yield x]
+]]]
+
+[var todo::entry::encode [lambda [entry] [block
+    [yield [fmt.encode "%|%|%|%" [list entry.created entry.title entry.description entry.completed]]]
+]]]
+
+[var todo::entry::decode [lambda [encoded] [block
+    [var expanded [fmt.split encoded "|"]]
+
+    [if [!= 4 [len expanded]] [
+        throw "Encoded data did not contain requisite number of fields"
+    ]]
+
+    [var x __::anonymous::todo::entry::struct]
+    [set x.created [at 0 expanded]]
+    [set x.title [at 1 expanded]]
+    [set x.description [at 2 expanded]]
+    [try
+        [set x.completed [as_int [at 3 expanded]]]
+        [throw [fmt.encode "Unable to convert encoded `completed` fiels to reequired data type: %" $]]
+    ]
+    [yield x]
+]]]

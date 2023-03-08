@@ -1,0 +1,18 @@
+[use "std"]
+[use "os"]
+
+[var receiver_lambda [lambda [] [block
+  [std.loop::auto >= 4 0 [lambda [i] [block 
+     [os.sleep_ms 1000]
+  ]]]
+  [yield 42]
+]]]
+
+[var handle [async [receiver_lambda]]]
+
+[os.sleep_ms 10000]
+
+[putln "Outer sleep complete"]
+
+[putln [handle.get]]
+

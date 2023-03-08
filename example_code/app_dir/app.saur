@@ -1,0 +1,11 @@
+[var app_name "Example-app"]
+
+[var authors "Bosley"]
+[var license "MIT"]
+
+[var requires [list 
+    "std"
+    "local_pkg"
+]]
+
+[var entry "main.saur"]
