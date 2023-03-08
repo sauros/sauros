@@ -6,8 +6,8 @@ jobs:
       - image: "debian:latest"
     steps:
       - checkout
-      - git submodule sync --recursive
-      - git submodule update --recursive --init
+      - run: git submodule sync --recursive
+      - run: git submodule update --recursive --init
       - run:
           name: Installing SUDO
           command: 'apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*'
