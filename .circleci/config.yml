@@ -6,14 +6,15 @@ jobs:
       - image: "debian:latest"
     steps:
       - checkout
-      - run: git submodule sync --recursive
-      - run: git submodule update --recursive --init
       - run:
           name: Installing SUDO
           command: 'apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*'
       - run:
           name: Install build tools and cpputest
           command: 'bash scripts/setup_ci.sh'
+      - run: 
+          name: Submodules
+          command: git submodule sync --recursive && git submodule update --recursive --init
       - run:
           name: Application Build
           command: 'mkdir build && cd build && cmake ../ && make -j4 && sudo make install'
