@@ -10,23 +10,11 @@ jobs:
           name: Installing SUDO
           command: 'apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*'
       - run:
-          name: Installing Build Tools
-          command: 'sudo apt-get update && apt-get install -y git gcc-9 g++-9 wget pkg-config build-essential cmake python3'
-      - run:
-          name: Upgrade
-          command: 'sudo apt-get upgrade -y'
-      - run:
-          name: Install CppuTest
-          command: 'bash scripts/install_cpputest.sh'
-      - run:
-          name: Library Build
-          command: 'cd src/libsauros && mkdir build && cd build && cmake ../ && make -j4 && sudo make install'
+          name: Install build tools and cpputest
+          command: 'bash scripts/setup_ci.sh'
       - run:
           name: Application Build
-          command: 'cd src/app && mkdir build && cd build && cmake ../ && make -j4 && sudo make install'
-      - run:
-          name: Install Packages
-          command: 'export SAUROS_HOME="/tmp/.sauros" && cd pkgs && python3 install.py'
+          command: 'mkdir build && cd build && cmake ../ && make -j4 && sudo make install'
       - run:
           name: Scripted Tests
-          command: 'cd src/app/test_scripts && export SAUROS_HOME="/tmp/.sauros" && python3 run.py ../build/sauros'
+          command: 'cd test_scripts && export SAUROS_HOME="/tmp/.sauros" && python3 run.py ../build/sauros'
