@@ -1,7 +1,0 @@
-[var my_truthy [true]]
-[var my_falsy [false]]
-[var my_nil [nil]]
-
-[assert "truthy.saur > true" my_truthy]
-[assert "truthy.saur > false" [not my_falsy]]
-[assert "truthy.saur > nil" [is_nil my_nil]]

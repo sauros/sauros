@@ -1,5 +1,0 @@
-[import "importable/alpha.saur"]
-[import "importable/beta.saur"]
-
-[assert "imports.saur > alpha imported" alpha::imported]
-[assert "imports.saur > beta imported" beta::imported]
