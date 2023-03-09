@@ -124,3 +124,13 @@ primality.saur >> averaged an execution time of  1.1859s ( 1185.9115ms )  after 
 mandelbrot.saur >> averaged an execution time of  0.2254s ( 225.4281ms )  after  50  executions
 4sieve.saur >> averaged an execution time of  1.0611s ( 1061.1067ms )  after  50  executions
 ```
+
+## 8-3-2023
+
+Post libsauros migration - using libsauros v0.2.x
+
+```
+primality.saur >> averaged an execution time of  1.1479s ( 1147.8706ms )  after  50  executions
+mandelbrot.saur >> averaged an execution time of  0.2236s ( 223.5877ms )  after  50  executions
+4sieve.saur >> averaged an execution time of  1.0205s ( 1020.4746ms )  after  50  executions
+```
