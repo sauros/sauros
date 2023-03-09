@@ -1,6 +1,6 @@
 #include "dir_loader.hpp"
 #include <filesystem>
-#include <libsauros/system/system.hpp>
+#include <libsauros/system.hpp>
 
 namespace app {
 
@@ -76,7 +76,6 @@ std::string load_dir(std::shared_ptr<sauros::environment_c> env) {
       std::exit(1);
     }
 
-    sauros::system_c sys;
     for (auto required : app_requires->list) {
       if (sauros::cell_type_e::STRING != required->type) {
         std::cerr << "Expected `required` item to be of type string"
@@ -84,7 +83,7 @@ std::string load_dir(std::shared_ptr<sauros::environment_c> env) {
         std::exit(1);
       }
 
-      std::filesystem::path target = required->data_as_str();
+      std::filesystem::path target = required->as_string();
 
       if (std::filesystem::is_directory(target)) {
         auto package_file = target / "pkg.saur";
@@ -95,7 +94,7 @@ std::string load_dir(std::shared_ptr<sauros::environment_c> env) {
       }
 
       // If we get here then its not local
-      auto sauros_home = sys.get_sauros_directory();
+      auto sauros_home = sauros::system::get_sauros_home_directory();
       if (!sauros_home.has_value()) {
         std::cerr << "Unable to locate package: " << target
                   << " locally, and SAUROS_HOME has not been set" << std::endl;
@@ -126,7 +125,7 @@ std::string load_dir(std::shared_ptr<sauros::environment_c> env) {
     std::exit(1);
   }
 
-  std::filesystem::path entry_actual = entry_file->data_as_str();
+  std::filesystem::path entry_actual = entry_file->as_string();
   if (!std::filesystem::is_regular_file(entry_actual)) {
     std::cerr << "File set for entry `" << entry_actual.string()
               << "` does not exist!" << std::endl;
